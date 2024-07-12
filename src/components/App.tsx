@@ -12,13 +12,13 @@ import {
 } from "@concord-consortium/codap-plugin-api";
 import "./App.css";
 
-const kPluginName = "Sample Plugin";
+const kPluginName = "Day Length Plugin";
 const kVersion = "0.0.1";
 const kInitialDimensions = {
   width: 380,
   height: 680
 };
-const kDataContextName = "SamplePluginData";
+const kDataContextName = "DayLength3PluginData";
 
 export const App = () => {
   const [codapResponse, setCodapResponse] = useState<any>(undefined);
@@ -49,10 +49,11 @@ export const App = () => {
     let createDC, createNC, createI;
     if (!existingDataContext.success) {
       createDC = await createDataContext(kDataContextName);
+      console.log("| attempted to create data context", createDC);
       setDataContext(createDC.values);
     }
     if (existingDataContext?.success || createDC?.success) {
-      createNC = await createNewCollection(kDataContextName, "Pets", [{name: "type", type: "string"}, {name: "number", type: "number"}]);
+      createNC = await createNewCollection(kDataContextName, "Pets", [{name: "type", type: "categorical"}, {name: "number", type: "numeric"}]);
       createI = await createItems(kDataContextName, [ {type: "dog", number: 5},
                                       {type: "cat", number: 4},
                                       {type: "fish", number: 20},
@@ -75,7 +76,7 @@ export const App = () => {
 
   return (
     <div className="App">
-      CODAP Starter Plugin
+      CODAP Day Length Plugin 3
       <div className="buttons">
         <button onClick={handleCreateData}>
           Create some data
