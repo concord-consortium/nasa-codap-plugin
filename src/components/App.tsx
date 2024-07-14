@@ -59,7 +59,14 @@ export const App = () => {
 
   return (
     <div className="App">
-      CODAP Day Length Plugin 3
+      <div className="plugin-row">
+        <p>How long is a day?</p>
+        <p>Enter a location or coordinates to retrieve data</p>
+      </div>
+      <div className="plugin-row">
+        <label>Location:</label><br/>
+        <input type="text" placeholder="city, state or country" />
+      </div>
       <div className="buttons">
         <button onClick={handleCreateData}>
           Create pets data
