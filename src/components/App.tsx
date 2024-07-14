@@ -3,12 +3,9 @@ import {
   createDataContext,
   createItems,
   createNewCollection,
-  createTable,
   getAllItems,
   getDataContext,
   initializePlugin,
-  addComponentListener,
-  ClientNotification,
 } from "@concord-consortium/codap-plugin-api";
 import "./App.css";
 
@@ -22,51 +19,37 @@ const kDataContextName = "DayLength3PluginData";
 
 export const App = () => {
   const [codapResponse, setCodapResponse] = useState<any>(undefined);
-  const [listenerNotification, setListenerNotification] = useState<string>();
-  const [dataContext, setDataContext] = useState<any>(null);
 
   useEffect(() => {
     initializePlugin({pluginName: kPluginName, version: kVersion, dimensions: kInitialDimensions});
-
-    // this is an example of how to add a notification listener to a CODAP component
-    // for more information on listeners and notifications, see
-    // https://github.com/concord-consortium/codap/wiki/CODAP-Data-Interactive-Plugin-API#documentchangenotice
-    const createTableListener = (listenerRes: ClientNotification) => {
-      if (listenerRes.values.operation === "open case table") {
-        setListenerNotification("A case table has been created");
-      }
-    };
-    addComponentListener(createTableListener);
   }, []);
-
-  const handleOpenTable = async () => {
-    const res = await createTable(dataContext, kDataContextName);
-    setCodapResponse(res);
-  };
 
   const handleCreateData = async() => {
     const existingDataContext = await getDataContext(kDataContextName);
     let createDC, createNC, createI;
     if (!existingDataContext.success) {
       createDC = await createDataContext(kDataContextName);
-      console.log("| attempted to create data context", createDC);
-      setDataContext(createDC.values);
     }
     if (existingDataContext?.success || createDC?.success) {
-      createNC = await createNewCollection(kDataContextName, "Pets", [{name: "type", type: "categorical"}, {name: "number", type: "numeric"}]);
-      createI = await createItems(kDataContextName, [ {type: "dog", number: 5},
-                                      {type: "cat", number: 4},
-                                      {type: "fish", number: 20},
-                                      {type: "horse", number: 1},
-                                      {type: "bird", number: 8},
-                                      {type: "hamster", number: 3}
-                                    ]);
+      createNC = await createNewCollection(kDataContextName, "Pets", [
+        { name: "animal", type: "categorical" },
+        { name: "count", type: "numeric" }
+      ]);
+      createI = await createItems(kDataContextName, [
+        { animal: "dog", count: 5 },
+        { animal: "cat", count: 4 },
+        { animal: "fish", count: 20 },
+        { animal: "horse", count: 1 },
+        { animal: "bird", count: 2 },
+        { animal: "snake", count: 1 }
+      ]);
     }
 
-    setCodapResponse(`Data context created: ${JSON.stringify(createDC)}
-    New collection created: ${JSON.stringify(createNC)}
-    New items created: ${JSON.stringify(createI)}`
-                    );
+    setCodapResponse(`
+      Data context created: ${JSON.stringify(createDC)}
+      New collection created: ${JSON.stringify(createNC)}
+      New items created: ${JSON.stringify(createI)}
+    `);
   };
 
   const handleGetResponse = async () => {
@@ -79,10 +62,7 @@ export const App = () => {
       CODAP Day Length Plugin 3
       <div className="buttons">
         <button onClick={handleCreateData}>
-          Create some data
-        </button>
-        <button onClick={handleOpenTable}>
-          Open Table
+          Create pets data
         </button>
         <button onClick={handleGetResponse}>
           See getAllItems response
@@ -93,12 +73,6 @@ export const App = () => {
             {codapResponse && `${JSON.stringify(codapResponse, null, "  ")}`}
           </div>
         </div>
-      </div>
-      <div className="response-area">
-          <span>Listener Notification:</span>
-          <div className="response">
-            {listenerNotification && listenerNotification}
-          </div>
       </div>
     </div>
   );
