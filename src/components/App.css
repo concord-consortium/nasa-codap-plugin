@@ -8,14 +8,53 @@
   font-size: 12px;
   font-weight: 500;
   color: #000;
-  width: 300px;
+  width: 320px;
 
   .plugin-row {
+    display:flex;
+    justify-content: space-between;
     width: 100%;
     margin-bottom: 10px;
     p {
       font-weight: bold;
       margin: 0px;
+      width: 100%;
     }
+  }
+
+  .attribute-tokens {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    margin-top: 10px;
+    padding: 0px;
+    li {
+      list-style: none;
+      background-color: #f0f0f0;
+      padding: 6px;
+      border-radius: 20px;
+      margin: 5px;
+    }
+  }
+
+  button {
+    background-color: white;
+    padding: 6px;
+    border-radius: 4px;
+    margin-left: auto;
+    cursor: pointer;
+  }
+
+  .temporary {
+    margin-top: 20px;
+    background-color: rgb(252, 235, 138);
+    padding: 10px;
+    display: none;
+  }
+
+  hr {
+    width: 100%;
+    margin: 10px 0px;
+    color:aliceblue;
   }
 }
