@@ -49,6 +49,7 @@ export const App = () => {
     let createDC;
     const solarEvents = getSolarEventsForYear(Number(latitude), Number(longitude), 2023);
     console.log(solarEvents);
+    console.log(dataContext);
 
     const existingDataContext = await getDataContext(kDataContextName);
 
@@ -59,9 +60,11 @@ export const App = () => {
     if (existingDataContext?.success || createDC?.success) {
       await createNewCollection(kDataContextName, "Day Length", [
         //TODO these will need to be date
-        { name: "day", type: "none" },
-        { name: "sunrise", type: "none" },
-        { name: "sunset", type: "none" }
+        { name: "day", type: "categorical" },
+        { name: "sunrise", type: "numeric" },
+        { name: "sunset", type: "numeric" },
+        { name: "dayLength", type: "numeric" },
+        { name: "dayAsInteger", type: "numeric" }
       ]);
       await createItems(kDataContextName, [
         ...solarEvents

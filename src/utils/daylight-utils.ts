@@ -4,6 +4,8 @@ interface DaylightInfo {
   day: any;
   sunrise: any;
   sunset: any;
+  dayLength: any;
+  dayAsInteger: any;
 }
 
 // export function getSolarEventsForYearOld(latitude: number, longitude: number, year: number): SolarEvent[] {
@@ -34,8 +36,10 @@ export function getSolarEventsForYear(latitude: number, longitude: number, year:
     //console.log("| what is wrong? ", "\n sunrise: ",  sunrise, "\n sunset: ", sunset);
     const record = {
       day: getSimpleDate(d),
-      sunrise: getTime(sunrise),
-      sunset: getTime(sunset)
+      sunrise: getTimeOfDayAsInteger(sunrise),
+      sunset: getTimeOfDayAsInteger(sunset),
+      dayLength: getDayLength(sunrise, sunset),
+      dayAsInteger: getDayOfYearAsInteger(d)
     };
     results.push(record);
   }
@@ -47,9 +51,9 @@ export function getSolarEventsForYear(latitude: number, longitude: number, year:
  * @param Date e.g.
  * @returns string
  */
-function getTime(date: Date): string {
-  return date.toTimeString().split(" ")[0];
-}
+// function getTime(date: Date): string {
+//   return date.toTimeString().split(" ")[0];
+// }
 
 /**
  * Get the date in YYYY-MM-DD format
@@ -58,4 +62,23 @@ function getTime(date: Date): string {
  */
 function getSimpleDate(date: Date): string {
   return date.toISOString().split("T")[0];
+}
+
+function getTimeOfDayAsInteger(date: Date): number {
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  return hours * 60 + minutes;
+}
+
+export function getDayLength(sunrise: Date, sunset: Date): number {
+  const sunriseTime = getTimeOfDayAsInteger(sunrise);
+  const sunsetTime = getTimeOfDayAsInteger(sunset);
+  return sunsetTime - sunriseTime;
+}
+
+export function getDayOfYearAsInteger(date: Date): number {
+  const start = new Date(date.getFullYear(), 0, 0);
+  const diff = date.getTime() - start.getTime();
+  const oneDay = 1000 * 60 * 60 * 24;
+  return Math.floor(diff / oneDay);
 }
