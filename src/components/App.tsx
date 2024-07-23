@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getSolarEventsForYear } from "../utils/daylight-utils";
+import { getDayLightInfo } from "../utils/daylight-utils";
 
 import {
   createDataContext,
@@ -47,28 +47,23 @@ export const App = () => {
 
   const getDayLengthData = async () => {
     let createDC;
-    const solarEvents = getSolarEventsForYear(Number(latitude), Number(longitude), 2023);
-    console.log(solarEvents);
-    console.log(dataContext);
-
+    const solarEvents = getDayLightInfo(Number(latitude), Number(longitude), 2023);
     const existingDataContext = await getDataContext(kDataContextName);
 
     if (!existingDataContext.success) {
       createDC = await createDataContext(kDataContextName);
       setDataContext(createDC.values);
     }
+
     if (existingDataContext?.success || createDC?.success) {
       await createNewCollection(kDataContextName, "Day Length", [
-        //TODO these will need to be date
-        { name: "day", type: "categorical" },
-        { name: "sunrise", type: "numeric" },
-        { name: "sunset", type: "numeric" },
+        { name: "day", type: "date" },
+        { name: "sunrise", type: "date" },
+        { name: "sunset", type: "date" },
         { name: "dayLength", type: "numeric" },
         { name: "dayAsInteger", type: "numeric" }
       ]);
-      await createItems(kDataContextName, [
-        ...solarEvents
-      ]);
+      await createItems(kDataContextName, [...solarEvents]);
     }
   };
 
@@ -132,6 +127,11 @@ export const App = () => {
         <button onClick={getDayLengthData}>
           Get Data
         </button>
+      </div>
+      <div className="plugin-row">
+        <em>
+          Data context { dataContext ? <span>created</span> : <span>not created</span> }
+        </em>
       </div>
     </div>
   );
