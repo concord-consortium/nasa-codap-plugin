@@ -12,16 +12,16 @@ export function getDayLightInfo(latitude: number, longitude: number, year: numbe
   const start = new Date(year, 0, 1).getTime();
   let results = [];
   for (let i = 0; i < 366; i++) {
-    const d = new Date(start + (i * 24 * 60 * 60 * 1000));
-    if (d.getFullYear() > year) break; // somehow handle leap year?
-    const sunrise = getSunrise(latitude, longitude, d);
-    const sunset = getSunset(latitude, longitude, d);
+    const day = new Date(start + (i * 24 * 60 * 60 * 1000));
+    if (day.getFullYear() > year) break; // somehow handle leap year?
+    const sunrise = getSunrise(latitude, longitude, day);
+    const sunset = getSunset(latitude, longitude, day);
     const record = {
-      day: d,
+      day,
       sunrise,
       sunset,
       dayLength: getDayLength(sunrise, sunset),
-      dayAsInteger: getDayOfYearAsInteger(d)
+      dayAsInteger: getDayOfYearAsInteger(day)
     };
     results.push(record);
   }
