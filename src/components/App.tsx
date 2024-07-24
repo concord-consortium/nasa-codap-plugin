@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getDayLightInfo } from "../utils/daylight-utils";
+import { kDataContextName, kInitialDimensions, kVersion, kPluginName } from "../constants";
+
 
 import {
   createDataContext,
@@ -10,14 +12,6 @@ import {
 } from "@concord-consortium/codap-plugin-api";
 import "./App.css";
 
-const kPluginName = "Day Length Plugin";
-const kVersion = "0.0.1";
-const kInitialDimensions = {
-  width: 380,
-  height: 680
-};
-
-const kDataContextName = "DayLengthPluginData";
 
 export const App = () => {
   const [dataContext, setDataContext] = useState<any>(null);
@@ -47,7 +41,12 @@ export const App = () => {
 
   const getDayLengthData = async () => {
     let createDC;
-    const solarEvents = getDayLightInfo(Number(latitude), Number(longitude), 2023);
+    const dayLightInfoOptions = {
+      latitude: Number(latitude),
+      longitude: Number(longitude),
+      year: 2023
+    };
+    const solarEvents = getDayLightInfo(dayLightInfoOptions);
     const existingDataContext = await getDataContext(kDataContextName);
 
     if (!existingDataContext.success) {

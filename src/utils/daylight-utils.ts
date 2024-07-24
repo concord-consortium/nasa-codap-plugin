@@ -1,14 +1,8 @@
 import { getSunrise, getSunset } from "sunrise-sunset-js";
+import { DaylightInfo, DayLightInfoOptions } from "../types";
 
-interface DaylightInfo {
-  day: Date;
-  sunrise: Date;
-  sunset: Date;
-  dayLength: number;
-  dayAsInteger: number;
-}
-
-export function getDayLightInfo(latitude: number, longitude: number, year: number): DaylightInfo[] {
+export function getDayLightInfo(options: DayLightInfoOptions): DaylightInfo[] {
+  const { latitude, longitude, year } = options;
   const start = new Date(year, 0, 1).getTime();
   let results = [];
   for (let i = 0; i < 366; i++) {
