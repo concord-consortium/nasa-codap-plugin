@@ -1,103 +1,137 @@
 import React, { useEffect, useState } from "react";
+import { getDayLightInfo } from "../utils/daylight-utils";
+
 import {
   createDataContext,
   createItems,
   createNewCollection,
-  createTable,
-  getAllItems,
   getDataContext,
   initializePlugin,
-  addComponentListener,
-  ClientNotification,
 } from "@concord-consortium/codap-plugin-api";
 import "./App.css";
 
-const kPluginName = "Sample Plugin";
+const kPluginName = "Day Length Plugin";
 const kVersion = "0.0.1";
 const kInitialDimensions = {
   width: 380,
   height: 680
 };
-const kDataContextName = "SamplePluginData";
+
+const kDataContextName = "DayLengthPluginData";
 
 export const App = () => {
-  const [codapResponse, setCodapResponse] = useState<any>(undefined);
-  const [listenerNotification, setListenerNotification] = useState<string>();
   const [dataContext, setDataContext] = useState<any>(null);
+  const [location, setLocation] = useState<string>("");
+  const [latitude, setLatitude] = useState<string>("");
+  const [longitude, setLongitude] = useState<string>("");
 
   useEffect(() => {
-    initializePlugin({pluginName: kPluginName, version: kVersion, dimensions: kInitialDimensions});
-
-    // this is an example of how to add a notification listener to a CODAP component
-    // for more information on listeners and notifications, see
-    // https://github.com/concord-consortium/codap/wiki/CODAP-Data-Interactive-Plugin-API#documentchangenotice
-    const createTableListener = (listenerRes: ClientNotification) => {
-      if (listenerRes.values.operation === "open case table") {
-        setListenerNotification("A case table has been created");
-      }
-    };
-    addComponentListener(createTableListener);
+    initializePlugin({
+      pluginName: kPluginName,
+      version: kVersion,
+      dimensions: kInitialDimensions
+    });
   }, []);
 
-  const handleOpenTable = async () => {
-    const res = await createTable(dataContext, kDataContextName);
-    setCodapResponse(res);
+  const handleLatChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setLatitude(event.target.value);
   };
 
-  const handleCreateData = async() => {
+  const handleLongChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setLongitude(event.target.value);
+  };
+
+  const handleLocChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setLocation(event.target.value);
+  };
+
+  const getDayLengthData = async () => {
+    let createDC;
+    const solarEvents = getDayLightInfo(Number(latitude), Number(longitude), 2023);
     const existingDataContext = await getDataContext(kDataContextName);
-    let createDC, createNC, createI;
+
     if (!existingDataContext.success) {
       createDC = await createDataContext(kDataContextName);
       setDataContext(createDC.values);
     }
+
     if (existingDataContext?.success || createDC?.success) {
-      createNC = await createNewCollection(kDataContextName, "Pets", [{name: "type", type: "string"}, {name: "number", type: "number"}]);
-      createI = await createItems(kDataContextName, [ {type: "dog", number: 5},
-                                      {type: "cat", number: 4},
-                                      {type: "fish", number: 20},
-                                      {type: "horse", number: 1},
-                                      {type: "bird", number: 8},
-                                      {type: "hamster", number: 3}
-                                    ]);
+      await createNewCollection(kDataContextName, "Day Length", [
+        { name: "day", type: "date" },
+        { name: "sunrise", type: "date" },
+        { name: "sunset", type: "date" },
+        { name: "dayLength", type: "numeric" },
+        { name: "dayAsInteger", type: "numeric" }
+      ]);
+      await createItems(kDataContextName, [...solarEvents]);
     }
-
-    setCodapResponse(`Data context created: ${JSON.stringify(createDC)}
-    New collection created: ${JSON.stringify(createNC)}
-    New items created: ${JSON.stringify(createI)}`
-                    );
-  };
-
-  const handleGetResponse = async () => {
-    const result = await getAllItems(kDataContextName);
-    setCodapResponse(result);
   };
 
   return (
     <div className="App">
-      CODAP Starter Plugin
-      <div className="buttons">
-        <button onClick={handleCreateData}>
-          Create some data
-        </button>
-        <button onClick={handleOpenTable}>
-          Open Table
-        </button>
-        <button onClick={handleGetResponse}>
-          See getAllItems response
-        </button>
-        <div className="response-area">
-          <span>Response:</span>
-          <div className="response">
-            {codapResponse && `${JSON.stringify(codapResponse, null, "  ")}`}
-          </div>
-        </div>
+      <div className="plugin-row">
+        <p>
+          How long is a day?<br />
+          Enter a location or coordinates to retrieve data
+        </p>
       </div>
-      <div className="response-area">
-          <span>Listener Notification:</span>
-          <div className="response">
-            {listenerNotification && listenerNotification}
-          </div>
+      <hr />
+      <div className="plugin-row">
+        <label>Location:</label>
+        <input
+          type="text"
+          placeholder="city, state or country"
+          value={location}
+          onChange={handleLocChange}
+        />
+      </div>
+
+      <hr />
+      <div className="plugin-row">
+        <label>Latitude:</label>
+        <input
+          type="text"
+          placeholder="latitude"
+          value={latitude}
+          onChange={handleLatChange}
+        />
+      </div>
+      <div className="plugin-row">
+        <label>Longitude:</label>
+        <input
+          type="text"
+          placeholder="longitude"
+          value={longitude}
+          onChange={handleLongChange}
+        />
+      </div>
+
+      <hr />
+      <div className="plugin-row">
+        Attributes
+      </div>
+      <div className="plugin-row">
+        { /* placeholder */}
+        <ul className="attribute-tokens">
+          <li>Day</li>
+          <li>Day Length</li>
+          <li>Rise Hour</li>
+          <li>Set Hour</li>
+          <li>Sunlight Angle</li>
+          <li>Solar Intensity</li>
+          <li>Surface Area</li>
+          <li>Season</li>
+        </ul>
+      </div>
+      <div className="plugin-row">
+        <button onClick={getDayLengthData}>
+          Get Data
+        </button>
+      </div>
+      <div className="plugin-row">
+        <em>
+          Data context { dataContext ? <span>created</span> : <span>not created</span> }
+        </em>
       </div>
     </div>
   );

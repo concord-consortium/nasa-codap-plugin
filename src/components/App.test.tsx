@@ -5,7 +5,7 @@ import { render, screen } from "@testing-library/react";
 describe("test load app", () => {
   it("renders without crashing", () => {
     render(<App/>);
-    expect(screen.getByText("CODAP Starter Plugin")).toBeDefined();
+    expect(screen.getByText("CODAP Day Length Plugin 3")).toBeDefined();
   });
 });
 
