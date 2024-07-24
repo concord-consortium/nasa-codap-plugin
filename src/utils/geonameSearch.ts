@@ -6,7 +6,7 @@ export const geoNameSearch = async (options: GeoNameSearchOptions): Promise<ILoc
   const { searchString, maxRows = kDefaultMaxRows } = options;
   const url = new URL(kGeonamesService);
   url.searchParams.append("username", kGeonamesUser);
-  url.searchParams.append("country", "US");
+  // url.searchParams.append("country", "US");
   url.searchParams.append("maxRows", maxRows.toString());
   url.searchParams.append("lang", "en");
   url.searchParams.append("type", "json");
@@ -20,11 +20,15 @@ export const geoNameSearch = async (options: GeoNameSearchOptions): Promise<ILoc
     }
     const data = await response.json();
     if (data.totalResultsCount > 0) {
-      return data.geonames.map((place: any) => ({
-        name: `${place.name}, ${place.adminCode1}`,
-        latitude: place.lat,
-        longitude: place.lng
-      }));
+      return data.geonames.map((place: any) => {
+        const admin = place.countryCode === "US" ? place.adminCode1 : place.countryName;
+        const name = `${place.name}, ${admin}`;
+        return {
+          name,
+          latitude: place.lat,
+          longitude: place.lng
+        };
+      });
     }
     return undefined;
   } catch (error) {

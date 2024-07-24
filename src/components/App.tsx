@@ -10,6 +10,7 @@ import {
   createNewCollection,
   getDataContext,
   initializePlugin,
+  codapInterface
 } from "@concord-consortium/codap-plugin-api";
 import "./App.css";
 
@@ -54,6 +55,20 @@ export const App = () => {
     }
   };
 
+  const handleClearData = async () => {
+    let result = await getDataContext(kDataContextName);
+    if (result.success) {
+      let dc = result.values;
+      let lastCollection = dc.collections[dc.collections.length-1];
+      return await codapInterface.sendRequest({
+        action: "delete",
+        resource: `dataContext[${kDataContextName}].collection[${lastCollection.name}].allCases`
+      });
+    } else {
+      return Promise.resolve({success: true});
+    }
+  };
+
   const getDayLengthData = async () => {
     if (!latitude || !longitude) {
       alert("Please enter both latitude and longitude.");
@@ -67,7 +82,6 @@ export const App = () => {
       year: 2023
     };
     const solarEvents = getDayLightInfo(dayLightInfoOptions);
-    console.log("| solar events from getDayLightInfo", solarEvents);
     const existingDataContext = await getDataContext(kDataContextName);
 
     if (!existingDataContext.success) {
@@ -151,7 +165,11 @@ export const App = () => {
         <button onClick={getDayLengthData}>
           Get Data
         </button>
+        <button onClick={handleClearData}>
+          Clear Data
+        </button>
       </div>
+
       <div className="plugin-row">
         <em>
           Data context { dataContext ? <span>created</span> : <span>not created</span> }
