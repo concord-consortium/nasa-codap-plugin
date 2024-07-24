@@ -19,3 +19,8 @@ export interface DayLightInfoOptions {
   year: number;
   // TODO: Add surface intensity, etc.
 }
+
+export interface GeoNameSearchOptions {
+  searchString: string;
+  maxRows?: number;
+}

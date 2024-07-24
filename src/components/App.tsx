@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { getDayLightInfo } from "../utils/daylight-utils";
 import { kDataContextName, kInitialDimensions, kVersion, kPluginName } from "../constants";
-
+import { DayLightInfoOptions, ILocation } from "../types";
+import { LocationPicker } from "./location-picker";
 
 import {
   createDataContext,
@@ -12,12 +13,12 @@ import {
 } from "@concord-consortium/codap-plugin-api";
 import "./App.css";
 
-
 export const App = () => {
   const [dataContext, setDataContext] = useState<any>(null);
-  const [location, setLocation] = useState<string>("");
+  const [location, setLocation] = useState<ILocation | null>(null);
   const [latitude, setLatitude] = useState<string>("");
   const [longitude, setLongitude] = useState<string>("");
+  const [locationSearch, setLocationSearch] = useState<string>("");
 
   useEffect(() => {
     initializePlugin({
@@ -29,24 +30,44 @@ export const App = () => {
 
   const handleLatChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLatitude(event.target.value);
+    setLocation(null);
+    setLocationSearch("");
   };
 
   const handleLongChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLongitude(event.target.value);
+    setLocation(null);
+    setLocationSearch("");
   };
 
-  const handleLocChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setLocation(event.target.value);
+  const handleLocationSelect = (selectedLocation: ILocation) => {
+    setLocation(selectedLocation);
+    setLatitude(selectedLocation.latitude.toString());
+    setLongitude(selectedLocation.longitude.toString());
+    setLocationSearch(selectedLocation.name);
+  };
+
+  const handleLocationSearchChange = (searchString: string) => {
+    setLocationSearch(searchString);
+    if (searchString === "") {
+      setLocation(null);
+    }
   };
 
   const getDayLengthData = async () => {
+    if (!latitude || !longitude) {
+      alert("Please enter both latitude and longitude.");
+      return;
+    }
+
     let createDC;
-    const dayLightInfoOptions = {
+    const dayLightInfoOptions: DayLightInfoOptions = {
       latitude: Number(latitude),
       longitude: Number(longitude),
       year: 2023
     };
     const solarEvents = getDayLightInfo(dayLightInfoOptions);
+    console.log("| solar events from getDayLightInfo", solarEvents);
     const existingDataContext = await getDataContext(kDataContextName);
 
     if (!existingDataContext.success) {
@@ -77,11 +98,10 @@ export const App = () => {
       <hr />
       <div className="plugin-row">
         <label>Location:</label>
-        <input
-          type="text"
-          placeholder="city, state or country"
-          value={location}
-          onChange={handleLocChange}
+        <LocationPicker
+          onLocationSelect={handleLocationSelect}
+          searchValue={locationSearch}
+          onSearchChange={handleLocationSearchChange}
         />
       </div>
 
@@ -105,12 +125,17 @@ export const App = () => {
         />
       </div>
 
+      {location && (
+        <div className="plugin-row">
+          <p>Selected Location: {location.name}</p>
+        </div>
+      )}
+
       <hr />
       <div className="plugin-row">
         Attributes
       </div>
       <div className="plugin-row">
-        { /* placeholder */}
         <ul className="attribute-tokens">
           <li>Day</li>
           <li>Day Length</li>

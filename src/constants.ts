@@ -6,3 +6,9 @@ export const kInitialDimensions = {
   height: 680
 };
 
+
+export const kGeonamesService = "https://secure.geonames.org/search";
+export const kGeolocService = "https://secure.geonames.org/findNearbyPlaceNameJSON";
+export const kGeonamesUser = "codap";
+export const kDefaultMaxRows = 4;
+
