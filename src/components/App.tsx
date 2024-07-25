@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { getDayLightInfo } from "../utils/daylight-utils";
-import { kDataContextName, kInitialDimensions, kVersion, kPluginName } from "../constants";
+import { kDataContextName, kInitialDimensions, kVersion, kPluginName, kParentCollectionName, kChildCollectionName } from "../constants";
 import { DayLightInfoOptions, ILocation } from "../types";
 import { LocationPicker } from "./location-picker";
 
 import {
   createDataContext,
   createItems,
-  createNewCollection,
+  createParentCollection,
   getDataContext,
   initializePlugin,
-  codapInterface
+  codapInterface,
+  createChildCollection
 } from "@concord-consortium/codap-plugin-api";
 import "./App.css";
 
@@ -59,13 +60,13 @@ export const App = () => {
     let result = await getDataContext(kDataContextName);
     if (result.success) {
       let dc = result.values;
-      let lastCollection = dc.collections[dc.collections.length-1];
+      let lastCollection = dc.collections[dc.collections.length - 1];
       return await codapInterface.sendRequest({
         action: "delete",
         resource: `dataContext[${kDataContextName}].collection[${lastCollection.name}].allCases`
       });
     } else {
-      return Promise.resolve({success: true});
+      return Promise.resolve({ success: true });
     }
   };
 
@@ -79,7 +80,7 @@ export const App = () => {
     const dayLightInfoOptions: DayLightInfoOptions = {
       latitude: Number(latitude),
       longitude: Number(longitude),
-      year: 2023
+      year: 2024
     };
     const solarEvents = getDayLightInfo(dayLightInfoOptions);
     const existingDataContext = await getDataContext(kDataContextName);
@@ -90,14 +91,33 @@ export const App = () => {
     }
 
     if (existingDataContext?.success || createDC?.success) {
-      await createNewCollection(kDataContextName, "Day Length", [
+      await createParentCollection(kDataContextName, kParentCollectionName, [
+        { name: "latitude", type: "numeric" },
+        { name: "longitude", type: "numeric" },
+        { name: "location", type: "categorical" }
+      ]);
+      await createChildCollection(kDataContextName, kChildCollectionName, kParentCollectionName, [
         { name: "day", type: "date" },
         { name: "sunrise", type: "date" },
         { name: "sunset", type: "date" },
         { name: "dayLength", type: "numeric" },
         { name: "dayAsInteger", type: "numeric" }
       ]);
-      await createItems(kDataContextName, [...solarEvents]);
+
+      const completeSolarRecords = solarEvents.map(solarEvent => {
+        return {
+          latitude: Number(latitude),
+          longitude: Number(longitude),
+          location: location?.name,
+          day: solarEvent.day,
+          sunrise: solarEvent.sunrise,
+          sunset: solarEvent.sunset,
+          dayLength: solarEvent.dayLength,
+          dayAsInteger: solarEvent.dayAsInteger
+        };
+      });
+
+      await createItems(kDataContextName, completeSolarRecords);
     }
   };
 
@@ -172,7 +192,7 @@ export const App = () => {
 
       <div className="plugin-row">
         <em>
-          Data context { dataContext ? <span>created</span> : <span>not created</span> }
+          Data context {dataContext ? <span>created</span> : <span>not created</span>}
         </em>
       </div>
     </div>
