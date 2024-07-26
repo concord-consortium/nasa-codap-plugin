@@ -1,5 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import * as THREE from "three";
+import ThreeGlobe from "three-globe";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 interface OrbitSystemProps {
   latitude: number;
@@ -20,43 +22,45 @@ export const OrbitSystem: React.FC<OrbitSystemProps> = ({
     // Set up scene, camera, and renderer
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer();
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
 
     renderer.setSize(300, 300);
     mount.appendChild(renderer.domElement);
 
-    // Create a sphere to represent the planet
-    const sphereGeometry = new THREE.SphereGeometry(1, 32, 32);
-    const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0x0077be, wireframe: true });
-    const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-    scene.add(sphere);
+    // Create a globe
+    const globe = new ThreeGlobe()
+      .globeImageUrl("//unpkg.com/three-globe/example/img/earth-blue-marble.jpg")
+      .bumpImageUrl("//unpkg.com/three-globe/example/img/earth-topology.png")
+      .showAtmosphere(true)
+      .atmosphereColor("#3a228a")
+      .atmosphereAltitude(0.25);
 
-    // Create a small dot to represent the location
-    const dotGeometry = new THREE.SphereGeometry(0.05, 32, 32);
-    const dotMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-    const dot = new THREE.Mesh(dotGeometry, dotMaterial);
-    scene.add(dot);
+    scene.add(globe);
 
-    camera.position.z = 3;
+    // Add lights
+    const ambientLight = new THREE.AmbientLight(0xbbbbbb);
+    scene.add(ambientLight);
 
-    // Function to update dot position
-    const updateDotPosition = () => {
-      const phi = (90 - latitude) * (Math.PI / 180);
-      const theta = (longitude + 180) * (Math.PI / 180);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
+    directionalLight.position.set(1, 1, 1);
+    scene.add(directionalLight);
 
-      dot.position.x = -Math.sin(phi) * Math.cos(theta);
-      dot.position.y = Math.cos(phi);
-      dot.position.z = Math.sin(phi) * Math.sin(theta);
-    };
+    // Set up camera and controls
+    camera.position.z = 300;
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.25;
+    controls.enableZoom = true;
 
-    // Initial position update
-    updateDotPosition();
+    // Add a point for the given latitude and longitude
+    const pointData = [{ lat: latitude, lng: longitude, size: 0.5, color: "#330000" }];
+    globe.pointsData(pointData);
 
     // Animation loop
     let animationFrameId: number;
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
-      sphere.rotation.y += 0.01;
+      controls.update();
       renderer.render(scene, camera);
     };
 
@@ -67,7 +71,7 @@ export const OrbitSystem: React.FC<OrbitSystemProps> = ({
       cancelAnimationFrame(animationFrameId);
       mount.removeChild(renderer.domElement);
     };
-  }, [latitude, longitude]); // Re-run effect when latitude or longitude changes
+  }, [latitude, longitude]);
 
   return <div ref={mountRef} />;
 };
