@@ -57,7 +57,7 @@ export function getDayLightInfo(options: LocationOptions): DaylightInfo[] {
     const utcSunset = dayjs.utc(systemSunset);
     const localSunset = utcSunset.add(offsetHours, "hour");
 
-    // TODO: implement CODAP formulas for dayLength and dayAsInteger
+    // TODO: implement CODAP formulas for dayLength and dayAsInteger?
     const localSunriseSinceMidnight = localSunrise.diff(localSunrise.startOf("day"), "hour", true);
     const localSunsetSinceMidnight = localSunset.diff(localSunset.startOf("day"), "hour", true);
     const dayLength = localSunsetSinceMidnight - localSunriseSinceMidnight;

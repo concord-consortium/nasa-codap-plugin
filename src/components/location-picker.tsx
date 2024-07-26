@@ -58,7 +58,6 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    console.log("| handleKeyDown: ", event.key);
     if (!showLocationDropdown) return;
 
     switch (event.key) {

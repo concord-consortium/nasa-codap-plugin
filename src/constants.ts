@@ -34,3 +34,7 @@ export const kSelectableAttributes = [
   { string: "Set hour", attrName: "sunset" },
   { string: "Day Length", attrName: "dayLength" },
 ];
+
+export const kDefaultOnAttributes = [
+  "day", "sunrise", "sunset", "dayLength"
+];

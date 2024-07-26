@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getDayLightInfo } from "../utils/daylight-utils";
 import { kDataContextName, kInitialDimensions, kVersion, kSelectableAttributes,
-  kPluginName, kParentCollectionName, kChildCollectionName } from "../constants";
+  kPluginName, kParentCollectionName, kChildCollectionName, kDefaultOnAttributes } from "../constants";
 import { LocationOptions, ILocation } from "../types";
 import { LocationPicker } from "./location-picker";
 
@@ -12,7 +12,8 @@ import {
   getDataContext,
   initializePlugin,
   codapInterface,
-  createChildCollection
+  createChildCollection,
+  createTable
 } from "@concord-consortium/codap-plugin-api";
 import InfoIcon from "../assets/images/icon-info.svg";
 
@@ -24,7 +25,7 @@ export const App = () => {
   const [latitude, setLatitude] = useState<string>("");
   const [longitude, setLongitude] = useState<string>("");
   const [locationSearch, setLocationSearch] = useState<string>("");
-  const [selectedAttrs, setSelectedAttributes] = useState<string[]>([]);
+  const [selectedAttrs, setSelectedAttributes] = useState<string[]>(kDefaultOnAttributes);
   const [showInfo, setShowInfo] = useState<boolean>(false);
 
   useEffect(() => {
@@ -100,11 +101,6 @@ export const App = () => {
       year: 2024
     };
 
-    const attrOptions = selectedAttrs.map(attr => {
-      return kSelectableAttributes.find(selectable => selectable.attrName === attr);
-    });
-    console.log("| pass these attrs to the getDayLightInfo function: ", attrOptions);
-
     const solarEvents = getDayLightInfo(locationOptions);
     const existingDataContext = await getDataContext(kDataContextName);
 
@@ -141,6 +137,7 @@ export const App = () => {
       });
 
       await createItems(kDataContextName, completeSolarRecords);
+      await createTable(kDataContextName);
     }
   };
 
