@@ -4,6 +4,7 @@ import { kDataContextName, kInitialDimensions, kVersion, kSelectableAttributes,
   kPluginName, kParentCollectionName, kChildCollectionName, kDefaultOnAttributes } from "../constants";
 import { LocationOptions, ILocation } from "../types";
 import { LocationPicker } from "./location-picker";
+import { OrbitSystem } from "./orbit-system";
 import {
   createDataContext,
   createItems,
@@ -26,6 +27,7 @@ export const App = () => {
   const [locationSearch, setLocationSearch] = useState<string>("");
   const [selectedAttrs, setSelectedAttributes] = useState<string[]>(kDefaultOnAttributes);
   const [showInfo, setShowInfo] = useState<boolean>(false);
+  const [showSim, setShowSim] = useState<boolean>(false);
 
   useEffect(() => {
     initializePlugin({
@@ -140,6 +142,10 @@ export const App = () => {
     }
   };
 
+  const handleSimCheckChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setShowSim(event.target.checked);
+  };
+
   return (
     <div className="App">
       <div className="plugin-row top">
@@ -150,6 +156,17 @@ export const App = () => {
         <span title="Get further information about this CODAP plugin">
           <InfoIcon className="info-icon" onClick={handleOpenInfo}/>
         </span>
+        {/* TODO: this is just a placeholder real info popup */}
+        <div
+          className={`info-popup ${showInfo ? "show" : ""}`}
+          style={{
+            position: "absolute",
+            visibility: showInfo ? "visible" : "hidden",
+            right: 0,
+          }}
+        >
+          plugin info
+        </div>
       </div>
       <hr />
 
@@ -207,6 +224,20 @@ export const App = () => {
           Get Data
         </button>
       </div>
+      <div className="plugin-row sim-checkbox">
+        <label>
+          <input type="checkbox" onChange={handleSimCheckChange} />
+          Show in simulation
+        </label>
+      </div>
+      {showSim &&
+        <div className="plugin-row sim">
+          <OrbitSystem
+            latitude={parseFloat(latitude) || 0}
+            longitude={parseFloat(longitude) || 0}
+          />
+        </div>
+      }
     </div>
   );
 };
