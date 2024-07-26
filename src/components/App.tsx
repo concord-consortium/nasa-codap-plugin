@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { getDayLightInfo } from "../utils/daylight-utils";
-import { kDataContextName, kInitialDimensions, kVersion, kPluginName, kParentCollectionName, kChildCollectionName } from "../constants";
-import { DayLightInfoOptions, ILocation } from "../types";
+import { kDataContextName, kInitialDimensions, kVersion, kSelectableAttributes,
+  kPluginName, kParentCollectionName, kChildCollectionName } from "../constants";
+import { LocationOptions, ILocation } from "../types";
 import { LocationPicker } from "./location-picker";
 
 import {
@@ -13,7 +14,9 @@ import {
   codapInterface,
   createChildCollection
 } from "@concord-consortium/codap-plugin-api";
-import "./App.css";
+import InfoIcon from "../assets/images/icon-info.svg";
+
+import "./App.scss";
 
 export const App = () => {
   const [dataContext, setDataContext] = useState<any>(null);
@@ -21,6 +24,8 @@ export const App = () => {
   const [latitude, setLatitude] = useState<string>("");
   const [longitude, setLongitude] = useState<string>("");
   const [locationSearch, setLocationSearch] = useState<string>("");
+  const [selectedAttrs, setSelectedAttributes] = useState<string[]>([]);
+  const [showInfo, setShowInfo] = useState<boolean>(false);
 
   useEffect(() => {
     initializePlugin({
@@ -70,6 +75,18 @@ export const App = () => {
     }
   };
 
+  const handleTokenClick = (attribute: string) => {
+    if (selectedAttrs.includes(attribute)) {
+      setSelectedAttributes(selectedAttrs.filter(attr => attr !== attribute));
+    } else {
+      setSelectedAttributes([...selectedAttrs, attribute]);
+    }
+  };
+
+  const handleOpenInfo = () => {
+    setShowInfo(!showInfo);
+  };
+
   const getDayLengthData = async () => {
     if (!latitude || !longitude) {
       alert("Please enter both latitude and longitude.");
@@ -77,12 +94,18 @@ export const App = () => {
     }
 
     let createDC;
-    const dayLightInfoOptions: DayLightInfoOptions = {
+    const locationOptions: LocationOptions = {
       latitude: Number(latitude),
       longitude: Number(longitude),
       year: 2024
     };
-    const solarEvents = getDayLightInfo(dayLightInfoOptions);
+
+    const attrOptions = selectedAttrs.map(attr => {
+      return kSelectableAttributes.find(selectable => selectable.attrName === attr);
+    });
+    console.log("| pass these attrs to the getDayLightInfo function: ", attrOptions);
+
+    const solarEvents = getDayLightInfo(locationOptions);
     const existingDataContext = await getDataContext(kDataContextName);
 
     if (!existingDataContext.success) {
@@ -109,10 +132,10 @@ export const App = () => {
           latitude: Number(latitude),
           longitude: Number(longitude),
           location: location?.name,
-          day: solarEvent.day,
-          sunrise: solarEvent.sunrise,
-          sunset: solarEvent.sunset,
-          dayLength: solarEvent.dayLength,
+          day: selectedAttrs.includes("day") ? solarEvent.day : null,
+          sunrise: selectedAttrs.includes("sunrise") ? solarEvent.sunrise : null,
+          sunset: selectedAttrs.includes("sunset") ? solarEvent.sunset : null,
+          dayLength: selectedAttrs.includes("dayLength") ? solarEvent.dayLength : null,
           dayAsInteger: solarEvent.dayAsInteger
         };
       });
@@ -123,25 +146,29 @@ export const App = () => {
 
   return (
     <div className="App">
-      <div className="plugin-row">
+      <div className="plugin-row top">
         <p>
           How long is a day?<br />
           Enter a location or coordinates to retrieve data
         </p>
+        <span title="Get further information about this CODAP plugin">
+          <InfoIcon className="info-icon" onClick={handleOpenInfo}/>
+        </span>
       </div>
       <hr />
-      <div className="plugin-row">
-        <label>Location:</label>
-        <LocationPicker
-          onLocationSelect={handleLocationSelect}
-          searchValue={locationSearch}
-          onSearchChange={handleLocationSearchChange}
-        />
-      </div>
 
+      <LocationPicker
+        onLocationSelect={handleLocationSelect}
+        searchValue={locationSearch}
+        onSearchChange={handleLocationSearchChange}
+      />
+      {/* { location && <p>Selected Location: {location.name}</p> } */}
+
+      <div className="or">OR</div>
       <hr />
-      <div className="plugin-row">
-        <label>Latitude:</label>
+
+      <div className="plugin-row latitude">
+        <label>Latitude</label>
         <input
           type="text"
           placeholder="latitude"
@@ -149,8 +176,8 @@ export const App = () => {
           onChange={handleLatChange}
         />
       </div>
-      <div className="plugin-row">
-        <label>Longitude:</label>
+      <div className="plugin-row longitude">
+        <label>Longitude</label>
         <input
           type="text"
           placeholder="longitude"
@@ -159,41 +186,31 @@ export const App = () => {
         />
       </div>
 
-      {location && (
-        <div className="plugin-row">
-          <p>Selected Location: {location.name}</p>
-        </div>
-      )}
-
       <hr />
-      <div className="plugin-row">
-        Attributes
-      </div>
-      <div className="plugin-row">
+
+      <div className="plugin-row attributes-selection">
+        <label>Attributes</label>
         <ul className="attribute-tokens">
-          <li>Day</li>
-          <li>Day Length</li>
-          <li>Rise Hour</li>
-          <li>Set Hour</li>
-          <li>Sunlight Angle</li>
-          <li>Solar Intensity</li>
-          <li>Surface Area</li>
-          <li>Season</li>
+        {
+          kSelectableAttributes.map((selectable, index) => (
+            <li
+              key={index}
+              className={`token ${selectedAttrs.includes(selectable.attrName) ? "on" : "off"}`}
+              onClick={() => handleTokenClick(selectable.attrName)}
+            >
+              {selectable.string}
+            </li>
+          ))
+        }
         </ul>
       </div>
-      <div className="plugin-row">
+      <div className="plugin-row data-buttons">
+        <button onClick={handleClearData} disabled={!dataContext}>
+          Clear Data
+        </button>
         <button onClick={getDayLengthData}>
           Get Data
         </button>
-        <button onClick={handleClearData}>
-          Clear Data
-        </button>
-      </div>
-
-      <div className="plugin-row">
-        <em>
-          Data context {dataContext ? <span>created</span> : <span>not created</span>}
-        </em>
       </div>
     </div>
   );

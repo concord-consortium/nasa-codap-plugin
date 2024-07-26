@@ -2,9 +2,9 @@ import dayjs, { extend } from "dayjs";
 import utc from "dayjs/plugin/utc";
 import dayOfYear from "dayjs/plugin/dayOfYear";
 import timezone from "dayjs/plugin/timezone";
-import tzlookup from "tz-lookup";
+/* import tzlookup from "tz-lookup"; (see comment below) */
 import { getSunrise, getSunset } from "sunrise-sunset-js";
-import { DaylightInfo, DayLightInfoOptions } from "../types";
+import { DaylightInfo, LocationOptions } from "../types";
 
 extend(utc);
 extend(dayOfYear);
@@ -15,20 +15,29 @@ function hoursFromGMT(longitude: number): number {
   return Math.round(longitude / 15);
 }
 
-// alternative function to keep around, but not currently used
-// returns the timezone-aware local time for a given UTC time
-// So, it incorporates the weirdness of daylight savings time and timezone lines
-// E.g.
-//     const tzAwareSunrise = utcToLocalTime(utcSunrise.toDate(), latitude, longitude);
-//     console.log("| tzAwareSunrise:", tzAwareSunrise.format("HH:mm"));
-//
-function utcToLocalTime(utcTime: Date, latitude: number, longitude: number): any {
+/**
+ * Alternative function to keep for possible future use.
+ * Returns the timezone-aware local time for a given UTC time.
+ * Incorporates the complexities of daylight savings time and timezone lines.
+ *
+ * Example usage:
+ * const tzAwareSunrise = utcToLocalTime(utcSunrise.toDate(), latitude, longitude);
+ * console.log("| tzAwareSunrise:", tzAwareSunrise.format("HH:mm"));
+ *
+ * @param utcTime - The UTC time as a Date object
+ * @param latitude - The latitude of the location
+ * @param longitude - The longitude of the location
+ * @returns A dayjs object representing the local time
+ */
+/*
+function utcToLocalTime(utcTime: Date, latitude: number, longitude: number): dayjs.Dayjs {
   const timeZoneName = tzlookup(latitude, longitude);
   const localTZTime = dayjs(utcTime).tz(timeZoneName);
   return localTZTime;
 }
+*/
 
-export function getDayLightInfo(options: DayLightInfoOptions): DaylightInfo[] {
+export function getDayLightInfo(options: LocationOptions): DaylightInfo[] {
   const { latitude, longitude, year } = options;
   const results: DaylightInfo[] = [];
   const offsetHours = hoursFromGMT(longitude);

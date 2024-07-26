@@ -5,6 +5,12 @@ export interface ILocation {
   longitude: number;
 }
 
+export interface LocationOptions {
+  latitude: number;
+  longitude: number;
+  year: number;
+}
+
 export interface DaylightInfo {
   day: Date;
   sunrise: Date;
@@ -13,19 +19,12 @@ export interface DaylightInfo {
   dayAsInteger: number;
 }
 
-export interface DayLightInfoOptions {
-  latitude: number;
-  longitude: number;
-  year: number;
-  // TODO: Add surface intensity, etc.
-}
-
 export interface GeoNameSearchOptions {
   searchString: string;
   maxRows?: number;
 }
 
-export interface CreateParentLocationResult {
-  success: boolean;
-  caseIDs: (string | number)[];
-}
+// export interface CreateParentLocationResult {
+//   success: boolean;
+//   caseIDs: (string | number)[];
+// }

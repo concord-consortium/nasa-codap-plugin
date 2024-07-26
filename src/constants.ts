@@ -27,3 +27,10 @@ export const kChildCollectionAttributes = [
   { name: "dayLength", type: "numeric" },
   { name: "dayAsInteger", type: "numeric" }
 ];
+
+export const kSelectableAttributes = [
+  { string: "Day", attrName: "day" },
+  { string: "Rise hour", attrName: "sunrise" },
+  { string: "Set hour", attrName: "sunset" },
+  { string: "Day Length", attrName: "dayLength" },
+];
