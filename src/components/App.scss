@@ -115,7 +115,6 @@ $codap-teal-lightest: rgba(114, 191, 202, 0.25);
           cursor: pointer;
           transition: background-color 0.3s;
           &:hover {
-            //background-color: rgba($codap-teal, 0.3);
             background-color: $codap-teal-lightest;
           }
         }
@@ -124,7 +123,6 @@ $codap-teal-lightest: rgba(114, 191, 202, 0.25);
         }
       }
     }
-
 
     &.attributes-selection {
       display: flex;
@@ -202,4 +200,3 @@ $codap-teal-lightest: rgba(114, 191, 202, 0.25);
     border-top: 1.5px solid rgba($codap-teal, 0.3);
   }
 }
-

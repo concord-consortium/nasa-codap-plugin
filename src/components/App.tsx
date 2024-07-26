@@ -4,7 +4,6 @@ import { kDataContextName, kInitialDimensions, kVersion, kSelectableAttributes,
   kPluginName, kParentCollectionName, kChildCollectionName, kDefaultOnAttributes } from "../constants";
 import { LocationOptions, ILocation } from "../types";
 import { LocationPicker } from "./location-picker";
-
 import {
   createDataContext,
   createItems,
@@ -15,8 +14,8 @@ import {
   createChildCollection,
   createTable
 } from "@concord-consortium/codap-plugin-api";
-import InfoIcon from "../assets/images/icon-info.svg";
 
+import InfoIcon from "../assets/images/icon-info.svg";
 import "./App.scss";
 
 export const App = () => {
@@ -159,7 +158,6 @@ export const App = () => {
         searchValue={locationSearch}
         onSearchChange={handleLocationSearchChange}
       />
-      {/* { location && <p>Selected Location: {location.name}</p> } */}
 
       <div className="or">OR</div>
       <hr />

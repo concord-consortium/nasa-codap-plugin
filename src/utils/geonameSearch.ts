@@ -1,12 +1,10 @@
 import { ILocation, GeoNameSearchOptions } from "../types";
 import { kGeonamesUser, kGeonamesService, kDefaultMaxRows } from "../constants";
 
-
 export const geoNameSearch = async (options: GeoNameSearchOptions): Promise<ILocation[] | undefined> => {
   const { searchString, maxRows = kDefaultMaxRows } = options;
   const url = new URL(kGeonamesService);
   url.searchParams.append("username", kGeonamesUser);
-  // url.searchParams.append("country", "US");
   url.searchParams.append("maxRows", maxRows.toString());
   url.searchParams.append("lang", "en");
   url.searchParams.append("type", "json");

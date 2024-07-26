@@ -24,7 +24,3 @@ export interface GeoNameSearchOptions {
   maxRows?: number;
 }
 
-// export interface CreateParentLocationResult {
-//   success: boolean;
-//   caseIDs: (string | number)[];
-// }

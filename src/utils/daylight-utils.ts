@@ -41,7 +41,6 @@ export function getDayLightInfo(options: LocationOptions): DaylightInfo[] {
   const { latitude, longitude, year } = options;
   const results: DaylightInfo[] = [];
   const offsetHours = hoursFromGMT(longitude);
-  console.log("| offsetHours: ", offsetHours);
 
   let currentDay = dayjs.utc(`${year}-01-01`);
   const endOfYear = dayjs.utc(`${year + 1}-01-01`);
