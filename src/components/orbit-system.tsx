@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useCallback, useMemo } from "react";
 import * as THREE from "three";
 import ThreeGlobe from "three-globe";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
@@ -15,6 +15,24 @@ export const OrbitSystem: React.FC<OrbitSystemProps> = ({
   dayOfYear
 }) => {
   const mountRef = useRef<HTMLDivElement>(null);
+  const sceneRef = useRef<THREE.Scene>();
+  const cameraRef = useRef<THREE.PerspectiveCamera>();
+  const rendererRef = useRef<THREE.WebGLRenderer>();
+  const globeRef = useRef<ThreeGlobe>();
+  const sunRef = useRef<THREE.Mesh>();
+  const controlsRef = useRef<OrbitControls>();
+
+  const calculateEarthPosition = useCallback((day: number) => {
+    const angle = (day / 365) * Math.PI * 2;
+    const radius = 200;
+    const x = Math.cos(angle) * radius;
+    const z = Math.sin(angle) * radius;
+    return new THREE.Vector3(x, 0, z);
+  }, []);
+
+  const pointData = useMemo(() => [
+    { lat: latitude, lng: longitude, size: 5, color: "#00bb00" }
+  ], [latitude, longitude]);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -22,60 +40,52 @@ export const OrbitSystem: React.FC<OrbitSystemProps> = ({
     const mount = mountRef.current;
 
     // Set up scene, camera, and renderer
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(100, 1, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    sceneRef.current = new THREE.Scene();
+    cameraRef.current = new THREE.PerspectiveCamera(100, 1, 0.1, 1000);
+    rendererRef.current = new THREE.WebGLRenderer({ antialias: true });
 
-    renderer.setSize(500, 500);
-    mount.appendChild(renderer.domElement);
+    rendererRef.current.setSize(500, 500);
+    mount.appendChild(rendererRef.current.domElement);
 
     // Create a globe
-    const globe = new ThreeGlobe()
+    globeRef.current = new ThreeGlobe()
       .globeImageUrl("//unpkg.com/three-globe/example/img/earth-blue-marble.jpg")
       .bumpImageUrl("//unpkg.com/three-globe/example/img/earth-topology.png");
 
-    const calculateEarthPosition = (day: number) => {
-      const angle = (day / 365) * Math.PI * 2;
-      const radius = 200;
-      const x = Math.cos(angle) * radius;
-      const z = Math.sin(angle) * radius;
-      return new THREE.Vector3(x, 0, z);
-    };
-
     const earthPosition = calculateEarthPosition(dayOfYear);
-    globe.position.copy(earthPosition);
-    scene.add(globe);
+    globeRef.current.position.copy(earthPosition);
+    sceneRef.current.add(globeRef.current);
 
     const sunGeometry = new THREE.SphereGeometry(30, 32, 32);
     const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-    const sun = new THREE.Mesh(sunGeometry, sunMaterial);
-    scene.add(sun);
+    sunRef.current = new THREE.Mesh(sunGeometry, sunMaterial);
+    sceneRef.current.add(sunRef.current);
 
-    const pointLight = new THREE.PointLight(0xffffff, 2, 1000); // Bright light
-    pointLight.position.set(0, 0, 0); // Position at the sun
-    scene.add(pointLight);
+    const pointLight = new THREE.PointLight(0xffffff, 2, 1000);
+    pointLight.position.set(0, 0, 0);
+    sceneRef.current.add(pointLight);
 
     const ambientLight = new THREE.AmbientLight(0xbbbbbb, 2);
-    scene.add(ambientLight);
+    sceneRef.current.add(ambientLight);
 
     // Set up camera and controls
-    camera.position.set(0, 300, 300);
-    camera.lookAt(scene.position);
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableRotate = false;
-    controls.enableZoom = false;
-    controls.enablePan = false;
-
-    // Add a point for the given latitude and longitude
-    const pointData = [{ lat: latitude, lng: longitude, size: 5, color: "#00bb00" }];
-    globe.pointsData(pointData);
+    cameraRef.current.position.set(0, 300, 300);
+    cameraRef.current.lookAt(sceneRef.current.position);
+    controlsRef.current = new OrbitControls(cameraRef.current, rendererRef.current.domElement);
+    controlsRef.current.enableRotate = false;
+    controlsRef.current.enableZoom = false;
+    controlsRef.current.enablePan = false;
 
     // Animation loop
     let animationFrameId: number;
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
-      globe.rotation.y += 0.01;
-      renderer.render(scene, camera);
+      if (globeRef.current) {
+        globeRef.current.rotation.y += 0.01;
+      }
+      if (rendererRef.current && sceneRef.current && cameraRef.current) {
+        rendererRef.current.render(sceneRef.current, cameraRef.current);
+      }
     };
 
     animate();
@@ -83,9 +93,24 @@ export const OrbitSystem: React.FC<OrbitSystemProps> = ({
     // Cleanup function
     return () => {
       cancelAnimationFrame(animationFrameId);
-      mount.removeChild(renderer.domElement);
+      if (rendererRef.current) {
+        mount.removeChild(rendererRef.current.domElement);
+      }
     };
-  }, [latitude, longitude, dayOfYear]);
+  }, []);
+
+  useEffect(() => {
+    if (globeRef.current) {
+      const earthPosition = calculateEarthPosition(dayOfYear);
+      globeRef.current.position.copy(earthPosition);
+    }
+  }, [dayOfYear, calculateEarthPosition]);
+
+  useEffect(() => {
+    if (globeRef.current) {
+      globeRef.current.pointsData(pointData);
+    }
+  }, [pointData]);
 
   return <div ref={mountRef} />;
 };
