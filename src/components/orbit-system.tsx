@@ -6,11 +6,13 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 interface OrbitSystemProps {
   latitude: number;
   longitude: number;
+  dayOfYear: number;
 }
 
 export const OrbitSystem: React.FC<OrbitSystemProps> = ({
   latitude,
-  longitude
+  longitude,
+  dayOfYear
 }) => {
   const mountRef = useRef<HTMLDivElement>(null);
 
@@ -21,46 +23,58 @@ export const OrbitSystem: React.FC<OrbitSystemProps> = ({
 
     // Set up scene, camera, and renderer
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(100, 1, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
 
-    renderer.setSize(300, 300);
+    renderer.setSize(500, 500);
     mount.appendChild(renderer.domElement);
 
     // Create a globe
     const globe = new ThreeGlobe()
       .globeImageUrl("//unpkg.com/three-globe/example/img/earth-blue-marble.jpg")
-      .bumpImageUrl("//unpkg.com/three-globe/example/img/earth-topology.png")
-      .showAtmosphere(true)
-      .atmosphereColor("#3a228a")
-      .atmosphereAltitude(0.25);
+      .bumpImageUrl("//unpkg.com/three-globe/example/img/earth-topology.png");
 
+    const calculateEarthPosition = (day: number) => {
+      const angle = (day / 365) * Math.PI * 2;
+      const radius = 200;
+      const x = Math.cos(angle) * radius;
+      const z = Math.sin(angle) * radius;
+      return new THREE.Vector3(x, 0, z);
+    };
+
+    const earthPosition = calculateEarthPosition(dayOfYear);
+    globe.position.copy(earthPosition);
     scene.add(globe);
 
-    // Add lights
-    const ambientLight = new THREE.AmbientLight(0xbbbbbb);
+    const sunGeometry = new THREE.SphereGeometry(30, 32, 32);
+    const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+    const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+    scene.add(sun);
+
+    const pointLight = new THREE.PointLight(0xffffff, 2, 1000); // Bright light
+    pointLight.position.set(0, 0, 0); // Position at the sun
+    scene.add(pointLight);
+
+    const ambientLight = new THREE.AmbientLight(0xbbbbbb, 2);
     scene.add(ambientLight);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
-    directionalLight.position.set(1, 1, 1);
-    scene.add(directionalLight);
-
     // Set up camera and controls
-    camera.position.z = 300;
+    camera.position.set(0, 300, 300);
+    camera.lookAt(scene.position);
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.25;
-    controls.enableZoom = true;
+    controls.enableRotate = false;
+    controls.enableZoom = false;
+    controls.enablePan = false;
 
     // Add a point for the given latitude and longitude
-    const pointData = [{ lat: latitude, lng: longitude, size: 0.5, color: "#330000" }];
+    const pointData = [{ lat: latitude, lng: longitude, size: 5, color: "#00bb00" }];
     globe.pointsData(pointData);
 
     // Animation loop
     let animationFrameId: number;
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
-      controls.update();
+      globe.rotation.y += 0.01;
       renderer.render(scene, camera);
     };
 
@@ -71,7 +85,7 @@ export const OrbitSystem: React.FC<OrbitSystemProps> = ({
       cancelAnimationFrame(animationFrameId);
       mount.removeChild(renderer.domElement);
     };
-  }, [latitude, longitude]);
+  }, [latitude, longitude, dayOfYear]);
 
   return <div ref={mountRef} />;
 };

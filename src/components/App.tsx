@@ -24,6 +24,7 @@ export const App = () => {
   const [location, setLocation] = useState<ILocation | null>(null);
   const [latitude, setLatitude] = useState<string>("");
   const [longitude, setLongitude] = useState<string>("");
+  const [dayOfYear, setDayOfYear] = useState<string>("280");
   const [locationSearch, setLocationSearch] = useState<string>("");
   const [selectedAttrs, setSelectedAttributes] = useState<string[]>(kDefaultOnAttributes);
   const [showInfo, setShowInfo] = useState<boolean>(false);
@@ -47,6 +48,10 @@ export const App = () => {
     setLongitude(event.target.value);
     setLocation(null);
     setLocationSearch("");
+  };
+
+  const handleDayChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDayOfYear(event.target.value);
   };
 
   const handleLocationSelect = (selectedLocation: ILocation) => {
@@ -235,6 +240,18 @@ export const App = () => {
           <OrbitSystem
             latitude={parseFloat(latitude) || 0}
             longitude={parseFloat(longitude) || 0}
+            dayOfYear={parseInt(dayOfYear, 10) || 0}
+          />
+        </div>
+      }
+      { showSim &&
+        <div className="plugin-row day-slider">
+          <input
+            type="range"
+            min="0"
+            max="364"
+            value={dayOfYear}
+            onChange={handleDayChange}
           />
         </div>
       }
