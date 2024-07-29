@@ -1,0 +1,202 @@
+$codap-teal: #177991;
+$codap-teal-light: #72bfca;
+$codap-teal-lightest: rgba(114, 191, 202, 0.25);
+
+.App {
+  padding: 6px 12px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: "Montserrat", sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #222222;
+
+  input {
+    font-family: "Montserrat", sans-serif;
+  }
+  .info-icon {
+    position: relative;
+    top: -6px;
+    right: -1px;
+  }
+
+  label {
+    font-weight: bold;
+  }
+
+  .or {
+    background-color: white;
+    width: 40px;
+    padding:0px 10px;
+    color: $codap-teal;
+    font-weight: bold;
+    position: absolute;
+    left: 2px;
+    top: 143px;
+  }
+  .plugin-row {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+    margin-bottom: 8px;
+    margin-top: 5px;
+
+    &.top {
+      p {
+        margin: 0;
+        width: 100%;
+      }
+    }
+
+    &.location-picker,
+    &.latitude,
+    &.longitude {
+      input {
+        width: 250px;
+        padding: 5px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+        border: 1.5px solid rgba($codap-teal, 0.3);
+      }
+    }
+
+    &.latitude {
+      margin-top: 12px;
+    }
+
+    &.location-picker {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      margin-bottom: 12px;
+
+      input, label {
+        width: 100%;
+      }
+
+      label {
+        margin-bottom: 10px;
+      }
+
+      .location-icon {
+        position: absolute;
+        left: 4px;
+        top: 28px;
+      }
+
+      input {
+        padding-left: 25px;
+        outline: none;
+        &:active, &:focus {
+          background-color: $codap-teal-lightest;
+        }
+      }
+
+      ul {
+        z-index: 1;
+        position: absolute;
+        background-color: white;
+        box-shadow: 0px 2px 4px rgba(silver, 0.4);
+        padding: 10px;
+        border-radius: 4px;
+        border: 1.5px solid rgba($codap-teal, 0.3);
+        width: 99%;
+        top: 53px;
+        left: 0;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        li {
+          padding: 8px 12px;
+          cursor: pointer;
+          transition: background-color 0.3s;
+          &:hover {
+            background-color: $codap-teal-lightest;
+          }
+        }
+        li.focused {
+          background-color: $codap-teal-lightest;
+        }
+      }
+    }
+
+    &.attributes-selection {
+      display: flex;
+      flex-direction: column;
+      label {
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .attribute-tokens {
+        list-style-type: none;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        margin-top: 10px;
+        gap: 3px;
+
+        li.token {
+          padding: 6px 20px;
+          border-radius: 20px;
+          cursor: pointer;
+          transition: background-color 0.3s, color 0.3s;
+          background-color: white;
+          list-style: none;
+          margin:4px;
+
+          &.on {
+            background-color: $codap-teal-lightest;
+            color: $codap-teal;
+            border: 1px solid $codap-teal;
+          }
+
+          &.off {
+            background-color: white;
+            color: #aaa;
+            border: 1px solid silver;
+          }
+        }
+      }
+    }
+
+    &.data-buttons {
+      justify-content: flex-end;
+
+      button {
+        background-color: white;
+        padding: 6px 12px;
+        border-radius: 4px;
+        margin-left: 10px;
+        cursor: pointer;
+        border: 1px solid $codap-teal;
+        color: $codap-teal;
+        transition: background-color 0.3s, color 0.3s;
+        &:disabled {
+          background-color: #f5f5f5;
+          color: #ccc;
+          border-color: #ccc;
+          &:hover {
+            background-color: #f5f5f5;
+            color: #ccc;
+          }
+        }
+        &:hover:not(:disabled) {
+          background-color: $codap-teal-light;
+          color: white;
+        }
+      }
+    }
+  }
+
+  hr {
+    width: 100%;
+    margin: 10px 0;
+    border: none;
+    border-top: 1.5px solid rgba($codap-teal, 0.3);
+  }
+}

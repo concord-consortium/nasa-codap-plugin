@@ -131,9 +131,12 @@
     "webpack-dev-server": "^4.15.0"
   },
   "dependencies": {
+    "@types/tz-lookup": "^6.1.2",
+    "dayjs": "^1.11.12",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sunrise-sunset-js": "^2.2.1",
-    "tslib": "^2.5.2"
+    "tslib": "^2.5.2",
+    "tz-lookup": "^6.1.25"
   }
 }
