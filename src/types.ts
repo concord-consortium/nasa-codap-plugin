@@ -12,9 +12,9 @@ export interface LocationOptions {
 }
 
 export interface DaylightInfo {
-  day: Date;
-  sunrise: Date;
-  sunset: Date;
+  day: string;
+  sunrise: string;
+  sunset: string;
   dayLength: number;
   dayAsInteger: number;
 }
