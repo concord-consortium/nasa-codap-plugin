@@ -28,7 +28,7 @@ export const App = () => {
   const [locationSearch, setLocationSearch] = useState<string>("");
   const [selectedAttrs, setSelectedAttributes] = useState<string[]>(kDefaultOnAttributes);
   const [showInfo, setShowInfo] = useState<boolean>(false);
-  const [showSim, setShowSim] = useState<boolean>(false);
+  const [showSim, setShowSim] = useState<boolean>(true);
 
   useEffect(() => {
     initializePlugin({
