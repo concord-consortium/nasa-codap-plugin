@@ -231,7 +231,7 @@ export const App = () => {
       </div>
       <div className="plugin-row sim-checkbox">
         <label>
-          <input type="checkbox" onChange={handleSimCheckChange} />
+          <input checked={showSim} type="checkbox" onChange={handleSimCheckChange} />
           Show in simulation
         </label>
       </div>
