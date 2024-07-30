@@ -97,6 +97,7 @@ export const OrbitSystem: React.FC<OrbitSystemProps> = ({
         mount.removeChild(rendererRef.current.domElement);
       }
     };
+    /* TODO: Address legit es-lint warning by setting up isInitialized state and depend on that */
   }, []);
 
   useEffect(() => {

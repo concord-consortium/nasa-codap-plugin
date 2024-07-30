@@ -237,7 +237,7 @@ export const App = () => {
       </div>
       { showSim &&
         <div className="plugin-row day-slider">
-          Day of Year
+          <label>Day of Year</label>
           <input
             type="range"
             min="0"
