@@ -235,15 +235,6 @@ export const App = () => {
           Show in simulation
         </label>
       </div>
-      {showSim &&
-        <div className="plugin-row sim">
-          <OrbitSystem
-            latitude={parseFloat(latitude) || 0}
-            longitude={parseFloat(longitude) || 0}
-            dayOfYear={parseInt(dayOfYear, 10) || 0}
-          />
-        </div>
-      }
       { showSim &&
         <div className="plugin-row day-slider">
           <input
@@ -252,6 +243,15 @@ export const App = () => {
             max="364"
             value={dayOfYear}
             onChange={handleDayChange}
+          />
+        </div>
+      }
+      {showSim &&
+        <div className="plugin-row sim">
+          <OrbitSystem
+            latitude={parseFloat(latitude) || 0}
+            longitude={parseFloat(longitude) || 0}
+            dayOfYear={parseInt(dayOfYear, 10) || 0}
           />
         </div>
       }
