@@ -9,6 +9,7 @@ export interface LocationOptions {
   latitude: number;
   longitude: number;
   year: number;
+  useRealTimeZones: boolean;
 }
 
 export interface DaylightInfo {

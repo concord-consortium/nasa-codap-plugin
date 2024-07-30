@@ -26,6 +26,7 @@ export const App = () => {
   const [locationSearch, setLocationSearch] = useState<string>("");
   const [selectedAttrs, setSelectedAttributes] = useState<string[]>(kDefaultOnAttributes);
   const [showInfo, setShowInfo] = useState<boolean>(false);
+  const [useRealTimeZones, setUseRealTimeZones] = useState<boolean>(true);
 
   useEffect(() => {
     initializePlugin({
@@ -97,7 +98,8 @@ export const App = () => {
     const locationOptions: LocationOptions = {
       latitude: Number(latitude),
       longitude: Number(longitude),
-      year: 2024
+      year: 2024,
+      useRealTimeZones
     };
 
     const solarEvents = getDayLightInfo(locationOptions);
@@ -206,6 +208,15 @@ export const App = () => {
         <button onClick={getDayLengthData}>
           Get Data
         </button>
+        {/* Hiding the useRealTimeZones checkbox since it is not in spec yet */}
+        <div className="plugin-row real-time-zones" style={{display: "none"}}>
+          <label>Use Real Time Zones</label>
+          <input
+            type="checkbox"
+            checked={useRealTimeZones}
+            onChange={() => setUseRealTimeZones(!useRealTimeZones)}
+          />
+        </div>
       </div>
     </div>
   );
