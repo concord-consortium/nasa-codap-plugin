@@ -61,14 +61,10 @@ export function getDayLightInfo(options: LocationOptions): DaylightInfo[] {
     const localSunsetSinceMidnight = localSunset.diff(localSunset.startOf("day"), "hour", true);
     const dayLength = localSunsetSinceMidnight - localSunriseSinceMidnight;
 
-    console.log("| currentDay:", currentDay);
-    console.log("| currentDay.toDate():", currentDay.toDate());
-    const reallyDate = new Date(currentDay.toDate());
-    console.log("| reallyDate:", reallyDate);
     const record: DaylightInfo = {
-      day: reallyDate,
-      sunrise: localSunrise.toDate(),
-      sunset: localSunset.toDate(),
+      day: currentDay.toISOString(),
+      sunrise: localSunrise.toISOString(),
+      sunset: localSunset.toISOString(),
       dayLength,
       dayAsInteger: currentDay.dayOfYear()
     };
