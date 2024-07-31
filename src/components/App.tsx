@@ -129,10 +129,10 @@ export const App = () => {
           latitude: Number(latitude),
           longitude: Number(longitude),
           location: location?.name,
-          day: selectedAttrs.includes("day") ? solarEvent.day : null,
-          sunrise: selectedAttrs.includes("sunrise") ? solarEvent.sunrise : null,
-          sunset: selectedAttrs.includes("sunset") ? solarEvent.sunset : null,
-          dayLength: selectedAttrs.includes("dayLength") ? solarEvent.dayLength : null,
+          day: selectedAttrs.includes("day") ? solarEvent.day : "",
+          sunrise: selectedAttrs.includes("sunrise") ? solarEvent.sunrise : "",
+          sunset: selectedAttrs.includes("sunset") ? solarEvent.sunset : "",
+          dayLength: selectedAttrs.includes("dayLength") ? solarEvent.dayLength : "",
           dayAsInteger: solarEvent.dayAsInteger
         };
       });
