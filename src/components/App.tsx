@@ -125,16 +125,27 @@ export const App = () => {
       ]);
 
       const completeSolarRecords = solarEvents.map(solarEvent => {
-        return {
+        const record: { [key: string]: any } = {
           latitude: Number(latitude),
           longitude: Number(longitude),
           location: location?.name,
-          day: selectedAttrs.includes("day") ? solarEvent.day : "",
-          sunrise: selectedAttrs.includes("sunrise") ? solarEvent.sunrise : "",
-          sunset: selectedAttrs.includes("sunset") ? solarEvent.sunset : "",
-          dayLength: selectedAttrs.includes("dayLength") ? solarEvent.dayLength : "",
           dayAsInteger: solarEvent.dayAsInteger
         };
+
+        if (selectedAttrs.includes("day")) {
+          record.day = solarEvent.day;
+        }
+        if (selectedAttrs.includes("sunrise")) {
+          record.sunrise = solarEvent.sunrise;
+        }
+        if (selectedAttrs.includes("sunset")) {
+          record.sunset = solarEvent.sunset;
+        }
+        if (selectedAttrs.includes("dayLength")) {
+          record.dayLength = solarEvent.dayLength;
+        }
+
+        return record;
       });
 
       await createItems(kDataContextName, completeSolarRecords);
