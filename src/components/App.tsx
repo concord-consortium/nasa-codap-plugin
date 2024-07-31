@@ -129,7 +129,7 @@ export const App = () => {
       ]);
 
       const completeSolarRecords = solarEvents.map(solarEvent => {
-        const record: { [key: string]: any } = {
+        const record: Record<string, any> = {
           latitude: Number(latitude),
           longitude: Number(longitude),
           location: location?.name,
