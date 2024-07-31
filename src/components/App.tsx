@@ -110,6 +110,10 @@ export const App = () => {
       setDataContext(createDC.values);
     }
 
+    // TODO: See how you managed hiding and unhiding in branch 'local-backup-of-attr-hiding-progress'
+    // It only worked for V3
+    // We can do { name: "day", type: "date", hidden: !selectedAttrs.includes("day") } initially
+    // But then will need to use UI listeners and data changes to hide and unhide attributes
     if (existingDataContext?.success || createDC?.success) {
       await createParentCollection(kDataContextName, kParentCollectionName, [
         { name: "latitude", type: "numeric" },
