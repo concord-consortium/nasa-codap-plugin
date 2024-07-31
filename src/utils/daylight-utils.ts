@@ -10,27 +10,9 @@ extend(utc);
 extend(dayOfYear);
 extend(timezone);
 
-// If useRealTimeZones is true, and our times will be authentic local times.
-function utcToLocalTime(utcTime: Date, latitude: number, longitude: number): dayjs.Dayjs {
-  const timeZoneName = tzlookup(latitude, longitude);
-  return dayjs(utcTime).tz(timeZoneName);
-}
-
-// If useRealTimeZones is false, we pretend the world's timezones are evenly distributed
-// and faithfully follow lines of longitude, and our time will be calculated based on this assumption.
-function hoursFromGMT(longitude: number): number {
-  return Math.round(longitude / 15);
-}
-
-function formatLocalTime(time: dayjs.Dayjs): string {
-  return time.format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
-}
-
 export function getDayLightInfo(options: LocationOptions): DaylightInfo[] {
   const { latitude, longitude, year, useRealTimeZones } = options;
   const results: DaylightInfo[] = [];
-
-  const offsetHours = hoursFromGMT(longitude);
 
   let currentDay = dayjs.utc(`${year}-01-01`);
   const endOfYear = dayjs.utc(`${year + 1}-01-01`);
@@ -38,28 +20,33 @@ export function getDayLightInfo(options: LocationOptions): DaylightInfo[] {
   while (currentDay.isBefore(endOfYear)) {
     const date = currentDay.toDate();
 
-    const systemSunrise = getSunrise(latitude, longitude, date);
-    const systemSunset = getSunset(latitude, longitude, date);
+    const userWallTimeSunrise = getSunrise(latitude, longitude, date);
+    console.log("| userWallTimeSunrise: ", userWallTimeSunrise);
+    const userWallTimeSunset = getSunset(latitude, longitude, date);
+    const utcSunrise = dayjs.utc(userWallTimeSunrise);
+    console.log("| utcSunrise: ", utcSunrise);
+    const utcSunset = dayjs.utc(userWallTimeSunset);
 
-    let localSunrise: dayjs.Dayjs;
-    let localSunset: dayjs.Dayjs;
+    const targetTZSunrise: dayjs.Dayjs = useRealTimeZones
+      ? utcSunrise.tz(tzlookup(latitude, longitude))
+      : utcSunrise.add(Math.round(longitude / 15), "hour");
 
-    if (useRealTimeZones) {
-      localSunrise = utcToLocalTime(systemSunrise, latitude, longitude);
-      localSunset = utcToLocalTime(systemSunset, latitude, longitude);
-    } else {
-      localSunrise = dayjs.utc(systemSunrise).add(offsetHours, "hour");
-      localSunset = dayjs.utc(systemSunset).add(offsetHours, "hour");
-    }
+    console.log("| targetTZSunrise: ", targetTZSunrise);
+    const codapSunrise = targetTZSunrise.format("YYYY-MM-DDTHH:mm:ss.SSS");
+    console.log("| codapSunrise: ", codapSunrise);
 
-    const localSunriseSinceMidnight = localSunrise.diff(localSunrise.startOf("day"), "hour", true);
-    const localSunsetSinceMidnight = localSunset.diff(localSunset.startOf("day"), "hour", true);
-    const dayLength = localSunsetSinceMidnight - localSunriseSinceMidnight;
+    const targetTZSunset: dayjs.Dayjs = useRealTimeZones
+      ? utcSunset.tz(tzlookup(latitude, longitude))
+      : utcSunset.add(Math.round(longitude / 15), "hour");
+
+    const riseSinceMidnight = targetTZSunrise.diff(targetTZSunrise.startOf("day"), "hour", true);
+    const setSinceMidnight = targetTZSunset.diff(targetTZSunset.startOf("day"), "hour", true);
+    const dayLength = setSinceMidnight - riseSinceMidnight;
 
     const record: DaylightInfo = {
       day: currentDay.format("YYYY-MM-DD"),
-      sunrise: formatLocalTime(localSunrise),
-      sunset: formatLocalTime(localSunset),
+      sunrise: codapSunrise,
+      sunset: targetTZSunset.format("YYYY-MM-DDTHH:mm:ss.SSS"),
       dayLength,
       dayAsInteger: currentDay.dayOfYear()
     };
