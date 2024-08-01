@@ -191,6 +191,15 @@ $codap-teal-lightest: rgba(114, 191, 202, 0.25);
         }
       }
     }
+
+    &.day-slider {
+      align-self: flex-start;
+      width: 500px;
+      flex-direction: column;
+      input {
+        width: 100%;
+      }
+    }
   }
 
   hr {

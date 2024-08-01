@@ -4,6 +4,7 @@ import { kDataContextName, kInitialDimensions, kVersion, kSelectableAttributes,
   kPluginName, kParentCollectionName, kChildCollectionName, kDefaultOnAttributes } from "../constants";
 import { LocationOptions, ILocation } from "../types";
 import { LocationPicker } from "./location-picker";
+import { OrbitSystem } from "./orbit-system";
 import {
   createDataContext,
   createItems,
@@ -23,9 +24,11 @@ export const App = () => {
   const [location, setLocation] = useState<ILocation | null>(null);
   const [latitude, setLatitude] = useState<string>("");
   const [longitude, setLongitude] = useState<string>("");
+  const [dayOfYear, setDayOfYear] = useState<string>("280");
   const [locationSearch, setLocationSearch] = useState<string>("");
   const [selectedAttrs, setSelectedAttributes] = useState<string[]>(kDefaultOnAttributes);
   const [showInfo, setShowInfo] = useState<boolean>(false);
+  const [showSim, setShowSim] = useState<boolean>(true);
   const [useRealTimeZones, setUseRealTimeZones] = useState<boolean>(true);
 
   useEffect(() => {
@@ -46,6 +49,10 @@ export const App = () => {
     setLongitude(event.target.value);
     setLocation(null);
     setLocationSearch("");
+  };
+
+  const handleDayChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDayOfYear(event.target.value);
   };
 
   const handleLocationSelect = (selectedLocation: ILocation) => {
@@ -157,6 +164,10 @@ export const App = () => {
     }
   };
 
+  const handleSimCheckChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setShowSim(event.target.checked);
+  };
+
   return (
     <div className="App">
       <div className="plugin-row top">
@@ -167,6 +178,17 @@ export const App = () => {
         <span title="Get further information about this CODAP plugin">
           <InfoIcon className="info-icon" onClick={handleOpenInfo}/>
         </span>
+        {/* TODO: this is just a placeholder real info popup */}
+        <div
+          className={`info-popup ${showInfo ? "show" : ""}`}
+          style={{
+            position: "absolute",
+            visibility: showInfo ? "visible" : "hidden",
+            right: 0,
+          }}
+        >
+          plugin info
+        </div>
       </div>
       <hr />
 
@@ -233,6 +255,33 @@ export const App = () => {
           />
         </div>
       </div>
+      <div className="plugin-row sim-checkbox">
+        <label>
+          <input checked={showSim} type="checkbox" onChange={handleSimCheckChange} />
+          Show in simulation
+        </label>
+      </div>
+      { showSim &&
+        <div className="plugin-row day-slider">
+          <label>Day of Year</label>
+          <input
+            type="range"
+            min="0"
+            max="364"
+            value={dayOfYear}
+            onChange={handleDayChange}
+          />
+        </div>
+      }
+      {showSim &&
+        <div className="plugin-row sim">
+          <OrbitSystem
+            latitude={parseFloat(latitude) || 0}
+            longitude={parseFloat(longitude) || 0}
+            dayOfYear={parseInt(dayOfYear, 10) || 0}
+          />
+        </div>
+      }
     </div>
   );
 };
