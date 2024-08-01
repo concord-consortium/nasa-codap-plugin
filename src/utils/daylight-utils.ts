@@ -21,12 +21,25 @@ export function getDayLightInfo(options: LocationOptions): DaylightInfo[] {
     const date = currentDay.toDate();
     const timeZone = tzlookup(latitude, longitude);
 
+    // TODO: will need to handle above arctic circle and below antarctic circle
+    // Figure out what to pass when sun never sets or never rises
+    // Sedondarily, will need to make dayLengths 0 and 24 respectively
+
     const utcSunrise = dayjs(getSunrise(latitude, longitude, date));
     const utcSunset = dayjs(getSunset(latitude, longitude, date));
-    const tzSunrise = utcSunrise.tz(timeZone);
-    const tzSunset = utcSunset.tz(timeZone);
 
-    // TODO: will need to handle above arctic circle and below antarctic circle
+    // NOTE: we might want to rip out the fake time zone option
+    // and remove the useRealTimeZones flag entirely
+    // but for now, we keep these conditionals in place
+
+    const tzSunrise = useRealTimeZones
+      ? utcSunrise.tz(timeZone)
+      : utcSunrise.add(Math.round(longitude / 15), "hour");
+
+    const tzSunset = useRealTimeZones
+      ? utcSunset.tz(timeZone)
+      : utcSunset.add(Math.round(longitude / 15), "hour");
+
 
     const utcMidnight = utcSunrise.startOf("day");
     const utcSunriseSinceMidnight = utcSunrise.diff(utcMidnight, "hour", true);
