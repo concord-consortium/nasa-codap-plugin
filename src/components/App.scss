@@ -13,6 +13,22 @@ $codap-teal-lightest: rgba(114, 191, 202, 0.25);
   font-weight: 500;
   color: #222222;
 
+  .plugin-info-popup {
+    display: flex;
+    transform: translateX(-50px);
+    position: absolute;
+    background-color: white;
+    box-shadow: 0px 2px 4px rgba(silver, 0.4);
+    padding: 10px;
+    border-radius: 4px;
+    border: 1.5px solid rgba($codap-teal, 0.3);
+    width: 150px;
+    top: 30px;
+    &.hidden {
+      display: none;
+    }
+  }
+
   input {
     font-family: "Montserrat", sans-serif;
   }

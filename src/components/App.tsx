@@ -178,9 +178,8 @@ export const App = () => {
         <span title="Get further information about this CODAP plugin">
           <InfoIcon className="info-icon" onClick={handleOpenInfo}/>
         </span>
-        {/* TODO: this is just a placeholder real info popup */}
         <div
-          className={`info-popup ${showInfo ? "show" : ""}`}
+          className={`plugin-info-popup ${showInfo ? "showing" : "hidden"}`}
           style={{
             position: "absolute",
             visibility: showInfo ? "visible" : "hidden",
