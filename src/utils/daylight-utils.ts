@@ -26,29 +26,22 @@ export function getDayLightInfo(options: LocationOptions): DaylightInfo[] {
     const tzSunrise = utcSunrise.tz(timeZone);
     const tzSunset = utcSunset.tz(timeZone);
 
-    // const localSunriseSinceMidnight = tzSunrise.diff(tzSunrise.startOf("day"), "hour", true);
-    // const localSunsetSinceMidnight = tzSunset.diff(tzSunset.startOf("day"), "hour", true);
-    // const dayLength = localSunsetSinceMidnight - localSunriseSinceMidnight;
+    // TODO: will need to handle above arctic circle and below antarctic circle
 
     const utcMidnight = utcSunrise.startOf("day");
     const utcSunriseSinceMidnight = utcSunrise.diff(utcMidnight, "hour", true);
     const utcSunsetSinceMidnight = utcSunset.diff(utcMidnight, "hour", true);
     let dayLength = utcSunsetSinceMidnight - utcSunriseSinceMidnight;
-
-    // Handle cases where sunset is on the next day
-    if (dayLength < 0) {
-      dayLength += 24;
-    }
-
+    if (dayLength < 0) dayLength += 24;
 
     const record: DaylightInfo = {
       day: currentDay.format("YYYY-MM-DD"),
       sunrise: tzSunrise.format("YYYY-MM-DDTHH:mmZ"),
       sunset: tzSunset.format("YYYY-MM-DDTHH:mmZ"),
-      dayLength, //: dayLength > 0 ? dayLength : dayLength + 24,
+      dayLength,
       dayAsInteger: currentDay.dayOfYear()
     };
-    console.log("record!", record);
+
     results.push(record);
     currentDay = currentDay.add(1, "day");
   }
