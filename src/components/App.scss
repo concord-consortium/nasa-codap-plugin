@@ -52,6 +52,50 @@ $codap-teal-lightest: rgba(114, 191, 202, 0.25);
     left: 2px;
     top: 143px;
   }
+
+  .tab-container {
+    display: flex;
+    width: 100%;
+    margin-bottom: 0;
+    position: relative;
+    z-index: 1;
+    justify-content: flex-start;
+
+    .tab {
+      flex: 0 0 auto;
+      text-align: center;
+      padding: 10px 20px;
+      cursor: pointer;
+      background-color: #f0f0f0;
+      color: #666;
+      border: 1px solid $codap-teal;
+      border-bottom: none;
+      margin-right: -1px;
+      position: relative;
+      border-radius: 8px 8px 0 0;
+
+      &.active {
+        background-color: white;
+        color: $codap-teal;
+        border-bottom: 1px solid white;
+        z-index: 2;
+      }
+
+      &:hover:not(.active) {
+        background-color: #e0e0e0;
+      }
+    }
+  }
+
+  .tab-content {
+    width: 100%;
+    border: 1px solid $codap-teal;
+    border-top: none;
+    padding: 20px;
+    background-color: white;
+    //border-top: 1px solid #222222;
+  }
+
   .plugin-row {
     display: flex;
     justify-content: space-between;
@@ -215,6 +259,10 @@ $codap-teal-lightest: rgba(114, 191, 202, 0.25);
       input {
         width: 100%;
       }
+    }
+
+    &.sim {
+      justify-content: center;
     }
   }
 

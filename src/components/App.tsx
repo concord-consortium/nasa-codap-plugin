@@ -28,7 +28,7 @@ export const App = () => {
   const [locationSearch, setLocationSearch] = useState<string>("");
   const [selectedAttrs, setSelectedAttributes] = useState<string[]>(kDefaultOnAttributes);
   const [showInfo, setShowInfo] = useState<boolean>(false);
-  const [showSim, setShowSim] = useState<boolean>(true);
+  const [activeTab, setActiveTab] = useState<"location" | "simulation">("location");
   const [useRealTimeZones, setUseRealTimeZones] = useState<boolean>(true);
 
   useEffect(() => {
@@ -117,10 +117,6 @@ export const App = () => {
       setDataContext(createDC.values);
     }
 
-    // TODO: See how you managed hiding and unhiding in branch 'local-backup-of-attr-hiding-progress'
-    // It only worked for V3
-    // We can do { name: "day", type: "date", hidden: !selectedAttrs.includes("day") } initially
-    // But then will need to use UI listeners and data changes to hide and unhide attributes
     if (existingDataContext?.success || createDC?.success) {
       await createParentCollection(kDataContextName, kParentCollectionName, [
         { name: "latitude", type: "numeric" },
@@ -164,10 +160,6 @@ export const App = () => {
     }
   };
 
-  const handleSimCheckChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setShowSim(event.target.checked);
-  };
-
   return (
     <div className="App">
       <div className="plugin-row top">
@@ -191,96 +183,109 @@ export const App = () => {
       </div>
       <hr />
 
-      <LocationPicker
-        onLocationSelect={handleLocationSelect}
-        searchValue={locationSearch}
-        onSearchChange={handleLocationSearchChange}
-      />
-
-      <div className="or">OR</div>
-      <hr />
-
-      <div className="plugin-row latitude">
-        <label>Latitude</label>
-        <input
-          type="text"
-          placeholder="latitude"
-          value={latitude}
-          onChange={handleLatChange}
-        />
-      </div>
-      <div className="plugin-row longitude">
-        <label>Longitude</label>
-        <input
-          type="text"
-          placeholder="longitude"
-          value={longitude}
-          onChange={handleLongChange}
-        />
-      </div>
-
-      <hr />
-
-      <div className="plugin-row attributes-selection">
-        <label>Attributes</label>
-        <ul className="attribute-tokens">
-        {
-          kSelectableAttributes.map((selectable, index) => (
-            <li
-              key={index}
-              className={`token ${selectedAttrs.includes(selectable.attrName) ? "on" : "off"}`}
-              onClick={() => handleTokenClick(selectable.attrName)}
-            >
-              {selectable.string}
-            </li>
-          ))
-        }
-        </ul>
-      </div>
-      <div className="plugin-row data-buttons">
-        <button onClick={handleClearData} disabled={!dataContext}>
-          Clear Data
-        </button>
-        <button onClick={getDayLengthData}>
-          Get Data
-        </button>
-        {/* Hiding the useRealTimeZones checkbox since it is not in spec yet */}
-        <div className="plugin-row real-time-zones" style={{display: "none"}}>
-          <label>Use Real Time Zones</label>
-          <input
-            type="checkbox"
-            checked={useRealTimeZones}
-            onChange={() => setUseRealTimeZones(!useRealTimeZones)}
-          />
+      <div className="tab-container">
+        <div
+          className={`tab ${activeTab === "location" ? "active" : ""}`}
+          onClick={() => setActiveTab("location")}
+        >
+          Location
+        </div>
+        <div
+          className={`tab ${activeTab === "simulation" ? "active" : ""}`}
+          onClick={() => setActiveTab("simulation")}
+        >
+          Simulation
         </div>
       </div>
-      <div className="plugin-row sim-checkbox">
-        <label>
-          <input checked={showSim} type="checkbox" onChange={handleSimCheckChange} />
-          Show in simulation
-        </label>
-      </div>
-      { showSim &&
-        <div className="plugin-row day-slider">
-          <label>Day of Year</label>
-          <input
-            type="range"
-            min="0"
-            max="364"
-            value={dayOfYear}
-            onChange={handleDayChange}
+
+      {activeTab === "location" && (
+        <div className="tab-content">
+          <LocationPicker
+            onLocationSelect={handleLocationSelect}
+            searchValue={locationSearch}
+            onSearchChange={handleLocationSearchChange}
           />
+
+          <div className="or">OR</div>
+          <hr />
+
+          <div className="plugin-row latitude">
+            <label>Latitude</label>
+            <input
+              type="text"
+              placeholder="latitude"
+              value={latitude}
+              onChange={handleLatChange}
+            />
+          </div>
+          <div className="plugin-row longitude">
+            <label>Longitude</label>
+            <input
+              type="text"
+              placeholder="longitude"
+              value={longitude}
+              onChange={handleLongChange}
+            />
+          </div>
+
+          <hr />
+
+          <div className="plugin-row attributes-selection">
+            <label>Attributes</label>
+            <ul className="attribute-tokens">
+            {
+              kSelectableAttributes.map((selectable, index) => (
+                <li
+                  key={index}
+                  className={`token ${selectedAttrs.includes(selectable.attrName) ? "on" : "off"}`}
+                  onClick={() => handleTokenClick(selectable.attrName)}
+                >
+                  {selectable.string}
+                </li>
+              ))
+            }
+            </ul>
+          </div>
+          <div className="plugin-row data-buttons">
+            <button onClick={handleClearData} disabled={!dataContext}>
+              Clear Data
+            </button>
+            <button onClick={getDayLengthData}>
+              Get Data
+            </button>
+            <div className="plugin-row real-time-zones" style={{display: "none"}}>
+              <label>Use Real Time Zones</label>
+              <input
+                type="checkbox"
+                checked={useRealTimeZones}
+                onChange={() => setUseRealTimeZones(!useRealTimeZones)}
+              />
+            </div>
+          </div>
         </div>
-      }
-      {showSim &&
-        <div className="plugin-row sim">
-          <OrbitSystem
-            latitude={parseFloat(latitude) || 0}
-            longitude={parseFloat(longitude) || 0}
-            dayOfYear={parseInt(dayOfYear, 10) || 0}
-          />
+      )}
+
+      {activeTab === "simulation" && (
+        <div className="tab-content">
+          <div className="plugin-row day-slider">
+            <label>Day of Year</label>
+            <input
+              type="range"
+              min="0"
+              max="364"
+              value={dayOfYear}
+              onChange={handleDayChange}
+            />
+          </div>
+          <div className="plugin-row sim">
+            <OrbitSystem
+              latitude={parseFloat(latitude) || 0}
+              longitude={parseFloat(longitude) || 0}
+              dayOfYear={parseInt(dayOfYear, 10) || 0}
+            />
+          </div>
         </div>
-      }
+      )}
     </div>
   );
 };
