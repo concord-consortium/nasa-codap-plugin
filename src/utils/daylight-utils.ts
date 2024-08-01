@@ -1,8 +1,8 @@
-import dayjs, { extend } from "dayjs";
+import dayjs, { Dayjs, extend } from "dayjs";
 import utc from "dayjs/plugin/utc";
 import dayOfYear from "dayjs/plugin/dayOfYear";
 import timezone from "dayjs/plugin/timezone";
-/* import tzlookup from "tz-lookup"; (see comment below) */
+import tzlookup from "tz-lookup";
 import { getSunrise, getSunset } from "sunrise-sunset-js";
 import { DaylightInfo, LocationOptions } from "../types";
 
@@ -10,65 +10,45 @@ extend(utc);
 extend(dayOfYear);
 extend(timezone);
 
-// We pretend the world's timezones are evenly distributed and follow lines of longitude.
-function hoursFromGMT(longitude: number): number {
-  return Math.round(longitude / 15);
+function getDayLength(sunrise: Dayjs, sunset: Dayjs): number {
+  const utcMidnight = sunrise.startOf("day");
+  const utcSunriseSinceMidnight = sunrise.diff(utcMidnight, "hour", true);
+  const utcSunsetSinceMidnight = sunset.diff(utcMidnight, "hour", true);
+  let dayLength = utcSunsetSinceMidnight - utcSunriseSinceMidnight;
+  return dayLength < 0 ? dayLength + 24 : dayLength;
 }
-
-/**
- * Alternative function to keep for possible future use.
- * Returns the timezone-aware local time for a given UTC time.
- * Incorporates the complexities of daylight savings time and timezone lines.
- *
- * Example usage:
- * const tzAwareSunrise = utcToLocalTime(utcSunrise.toDate(), latitude, longitude);
- * console.log("| tzAwareSunrise:", tzAwareSunrise.format("HH:mm"));
- *
- * @param utcTime - The UTC time as a Date object
- * @param latitude - The latitude of the location
- * @param longitude - The longitude of the location
- * @returns A dayjs object representing the local time
- */
-/*
-function utcToLocalTime(utcTime: Date, latitude: number, longitude: number): dayjs.Dayjs {
-  const timeZoneName = tzlookup(latitude, longitude);
-  const localTZTime = dayjs(utcTime).tz(timeZoneName);
-  return localTZTime;
-}
-*/
 
 export function getDayLightInfo(options: LocationOptions): DaylightInfo[] {
-  const { latitude, longitude, year } = options;
+  const { latitude, longitude, year, useRealTimeZones } = options;
   const results: DaylightInfo[] = [];
-  const offsetHours = hoursFromGMT(longitude);
 
   let currentDay = dayjs.utc(`${year}-01-01`);
   const endOfYear = dayjs.utc(`${year + 1}-01-01`);
 
   while (currentDay.isBefore(endOfYear)) {
     const date = currentDay.toDate();
+    const timeZone = tzlookup(latitude, longitude);
 
-    const systemSunrise = getSunrise(latitude, longitude, date);
-    const utcSunrise = dayjs.utc(systemSunrise);
-    const localSunrise = utcSunrise.add(offsetHours, "hour");
+    // TODO: handle above arctic circle and below antarctic circle
+    const utcSunrise = dayjs(getSunrise(latitude, longitude, date));
+    const utcSunset = dayjs(getSunset(latitude, longitude, date));
 
-    const systemSunset = getSunset(latitude, longitude, date);
-    const utcSunset = dayjs.utc(systemSunset);
-    const localSunset = utcSunset.add(offsetHours, "hour");
+    // TODO: Consider removing fake timezone option entirely
+    const tzSunrise = useRealTimeZones
+      ? utcSunrise.tz(timeZone)
+      : utcSunrise.add(Math.round(longitude / 15), "hour");
 
-    // TODO: implement CODAP formulas for dayLength and dayAsInteger?
-    const localSunriseSinceMidnight = localSunrise.diff(localSunrise.startOf("day"), "hour", true);
-    const localSunsetSinceMidnight = localSunset.diff(localSunset.startOf("day"), "hour", true);
-    const dayLength = localSunsetSinceMidnight - localSunriseSinceMidnight;
+    const tzSunset = useRealTimeZones
+      ? utcSunset.tz(timeZone)
+      : utcSunset.add(Math.round(longitude / 15), "hour");
 
     const record: DaylightInfo = {
-      day: currentDay.toDate(),
-      sunrise: localSunrise.toDate(),
-      sunset: localSunset.toDate(),
-      dayLength,
+      day: currentDay.format("YYYY-MM-DD"),
+      sunrise: tzSunrise.format("YYYY-MM-DDTHH:mmZ"),
+      sunset: tzSunset.format("YYYY-MM-DDTHH:mmZ"),
+      dayLength: getDayLength(tzSunrise, tzSunset),
       dayAsInteger: currentDay.dayOfYear()
     };
-
     results.push(record);
     currentDay = currentDay.add(1, "day");
   }

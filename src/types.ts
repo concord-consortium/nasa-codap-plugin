@@ -9,12 +9,13 @@ export interface LocationOptions {
   latitude: number;
   longitude: number;
   year: number;
+  useRealTimeZones: boolean;
 }
 
 export interface DaylightInfo {
-  day: Date;
-  sunrise: Date;
-  sunset: Date;
+  day: string;
+  sunrise: string;
+  sunset: string;
   dayLength: number;
   dayAsInteger: number;
 }

@@ -26,6 +26,7 @@ export const App = () => {
   const [locationSearch, setLocationSearch] = useState<string>("");
   const [selectedAttrs, setSelectedAttributes] = useState<string[]>(kDefaultOnAttributes);
   const [showInfo, setShowInfo] = useState<boolean>(false);
+  const [useRealTimeZones, setUseRealTimeZones] = useState<boolean>(true);
 
   useEffect(() => {
     initializePlugin({
@@ -97,7 +98,8 @@ export const App = () => {
     const locationOptions: LocationOptions = {
       latitude: Number(latitude),
       longitude: Number(longitude),
-      year: 2024
+      year: 2024,
+      useRealTimeZones
     };
 
     const solarEvents = getDayLightInfo(locationOptions);
@@ -108,6 +110,10 @@ export const App = () => {
       setDataContext(createDC.values);
     }
 
+    // TODO: See how you managed hiding and unhiding in branch 'local-backup-of-attr-hiding-progress'
+    // It only worked for V3
+    // We can do { name: "day", type: "date", hidden: !selectedAttrs.includes("day") } initially
+    // But then will need to use UI listeners and data changes to hide and unhide attributes
     if (existingDataContext?.success || createDC?.success) {
       await createParentCollection(kDataContextName, kParentCollectionName, [
         { name: "latitude", type: "numeric" },
@@ -123,16 +129,27 @@ export const App = () => {
       ]);
 
       const completeSolarRecords = solarEvents.map(solarEvent => {
-        return {
+        const record: Record<string, any> = {
           latitude: Number(latitude),
           longitude: Number(longitude),
           location: location?.name,
-          day: selectedAttrs.includes("day") ? solarEvent.day : null,
-          sunrise: selectedAttrs.includes("sunrise") ? solarEvent.sunrise : null,
-          sunset: selectedAttrs.includes("sunset") ? solarEvent.sunset : null,
-          dayLength: selectedAttrs.includes("dayLength") ? solarEvent.dayLength : null,
           dayAsInteger: solarEvent.dayAsInteger
         };
+
+        if (selectedAttrs.includes("day")) {
+          record.day = solarEvent.day;
+        }
+        if (selectedAttrs.includes("sunrise")) {
+          record.sunrise = solarEvent.sunrise;
+        }
+        if (selectedAttrs.includes("sunset")) {
+          record.sunset = solarEvent.sunset;
+        }
+        if (selectedAttrs.includes("dayLength")) {
+          record.dayLength = solarEvent.dayLength;
+        }
+
+        return record;
       });
 
       await createItems(kDataContextName, completeSolarRecords);
@@ -206,6 +223,15 @@ export const App = () => {
         <button onClick={getDayLengthData}>
           Get Data
         </button>
+        {/* Hiding the useRealTimeZones checkbox since it is not in spec yet */}
+        <div className="plugin-row real-time-zones" style={{display: "none"}}>
+          <label>Use Real Time Zones</label>
+          <input
+            type="checkbox"
+            checked={useRealTimeZones}
+            onChange={() => setUseRealTimeZones(!useRealTimeZones)}
+          />
+        </div>
       </div>
     </div>
   );
