@@ -1,6 +1,9 @@
 @import "./vars";
 
 .location-tab {
+  width: 350px;
+  padding:10px;
+
   hr {
     width: 100%;
     margin: 10px 0;
@@ -8,20 +11,20 @@
     border-top: 1.5px solid rgba($codap-teal, 0.3);
   }
 
-  .location-picker,
   .latitude,
   .longitude {
+    justify-content: space-between;
     input {
       width: 250px;
       padding: 5px;
       border-radius: 4px;
-      border: 1px solid #ccc;
       box-sizing: border-box;
       border: 1.5px solid rgba($codap-teal, 0.3);
     }
   }
 
   .or {
+    display: none; // TODO: temporary, come back to this
     background-color: white;
     width: 40px;
     padding:0px 10px;

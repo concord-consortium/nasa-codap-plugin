@@ -1,26 +1,27 @@
 @import "./vars.scss";
 
-.location-picker {
-  display: flex;
-  flex-direction: column;
+.location-picker-label {
   position: relative;
-  margin-bottom: 12px;
-
-  input, label {
-    width: 100%;
-  }
-
-  label {
-    margin-bottom: 10px;
-  }
-
   .location-icon {
     position: absolute;
     left: 4px;
-    top: 28px;
+    top: 26px;
+    z-index: 1;
   }
+}
+
+.location-picker {
+  display:flex;
+  position: relative;
+  margin-bottom: 12px;
+  justify-content: space-between;
 
   input {
+    padding: 5px;
+    width: 100%;
+    border-radius: 4px;
+    box-sizing: border-box;
+    border: 1.5px solid rgba($codap-teal, 0.3);
     padding-left: 25px;
     outline: none;
     &:active, &:focus {
@@ -28,7 +29,7 @@
     }
   }
 
-  ul {
+  ul.location-dropdown {
     z-index: 1;
     position: absolute;
     background-color: white;
@@ -55,3 +56,4 @@
     }
   }
 }
+

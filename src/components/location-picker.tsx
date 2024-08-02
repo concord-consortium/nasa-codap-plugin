@@ -3,7 +3,7 @@ import { geoNameSearch } from "../utils/geonameSearch";
 import { ILocation } from "../types";
 import LocationIcon from "../assets/images/icon-location.svg";
 
-import "../assets/scss/location-tab.scss";
+import "../assets/scss/location-picker.scss";
 
 interface LocationPickerProps {
   searchValue: string;
@@ -87,30 +87,34 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
   };
 
   return (
-    <div className="plugin-row location-picker">
-      <label>Location</label>
-      <LocationIcon className="location-icon" />
-      <input
-        type="text"
-        placeholder="Enter location"
-        value={searchValue}
-        onChange={handleLocationChange}
-        onKeyDown={handleKeyDown}
-      />
-      {showLocationDropdown && locationCandidates.length > 0 && (
-        <ul className="location-dropdown">
-          {locationCandidates.map((place, index) => (
-            <li
-              key={index}
-              onClick={() => handleLocationSelect(place)}
-              onMouseEnter={() => setFocusedLocationIndex(index)}
-              className={focusedLocationIndex === index ? "focused" : ""}
-            >
-              {place.name}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+    <>
+      <div className="plugin-row location-picker-label">
+        <label>Location</label>
+        <LocationIcon className="location-icon" />
+      </div>
+      <div className="plugin-row location-picker">
+        <input
+          type="text"
+          placeholder="Enter location"
+          value={searchValue}
+          onChange={handleLocationChange}
+          onKeyDown={handleKeyDown}
+        />
+        {showLocationDropdown && locationCandidates.length > 0 && (
+          <ul className="location-dropdown">
+            {locationCandidates.map((place, index) => (
+              <li
+                key={index}
+                onClick={() => handleLocationSelect(place)}
+                onMouseEnter={() => setFocusedLocationIndex(index)}
+                className={focusedLocationIndex === index ? "focused" : ""}
+              >
+                {place.name}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </>
   );
 };
