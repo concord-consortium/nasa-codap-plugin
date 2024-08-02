@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { kDataContextName, kChildCollectionName, kParentCollectionName } from "../constants";
+import { kDataContextName, kChildCollectionName, kParentCollectionName, kParentCollectionAttributes, kChildCollectionAttributes } from "../constants";
 import { DaylightCalcOptions } from "../types";
 import { getDayLightInfo } from "../utils/daylight-utils";
 import {
@@ -30,7 +30,7 @@ export const useCodapData = () => {
     }
   };
 
-  const getDayLengthData = async (latitude: number, longitude: number, location: any, selectedAttrs: string[]) => {
+  const getDayLengthData = async (latitude: number, longitude: number, location: any) => {
     if (!latitude || !longitude) {
       alert("Please enter both latitude and longitude.");
       return;
@@ -53,26 +53,25 @@ export const useCodapData = () => {
     }
 
     if (existingDataContext?.success || createDC?.success) {
-      await createParentCollection(kDataContextName, kParentCollectionName, [
-        { name: "latitude", type: "numeric" },
-        { name: "longitude", type: "numeric" },
-        { name: "location", type: "categorical" }
-      ]);
-      await createChildCollection(kDataContextName, kChildCollectionName, kParentCollectionName, [
-        { name: "day", type: "date" },
-        { name: "sunrise", type: "date" },
-        { name: "sunset", type: "date" },
-        { name: "dayLength", type: "numeric" },
-        { name: "dayAsInteger", type: "numeric" }
-      ]);
+      await createParentCollection(
+        kDataContextName,
+        kParentCollectionName,
+        kParentCollectionAttributes
+      );
+      await createChildCollection(
+        kDataContextName,
+        kChildCollectionName,
+        kParentCollectionName,
+        kChildCollectionAttributes
+      );
 
       const completeSolarRecords = solarEvents.map(solarEvent => {
         const record: Record<string, any> = {
           latitude: Number(latitude),
           longitude: Number(longitude),
           location: location?.name,
-          dayAsInteger: solarEvent.dayAsInteger,
-          day: solarEvent.day,
+          dayNumber: solarEvent.dayAsInteger,
+          date: solarEvent.day,
           sunrise: solarEvent.sunrise,
           sunset: solarEvent.sunset,
           dayLength: solarEvent.dayLength

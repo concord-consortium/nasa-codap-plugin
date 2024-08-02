@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useCodapData } from "../hooks/useCodapData";
-import { kSelectableAttributes } from "../constants";
+import { kChildCollectionAttributes } from "../constants";
 import { ILocation } from "../types";
 import { LocationPicker } from "./location-picker";
 
@@ -42,9 +42,9 @@ export const LocationTab: React.FC<LocationTabProps> = ({
 
   useEffect(() => {
     const updateAttributesVisibility = async () => {
-      for (const selectable of kSelectableAttributes) {
-        const isSelected = selectedAttrs.includes(selectable.attrName);
-        await updateAttributeVisibility(selectable.attrName, !isSelected);
+      for (const attr of kChildCollectionAttributes) {
+        const isSelected = selectedAttrs.includes(attr.name);
+        await updateAttributeVisibility(attr.name, !isSelected);
       }
     };
 
@@ -86,7 +86,7 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   };
 
   const handleGetDetaClick = () => {
-    getDayLengthData(Number(latitude), Number(longitude), location, selectedAttrs);
+    getDayLengthData(Number(latitude), Number(longitude), location);
   };
 
   return (
@@ -120,13 +120,13 @@ export const LocationTab: React.FC<LocationTabProps> = ({
       <div className="plugin-row attributes-selection">
         <label>Attributes</label>
         <ul className="attribute-tokens">
-          {kSelectableAttributes.map((selectable: any, index: number) => (
+          {kChildCollectionAttributes.map((attr: any, i: number) => (
             <li
-              key={index}
-              className={`token ${selectedAttrs.includes(selectable.attrName) ? "on" : "off"}`}
-              onClick={() => handleTokenClick(selectable.attrName)}
+              key={i}
+              className={`token ${selectedAttrs.includes(attr.name) ? "on" : "off"}`}
+              onClick={() => handleTokenClick(attr.name)}
             >
-              {selectable.string}
+              {attr.title}
             </li>
           ))}
         </ul>
