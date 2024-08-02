@@ -1,0 +1,26 @@
+@import "./vars";
+
+.App {
+  padding: 10px;
+  box-sizing: border-box;
+  font-family: "Montserrat", sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #222222;
+
+  input {
+    font-family: "Montserrat", sans-serif;
+  }
+
+  label {
+    font-weight: bold;
+  }
+
+  .plugin-row {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    margin-bottom: 7px;
+    margin-top: 7px;
+  }
+}

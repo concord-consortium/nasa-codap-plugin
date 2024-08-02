@@ -1,0 +1,104 @@
+@import "./vars";
+
+.location-tab {
+  width: 350px;
+  padding:10px;
+
+  hr {
+    width: 100%;
+    margin: 10px 0;
+    border: none;
+    border-top: 1.5px solid rgba($codap-teal, 0.3);
+  }
+
+  .latitude,
+  .longitude {
+    justify-content: space-between;
+    input {
+      width: 250px;
+      padding: 5px;
+      border-radius: 4px;
+      box-sizing: border-box;
+      border: 1.5px solid rgba($codap-teal, 0.3);
+    }
+  }
+
+  .or {
+    display: none; // TODO: temporary, come back to this
+    background-color: white;
+    width: 40px;
+    padding:0px 10px;
+    color: $codap-teal;
+    font-weight: bold;
+  }
+
+  .latitude {
+    margin-top: 12px;
+  }
+
+  .attributes-selection {
+    display: flex;
+    flex-direction: column;
+    label {
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .attribute-tokens {
+      list-style-type: none;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      width: 100%;
+      margin-top: 10px;
+      gap: 3px;
+
+      li.token {
+        padding: 6px 20px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+        background-color: white;
+        list-style: none;
+        margin:4px;
+
+        &.on {
+          background-color: $codap-teal-lightest;
+          color: $codap-teal;
+          border: 1px solid $codap-teal;
+        }
+
+        &.off {
+          background-color: white;
+          color: #aaa;
+          border: 1px solid silver;
+        }
+      }
+    }
+  }
+
+  .data-buttons {
+    justify-content: flex-end;
+
+    button {
+      background-color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      margin-left: 10px;
+      cursor: pointer;
+      border: 1px solid $codap-teal;
+      color: $codap-teal;
+      transition: background-color 0.3s, color 0.3s;
+      &:disabled {
+        color: #ccc;
+        border-color: #ccc;
+        &:hover {
+          color: #ccc;
+        }
+      }
+      &:hover:not(:disabled) {
+        background-color: $codap-teal-light;
+        color: white;
+      }
+    }
+  }
+}

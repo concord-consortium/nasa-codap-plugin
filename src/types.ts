@@ -5,7 +5,7 @@ export interface ILocation {
   longitude: number;
 }
 
-export interface LocationOptions {
+export interface DaylightCalcOptions {
   latitude: number;
   longitude: number;
   year: number;

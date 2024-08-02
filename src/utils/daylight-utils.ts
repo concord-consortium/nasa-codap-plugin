@@ -4,7 +4,7 @@ import dayOfYear from "dayjs/plugin/dayOfYear";
 import timezone from "dayjs/plugin/timezone";
 import tzlookup from "tz-lookup";
 import { getSunrise, getSunset } from "sunrise-sunset-js";
-import { DaylightInfo, LocationOptions } from "../types";
+import { DaylightInfo, DaylightCalcOptions } from "../types";
 
 extend(utc);
 extend(dayOfYear);
@@ -18,7 +18,7 @@ function getDayLength(sunrise: Dayjs, sunset: Dayjs): number {
   return dayLength < 0 ? dayLength + 24 : dayLength;
 }
 
-export function getDayLightInfo(options: LocationOptions): DaylightInfo[] {
+export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
   const { latitude, longitude, year, useRealTimeZones } = options;
   const results: DaylightInfo[] = [];
 
