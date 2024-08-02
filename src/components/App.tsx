@@ -4,7 +4,8 @@ import { kInitialDimensions, kVersion, kPluginName, kDefaultOnAttributes } from 
 import { initializePlugin } from "@concord-consortium/codap-plugin-api";
 import { LocationTab } from "./location-tab";
 import { SimulationTab } from "./simulation-tab";
-import InfoIcon from "../assets/images/icon-info.svg";
+import { Header } from "./header";
+
 import "./App.scss";
 
 export const App: React.FC = () => {
@@ -16,7 +17,6 @@ export const App: React.FC = () => {
   const [locationSearch, setLocationSearch] = useState<string>("");
   const [selectedAttrs, setSelectedAttributes] = useState<string[]>(kDefaultOnAttributes);
   const [dataContext, setDataContext] = useState<any>(null);
-  const [showInfo, setShowInfo] = useState<boolean>(false);
 
   useEffect(() => {
     initializePlugin({
@@ -26,39 +26,16 @@ export const App: React.FC = () => {
     });
   }, []);
 
-  const handleOpenInfo = () => {
-    setShowInfo(!showInfo);
+  const handleTabClick = (tab: "location" | "simulation") => {
+    setActiveTab(tab);
   };
 
   return (
     <div className="App">
-      <div className="plugin-row top">
-        <p>
-          How long is a day?<br />
-          Enter a location or coordinates to retrieve data
-        </p>
-        <span title="Get further information about this CODAP plugin">
-          <InfoIcon className="info-icon" onClick={handleOpenInfo}/>
-        </span>
-        <div className={`plugin-info-popup ${showInfo ? "showing" : "hidden"}`}>
-          plugin info
-        </div>
-      </div>
-      <hr />
-      <div className="tab-container">
-        <div
-          className={`tab ${activeTab === "location" ? "active" : ""}`}
-          onClick={() => setActiveTab("location")}
-        >
-          Location
-        </div>
-        <div
-          className={`tab ${activeTab === "simulation" ? "active" : ""}`}
-          onClick={() => setActiveTab("simulation")}
-        >
-          Simulation
-        </div>
-      </div>
+      <Header
+        activeTab={activeTab}
+        onTabClick={handleTabClick}
+      />
       {activeTab === "location" ? (
         <LocationTab
           latitude={latitude}
