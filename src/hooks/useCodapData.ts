@@ -9,13 +9,14 @@ import {
   createTable,
   createDataContext,
   createParentCollection,
-  createChildCollection
+  createChildCollection,
+  updateAttribute
 } from "@concord-consortium/codap-plugin-api";
 
-export const useDataUtils = () => {
+export const useCodapData = () => {
   const [dataContext, setDataContext] = useState<any>(null);
 
-  const handleClearData = async () => {
+  const handleClearDataClick = async () => {
     let result = await getDataContext(kDataContextName);
     if (result.success) {
       let dc = result.values;
@@ -94,9 +95,26 @@ export const useDataUtils = () => {
     }
   };
 
+  const updateAttributeVisibility = async (attributeName: string, hidden: boolean) => {
+    if (!dataContext) return;
+
+    try {
+      await updateAttribute(
+        kDataContextName,
+        kChildCollectionName,
+        attributeName,
+        { name: attributeName },
+        { hidden }
+      );
+    } catch (error) {
+      console.error("Error updating attribute visibility:", error);
+    }
+  };
+
   return {
     dataContext,
-    handleClearData,
+    updateAttributeVisibility,
+    handleClearDataClick,
     getDayLengthData
   };
 };

@@ -1,5 +1,5 @@
-import React from "react";
-import { useDataUtils } from "../hooks/useCodapData";
+import React, { useEffect } from "react";
+import { useCodapData } from "../hooks/useCodapData";
 import { kSelectableAttributes } from "../constants";
 import { ILocation } from "../types";
 import { LocationPicker } from "./location-picker";
@@ -33,7 +33,23 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   setLocationSearch,
   setSelectedAttributes
 }) => {
-  const { dataContext, handleClearData: handleClearDataClick, getDayLengthData } = useDataUtils();
+  const {
+    dataContext,
+    handleClearDataClick,
+    getDayLengthData,
+    updateAttributeVisibility
+  } = useCodapData();
+
+  useEffect(() => {
+    const updateAttributesVisibility = async () => {
+      for (const selectable of kSelectableAttributes) {
+        const isSelected = selectedAttrs.includes(selectable.attrName);
+        await updateAttributeVisibility(selectable.attrName, !isSelected);
+      }
+    };
+
+    updateAttributesVisibility();
+  }, [selectedAttrs, updateAttributeVisibility]);
 
   const handleLatChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLatitude(event.target.value);
