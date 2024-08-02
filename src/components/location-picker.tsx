@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { geoNameSearch } from "../utils/geonameSearch";
 import { ILocation } from "../types";
-
 import LocationIcon from "../assets/images/icon-location.svg";
+
+import "../assets/scss/location-tab.scss";
+
 interface LocationPickerProps {
-  onLocationSelect: (place: ILocation) => void;
   searchValue: string;
+  onLocationSelect: (place: ILocation) => void;
   onSearchChange: (value: string) => void;
 }
 
 export const LocationPicker: React.FC<LocationPickerProps> = ({
-  onLocationSelect,
   searchValue,
+  onLocationSelect,
   onSearchChange
 }) => {
   const [locationCandidates, setLocationCandidates] = useState<ILocation[]>([]);

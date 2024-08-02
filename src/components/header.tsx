@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import InfoIcon from "../assets/images/icon-info.svg";
 
+import "../assets/scss/header.scss";
+
 interface IHeaderProps {
   activeTab: "location" | "simulation";
   onTabClick: (tab: "location" | "simulation") => void;
@@ -15,7 +17,7 @@ export const Header: React.FC<IHeaderProps> = ({ activeTab, onTabClick }) => {
 
   return (
     <>
-      <div className="plugin-row top">
+      <div className="plugin-row header">
         <p>
           How long is a day?<br />
           Enter a location or coordinates to retrieve data

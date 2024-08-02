@@ -2,7 +2,7 @@ import React from "react";
 import { ILocation } from "../types";
 import { OrbitSystem } from "./orbit-system";
 
-//import "./SimulationTab.scss";
+import "../assets/scss/simulation-tab.scss";
 
 interface SimulationTabProps {
   latitude: string;

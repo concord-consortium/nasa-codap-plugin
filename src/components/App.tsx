@@ -6,7 +6,7 @@ import { LocationTab } from "./location-tab";
 import { SimulationTab } from "./simulation-tab";
 import { Header } from "./header";
 
-import "./App.scss";
+import "../assets/scss/App.scss";
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"location" | "simulation">("location");

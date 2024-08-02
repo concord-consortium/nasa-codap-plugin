@@ -4,7 +4,7 @@ import { kSelectableAttributes } from "../constants";
 import { ILocation } from "../types";
 import { LocationPicker } from "./location-picker";
 
-//import "./LocationTab.scss";
+import "../assets/scss/location-tab.scss";
 
 interface LocationTabProps {
   latitude: string;
