@@ -71,21 +71,12 @@ export const useCodapData = () => {
           latitude: Number(latitude),
           longitude: Number(longitude),
           location: location?.name,
-          dayAsInteger: solarEvent.dayAsInteger
+          dayAsInteger: solarEvent.dayAsInteger,
+          day: solarEvent.day,
+          sunrise: solarEvent.sunrise,
+          sunset: solarEvent.sunset,
+          dayLength: solarEvent.dayLength
         };
-
-        if (selectedAttrs.includes("day")) {
-          record.day = solarEvent.day;
-        }
-        if (selectedAttrs.includes("sunrise")) {
-          record.sunrise = solarEvent.sunrise;
-        }
-        if (selectedAttrs.includes("sunset")) {
-          record.sunset = solarEvent.sunset;
-        }
-        if (selectedAttrs.includes("dayLength")) {
-          record.dayLength = solarEvent.dayLength;
-        }
 
         return record;
       });
