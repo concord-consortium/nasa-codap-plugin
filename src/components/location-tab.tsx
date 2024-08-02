@@ -1,18 +1,8 @@
 import React from "react";
-import { getDayLightInfo } from "../utils/daylight-utils";
-import { kDataContextName, kSelectableAttributes, kParentCollectionName, kChildCollectionName } from "../constants";
-import { DaylightCalcOptions, ILocation } from "../types";
+import { useDataUtils } from "../hooks/useCodapData";
+import { kSelectableAttributes } from "../constants";
+import { ILocation } from "../types";
 import { LocationPicker } from "./location-picker";
-
-import {
-  createDataContext,
-  createItems,
-  createParentCollection,
-  getDataContext,
-  codapInterface,
-  createChildCollection,
-  createTable
-} from "@concord-consortium/codap-plugin-api";
 
 //import "./LocationTab.scss";
 
@@ -22,13 +12,13 @@ interface LocationTabProps {
   location: ILocation | null;
   locationSearch: string;
   selectedAttrs: string[];
-  dataContext: any; // TODO figure if we need this - not sure I am using it
+  dataContext: any; // TODO the type
   setLatitude: (latitude: string) => void;
   setLongitude: (longitude: string) => void;
   setLocation: (location: ILocation | null) => void;
   setLocationSearch: (search: string) => void;
   setSelectedAttributes: (attrs: string[]) => void;
-  setDataContext: (context: any) => void; // TODO figure if we need this - not sure I am using it
+  setDataContext: (context: any) => void; // TODO the type
 }
 
 export const LocationTab: React.FC<LocationTabProps> = ({
@@ -37,14 +27,14 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   location,
   locationSearch,
   selectedAttrs,
-  dataContext,
   setLatitude,
   setLongitude,
   setLocation,
   setLocationSearch,
-  setSelectedAttributes,
-  setDataContext
+  setSelectedAttributes
 }) => {
+  const { dataContext, handleClearData: handleClearDataClick, getDayLengthData } = useDataUtils();
+
   const handleLatChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLatitude(event.target.value);
     setLocation(null);
@@ -79,83 +69,8 @@ export const LocationTab: React.FC<LocationTabProps> = ({
     }
   };
 
-  const handleClearData = async () => {
-    let result = await getDataContext(kDataContextName);
-    if (result.success) {
-      let dc = result.values;
-      let lastCollection = dc.collections[dc.collections.length - 1];
-      return await codapInterface.sendRequest({
-        action: "delete",
-        resource: `dataContext[${kDataContextName}].collection[${lastCollection.name}].allCases`
-      });
-    } else {
-      return Promise.resolve({ success: true });
-    }
-  };
-
-  const getDayLengthData = async () => {
-    if (!latitude || !longitude) {
-      alert("Please enter both latitude and longitude.");
-      return;
-    }
-
-    let createDC;
-    const calcOptions: DaylightCalcOptions = {
-      latitude: Number(latitude),
-      longitude: Number(longitude),
-      year: 2024,
-      useRealTimeZones: true
-    };
-
-    const solarEvents = getDayLightInfo(calcOptions);
-    const existingDataContext = await getDataContext(kDataContextName);
-
-    if (!existingDataContext.success) {
-      createDC = await createDataContext(kDataContextName);
-      setDataContext(createDC.values);
-    }
-
-    if (existingDataContext?.success || createDC?.success) {
-      await createParentCollection(kDataContextName, kParentCollectionName, [
-        { name: "latitude", type: "numeric" },
-        { name: "longitude", type: "numeric" },
-        { name: "location", type: "categorical" }
-      ]);
-      await createChildCollection(kDataContextName, kChildCollectionName, kParentCollectionName, [
-        { name: "day", type: "date" },
-        { name: "sunrise", type: "date" },
-        { name: "sunset", type: "date" },
-        { name: "dayLength", type: "numeric" },
-        { name: "dayAsInteger", type: "numeric" }
-      ]);
-
-      const completeSolarRecords = solarEvents.map(solarEvent => {
-        const record: Record<string, any> = {
-          latitude: Number(latitude),
-          longitude: Number(longitude),
-          location: location?.name,
-          dayAsInteger: solarEvent.dayAsInteger
-        };
-
-        if (selectedAttrs.includes("day")) {
-          record.day = solarEvent.day;
-        }
-        if (selectedAttrs.includes("sunrise")) {
-          record.sunrise = solarEvent.sunrise;
-        }
-        if (selectedAttrs.includes("sunset")) {
-          record.sunset = solarEvent.sunset;
-        }
-        if (selectedAttrs.includes("dayLength")) {
-          record.dayLength = solarEvent.dayLength;
-        }
-
-        return record;
-      });
-
-      await createItems(kDataContextName, completeSolarRecords);
-      await createTable(kDataContextName);
-    }
+  const handleGetDetaClick = () => {
+    getDayLengthData(Number(latitude), Number(longitude), location, selectedAttrs);
   };
 
   return (
@@ -201,10 +116,10 @@ export const LocationTab: React.FC<LocationTabProps> = ({
         </ul>
       </div>
       <div className="plugin-row data-buttons">
-        <button onClick={handleClearData} disabled={!dataContext}>
+        <button onClick={handleClearDataClick} disabled={!dataContext}>
           Clear Data
         </button>
-        <button onClick={getDayLengthData}>
+        <button onClick={handleGetDetaClick}>
           Get Data
         </button>
       </div>
