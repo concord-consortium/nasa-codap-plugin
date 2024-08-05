@@ -15,26 +15,51 @@ export const kParentCollectionName = "Locations";
 export const kChildCollectionName = "Daylight Info";
 
 export const kParentCollectionAttributes = [
-  { name: "latitude", type: "numeric" },
-  { name: "longitude", type: "numeric" },
-  { name: "location", type: "categorical" }
+  {
+    name: "latitude",
+    type: "numeric"
+  },
+  {
+    name: "longitude",
+    type: "numeric"
+
+  },
+  {
+    name: "location",
+    type: "categorical"
+
+  }
+  // NOTE: If data are to be historical, add year attribute
 ];
 
 export const kChildCollectionAttributes = [
-  { name: "day", type: "date" },
-  { name: "sunrise", type: "date" },
-  { name: "sunset", type: "date" },
-  { name: "dayLength", type: "numeric" },
-  { name: "dayAsInteger", type: "numeric" }
-];
-
-export const kSelectableAttributes = [
-  { string: "Day", attrName: "day" },
-  { string: "Rise hour", attrName: "sunrise" },
-  { string: "Set hour", attrName: "sunset" },
-  { string: "Day Length", attrName: "dayLength" },
+  {
+    name: "date",
+    title: "Date",
+    type: "date"
+  },
+  {
+    name: "sunrise",
+    title: "Sunrise",
+    type: "date"
+  },
+  {
+    name: "sunset",
+    title: "Sunset",
+    type: "date"
+  },
+  {
+    name: "dayLength",
+    title: "Day Length",
+    type: "numeric"
+  },
+  {
+    name: "dayNumber",
+    title: "Day Number",
+    type: "numeric"
+  }
 ];
 
 export const kDefaultOnAttributes = [
-  "day", "sunrise", "sunset", "dayLength"
+  "date", "sunrise", "sunset", "dayLength"
 ];

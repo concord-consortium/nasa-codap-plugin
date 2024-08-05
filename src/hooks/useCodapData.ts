@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { kDataContextName, kChildCollectionName, kParentCollectionName } from "../constants";
+import { kDataContextName, kChildCollectionName, kParentCollectionName, kParentCollectionAttributes, kChildCollectionAttributes } from "../constants";
 import { DaylightCalcOptions } from "../types";
 import { getDayLightInfo } from "../utils/daylight-utils";
 import {
@@ -9,13 +9,14 @@ import {
   createTable,
   createDataContext,
   createParentCollection,
-  createChildCollection
+  createChildCollection,
+  updateAttribute
 } from "@concord-consortium/codap-plugin-api";
 
-export const useDataUtils = () => {
+export const useCodapData = () => {
   const [dataContext, setDataContext] = useState<any>(null);
 
-  const handleClearData = async () => {
+  const handleClearDataClick = async () => {
     let result = await getDataContext(kDataContextName);
     if (result.success) {
       let dc = result.values;
@@ -29,7 +30,7 @@ export const useDataUtils = () => {
     }
   };
 
-  const getDayLengthData = async (latitude: number, longitude: number, location: any, selectedAttrs: string[]) => {
+  const getDayLengthData = async (latitude: number, longitude: number, location: any) => {
     if (!latitude || !longitude) {
       alert("Please enter both latitude and longitude.");
       return;
@@ -52,39 +53,29 @@ export const useDataUtils = () => {
     }
 
     if (existingDataContext?.success || createDC?.success) {
-      await createParentCollection(kDataContextName, kParentCollectionName, [
-        { name: "latitude", type: "numeric" },
-        { name: "longitude", type: "numeric" },
-        { name: "location", type: "categorical" }
-      ]);
-      await createChildCollection(kDataContextName, kChildCollectionName, kParentCollectionName, [
-        { name: "day", type: "date" },
-        { name: "sunrise", type: "date" },
-        { name: "sunset", type: "date" },
-        { name: "dayLength", type: "numeric" },
-        { name: "dayAsInteger", type: "numeric" }
-      ]);
+      await createParentCollection(
+        kDataContextName,
+        kParentCollectionName,
+        kParentCollectionAttributes
+      );
+      await createChildCollection(
+        kDataContextName,
+        kChildCollectionName,
+        kParentCollectionName,
+        kChildCollectionAttributes
+      );
 
       const completeSolarRecords = solarEvents.map(solarEvent => {
         const record: Record<string, any> = {
           latitude: Number(latitude),
           longitude: Number(longitude),
           location: location?.name,
-          dayAsInteger: solarEvent.dayAsInteger
+          dayNumber: solarEvent.dayAsInteger,
+          date: solarEvent.day,
+          sunrise: solarEvent.sunrise,
+          sunset: solarEvent.sunset,
+          dayLength: solarEvent.dayLength
         };
-
-        if (selectedAttrs.includes("day")) {
-          record.day = solarEvent.day;
-        }
-        if (selectedAttrs.includes("sunrise")) {
-          record.sunrise = solarEvent.sunrise;
-        }
-        if (selectedAttrs.includes("sunset")) {
-          record.sunset = solarEvent.sunset;
-        }
-        if (selectedAttrs.includes("dayLength")) {
-          record.dayLength = solarEvent.dayLength;
-        }
 
         return record;
       });
@@ -94,9 +85,26 @@ export const useDataUtils = () => {
     }
   };
 
+  const updateAttributeVisibility = async (attributeName: string, hidden: boolean) => {
+    if (!dataContext) return;
+
+    try {
+      await updateAttribute(
+        kDataContextName,
+        kChildCollectionName,
+        attributeName,
+        { name: attributeName },
+        { hidden }
+      );
+    } catch (error) {
+      console.error("Error updating attribute visibility:", error);
+    }
+  };
+
   return {
     dataContext,
-    handleClearData,
+    updateAttributeVisibility,
+    handleClearDataClick,
     getDayLengthData
   };
 };
