@@ -133,6 +133,7 @@
   },
   "dependencies": {
     "@types/tz-lookup": "^6.1.2",
+    "astronomy-engine": "^2.1.19",
     "dayjs": "^1.11.12",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

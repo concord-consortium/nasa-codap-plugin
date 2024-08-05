@@ -4,6 +4,7 @@ import dayOfYear from "dayjs/plugin/dayOfYear";
 import timezone from "dayjs/plugin/timezone";
 import tzlookup from "tz-lookup";
 import { getSunrise, getSunset } from "sunrise-sunset-js";
+import { Seasons, SeasonInfo } from "astronomy-engine";
 import { DaylightInfo, DaylightCalcOptions } from "../types";
 
 extend(utc);
@@ -16,6 +17,43 @@ function getDayLength(sunrise: Dayjs, sunset: Dayjs): number {
   const utcSunsetSinceMidnight = sunset.diff(utcMidnight, "hour", true);
   let dayLength = utcSunsetSinceMidnight - utcSunriseSinceMidnight;
   return dayLength < 0 ? dayLength + 24 : dayLength;
+}
+
+function getSeasonName(dayJsDay: Dayjs, latitude: number): string {
+  const year = dayJsDay.year();
+  const { mar_equinox, jun_solstice, sep_equinox, dec_solstice } = Seasons(year);
+
+  const springEq = dayjs(mar_equinox.date);
+  const summerSol = dayjs(jun_solstice.date);
+  const fallEq = dayjs(sep_equinox.date);
+  const winterSol = dayjs(dec_solstice.date);
+
+  let season: string;
+
+  if (dayJsDay.isBefore(springEq) || dayJsDay.isAfter(winterSol) || dayJsDay.isSame(winterSol)) {
+    season = "Winter";
+  } else if (dayJsDay.isBefore(summerSol)) {
+    season = "Spring";
+  } else if (dayJsDay.isBefore(fallEq)) {
+    season = "Summer";
+  } else if (dayJsDay.isBefore(winterSol)) {
+    season = "Fall";
+  } else {
+    throw new Error("Unable to determine season");
+  }
+
+  // Flip seasons for Southern Hemisphere
+  if (latitude < 0) {
+    const oppositeSeasons: { [key: string]: string } = {
+      "Winter": "Summer",
+      "Spring": "Fall",
+      "Summer": "Winter",
+      "Fall": "Spring"
+    };
+    return oppositeSeasons[season];
+  }
+
+  return season;
 }
 
 export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
@@ -47,7 +85,8 @@ export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
       sunrise: tzSunrise.format("YYYY-MM-DDTHH:mmZ"),
       sunset: tzSunset.format("YYYY-MM-DDTHH:mmZ"),
       dayLength: getDayLength(tzSunrise, tzSunset),
-      dayAsInteger: currentDay.dayOfYear()
+      dayAsInteger: currentDay.dayOfYear(),
+      season: getSeasonName(currentDay, latitude),
     };
     results.push(record);
     currentDay = currentDay.add(1, "day");

@@ -57,6 +57,21 @@ export const kChildCollectionAttributes = [
     name: "dayNumber",
     title: "Day Number",
     type: "numeric"
+  },
+  {
+    name: "sunlightAngle",
+    title: "Sunlight Angle",
+    type: "numeric"
+  },
+  {
+    name: "season",
+    title: "Season",
+    type: "categorical"
+  },
+  {
+    name: "solarIntensity",
+    title: "Solar Intensity",
+    type: "numeric"
   }
 ];
 

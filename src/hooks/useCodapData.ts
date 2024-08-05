@@ -40,7 +40,7 @@ export const useCodapData = () => {
     const calcOptions: DaylightCalcOptions = {
       latitude: Number(latitude),
       longitude: Number(longitude),
-      year: 2024,
+      year: 2024, //TODO: If data are to be historical, add dynamic year attribute
       useRealTimeZones: true
     };
 
@@ -74,7 +74,8 @@ export const useCodapData = () => {
           date: solarEvent.day,
           sunrise: solarEvent.sunrise,
           sunset: solarEvent.sunset,
-          dayLength: solarEvent.dayLength
+          dayLength: solarEvent.dayLength,
+          season: solarEvent.season
         };
 
         return record;
