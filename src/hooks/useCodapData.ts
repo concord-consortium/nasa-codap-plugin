@@ -75,7 +75,8 @@ export const useCodapData = () => {
           sunrise: solarEvent.sunrise,
           sunset: solarEvent.sunset,
           dayLength: solarEvent.dayLength,
-          season: solarEvent.season
+          season: solarEvent.season,
+          sunlightAngle: solarEvent.sunlightAngle
         };
 
         return record;

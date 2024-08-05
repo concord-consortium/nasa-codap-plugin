@@ -4,8 +4,9 @@ import dayOfYear from "dayjs/plugin/dayOfYear";
 import timezone from "dayjs/plugin/timezone";
 import tzlookup from "tz-lookup";
 import { getSunrise, getSunset } from "sunrise-sunset-js";
-import { Seasons, SeasonInfo } from "astronomy-engine";
+import { Seasons } from "astronomy-engine";
 import { DaylightInfo, DaylightCalcOptions } from "../types";
+import { kBasicSummerSolstice, kEarthTilt } from "../constants";
 
 extend(utc);
 extend(dayOfYear);
@@ -56,6 +57,14 @@ function getSeasonName(dayJsDay: Dayjs, latitude: number): string {
   return season;
 }
 
+function getSunrayAngleInDegrees(dayNum: number, earthTilt: number, lat:number): number {
+  const tiltAxisZRadians = 2 * Math.PI * (dayNum - kBasicSummerSolstice) / 365;
+  const orbitalTiltDegrees = earthTilt ? earthTilt : 0;
+  const effectiveTiltDegrees = -Math.cos(tiltAxisZRadians) * orbitalTiltDegrees;
+  const degrees = 90 - (lat + effectiveTiltDegrees);
+  return degrees;
+}
+
 export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
   const { latitude, longitude, year, useRealTimeZones } = options;
   const results: DaylightInfo[] = [];
@@ -87,6 +96,7 @@ export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
       dayLength: getDayLength(tzSunrise, tzSunset),
       dayAsInteger: currentDay.dayOfYear(),
       season: getSeasonName(currentDay, latitude),
+      sunlightAngle: getSunrayAngleInDegrees(currentDay.dayOfYear(), kEarthTilt, latitude)
     };
     results.push(record);
     currentDay = currentDay.add(1, "day");

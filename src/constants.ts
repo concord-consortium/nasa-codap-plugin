@@ -6,6 +6,11 @@ export const kInitialDimensions = {
   height: 680
 };
 
+// These are only used in the simplified sunray angle calc
+// solstice dates in season calc are based on astronomy-engine Seasons()
+export const kBasicSummerSolstice = 172;
+export const kEarthTilt = 23.5;
+
 export const kGeonamesService = "https://secure.geonames.org/search";
 export const kGeolocService = "https://secure.geonames.org/findNearbyPlaceNameJSON";
 export const kGeonamesUser = "codap";
