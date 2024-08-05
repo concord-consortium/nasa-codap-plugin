@@ -1,0 +1,24 @@
+.ui-widget {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.ui-slider{
+  background-color: #fff;
+  border: 1px solid #999;
+  border-radius:4px;
+}
+
+.ui-slider-handle {
+  border-radius: 50px;
+  background: #fff !important;
+  box-shadow: 0 0 6px #666;
+}
+
+.ui-slider-with-tick-labels {
+  margin-bottom: 25px;
+}
+
+.ui-slider-tick-label {
+  margin-top: 2px;
+}

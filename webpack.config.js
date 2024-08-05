@@ -69,7 +69,7 @@ module.exports = (env, argv) => {
           ]
         },
         {
-          test: /\.(png|woff|woff2|eot|ttf)$/,
+          test: /\.(png|jpg|woff|woff2|eot|ttf)$/,
           type: 'asset',
         },
         { // disable svgo optimization for files ending in .nosvgo.svg

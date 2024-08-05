@@ -1,0 +1,156 @@
+body {
+  margin: 0;
+  background: #f6f6f6;
+}
+
+.grasp-seasons {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #333;
+  margin: 0;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+
+  label {
+    font-weight: 500;
+  }
+
+  .controls {
+    margin: 10px auto;
+    position: relative;
+    width: 1200px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .controls select {
+    display: inline-block;
+    width: 250px;
+    margin-left: 5px;
+  }
+
+  .controls button {
+    margin-right: 4px;
+  }
+
+  .controls .form-group {
+    margin-bottom: 5px;
+  }
+
+  .day {
+    margin-left: 140px;
+    font-size: 2em;
+    font-family: 'Lato', arial, helvetica, sans-serif;
+  }
+
+  .day-slider {
+    display: inline-block;
+    width: 795px;
+    padding: 25px 0 20px;
+    vertical-align: middle;
+    margin-top: 10px;
+  }
+
+  .animation-btn {
+    margin-top: -8px !important;
+    width: 70px;
+  }
+
+  .left-col {
+    width: 795px;
+  }
+
+  .right-col {
+    width: 395px;
+
+    .checkboxes {
+      margin-top: 15px;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  .long-lat-sliders {
+    margin-top: 26px;
+    width: 395px;
+  }
+
+  .btn {
+    background: #eb8723;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-family: bold 1em 'Lato', arial, helvetica, sans-serif;
+    margin: -4px 0 0 0;
+    padding: .375em .625em;
+    text-align: center;
+    text-decoration: none;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    box-shadow: 0 3px 0 #e16a3e;
+    background: linear-gradient(to bottom, rgb(244, 182, 38) 0%, rgb(235, 135, 35) 100%);
+  }
+
+  .btn-small {
+    padding: .31em .625em;
+    line-height: 1em;
+  }
+
+  .btn:active, .btn:focus, .btn:hover, .btn:visited {
+    background: #eb8723;
+    border: none;
+    color: #fff !important;
+    background: rgb(244, 182, 38);
+  }
+
+  .rays-ground-text{
+    position: absolute;
+    bottom: 10px;
+    text-align: center;
+    width: 100%;
+    color:white;
+  }
+
+  .earth-gridlines-toggle{
+    margin-top: 6px;
+    height: 25px;
+    input {
+      margin-left:6px;
+    }
+  }
+
+  .page-footer {
+    background: #a3dde7;
+    clear: both;
+    color: #0093b0;
+    font-size: .9em;
+    height: 140px;
+    margin-top: 3em;
+    padding: 1em 0;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+
+    section {
+      margin: 0 auto;
+      width: 1200px;
+    }
+
+    .cc-brand {
+      display: block;
+      height: auto;
+      margin: 1em auto 1.5em;
+      width: 200px;
+    }
+
+    .cc-brand img {
+      height: auto;
+      width: 100%;
+    }
+  }
+}
