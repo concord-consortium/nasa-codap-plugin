@@ -57,6 +57,22 @@ function getSeasonName(dayJsDay: Dayjs, latitude: number): string {
   return season;
 }
 
+function getSolarNoonIntensity(dayNum: number, latitude: number): number {
+  const solarConstant = 1361;
+  const latitudeRad = latitude * Math.PI / 180;
+  const declination = 23.45 * Math.sin((360/365) * (dayNum - 81) * Math.PI / 180);
+  const declinationRad = declination * Math.PI / 180;
+  const dayAngle = 2 * Math.PI * (dayNum - 1) / 365;
+  // correction factor for Earth's elliptical orbit
+  const eccentricityFactor = 1 + 0.033 * Math.cos(dayAngle);
+  // cosine of the solar zenith angle at solar noon
+  const cosSolarZenithAngle = Math.sin(latitudeRad) * Math.sin(declinationRad) +
+                              Math.cos(latitudeRad) * Math.cos(declinationRad);
+
+  const solarNoonIntensity = solarConstant * eccentricityFactor * cosSolarZenithAngle;
+  return Math.max(0, solarNoonIntensity); // Ensure non-negative value
+}
+
 function getSunrayAngleInDegrees(dayNum: number, earthTilt: number, lat:number): number {
   const tiltAxisZRadians = 2 * Math.PI * (dayNum - kBasicSummerSolstice) / 365;
   const orbitalTiltDegrees = earthTilt ? earthTilt : 0;
@@ -96,7 +112,8 @@ export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
       dayLength: getDayLength(tzSunrise, tzSunset),
       dayAsInteger: currentDay.dayOfYear(),
       season: getSeasonName(currentDay, latitude),
-      sunlightAngle: getSunrayAngleInDegrees(currentDay.dayOfYear(), kEarthTilt, latitude)
+      sunlightAngle: getSunrayAngleInDegrees(currentDay.dayOfYear(), kEarthTilt, latitude),
+      solarIntensity: getSolarNoonIntensity(currentDay.dayOfYear(), latitude)
     };
     results.push(record);
     currentDay = currentDay.add(1, "day");
