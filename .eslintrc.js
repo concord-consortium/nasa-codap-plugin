@@ -47,7 +47,6 @@ module.exports = {
     "@typescript-eslint/no-this-alias": "off",
     "@typescript-eslint/no-unused-vars": ["warn", { args: "none", ignoreRestSiblings: true }],
     "@typescript-eslint/prefer-optional-chain": "off",
-    "@typescript-eslint/semi": ["warn", "always"],
     "curly": ["error", "multi-line", "consistent"],
     "dot-notation": "error",
     "eol-last": "warn",
