@@ -78,6 +78,10 @@ export default class OrbitView extends BaseView {
     this._addLabels();
   }
 
+  _updateShowCamera() {
+    this.toggleCameraModel(this.props.showCamera ?? false);
+  }
+
   _updateLat() {
     this.latLine.setLat(this.props.lat);
     this.latLongMarker.setLatLong(this.props.lat, this.props.long);

@@ -18,8 +18,6 @@ interface ILocation {
 }
 interface IState {
   locations: ILocation[];
-  customLocationsCount: number;
-  customLocName: string;
 }
 export default class CitySelect extends Component<IProps> {
   state: IState;
@@ -27,13 +25,9 @@ export default class CitySelect extends Component<IProps> {
     super(props);
     this.state = {
       locations: [{ name: t("~CUSTOM_LOCATION", props.lang), disabled: true } as ILocation].concat(CITY_DATA),
-      customLocationsCount: 0,
-      customLocName: t("~CUSTOM_LOCATION_NAME", props.lang)
     };
 
     this.selectChange = this.selectChange.bind(this);
-    this.handleCustomLocNameChange = this.handleCustomLocNameChange.bind(this);
-    this.saveCustomLocation = this.saveCustomLocation.bind(this);
   }
 
   selectChange(event: any) {
@@ -66,37 +60,13 @@ export default class CitySelect extends Component<IProps> {
     return 0; // custom location
   }
 
-  get isLocationCustom() {
-    return this.selectedCity === 0;
-  }
-
-  handleCustomLocNameChange(event: any) {
-    this.setState({ customLocName: event.target.value });
-  }
-
-  saveCustomLocation() {
-    const { lat, long } = this.props;
-    const { customLocName, customLocationsCount, locations } = this.state;
-    const newLocations = locations.concat({ name: customLocName, lat, long });
-    this.setState({
-      customLocationsCount: customLocationsCount + 1,
-      customLocName: `Custom Location ${customLocationsCount + 2}`,
-      locations: newLocations
-    });
-  }
-
   render() {
-    const { customLocName } = this.state;
     return (
       <div className="city-select">
-        <label>{ t("~SELECT_CITY", this.props.lang) }</label>
+        <label>{ t("~MY_LOCATIONS", this.props.lang) }</label>
         <select className="form-control" value={this.selectedCity} onChange={this.selectChange}>
           { this.getOptions() }
         </select>
-        <span className={`custom-location ${this.isLocationCustom ? "visible" : ""}`}>
-          <input type="text" value={customLocName} onChange={this.handleCustomLocNameChange}/>
-          <button className="btn btn-small" onClick={this.saveCustomLocation}>Save Location</button>
-        </span>
       </div>
     );
   }

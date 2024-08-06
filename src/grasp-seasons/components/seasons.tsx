@@ -1,19 +1,18 @@
 import React, { useState, useEffect, useRef, ChangeEvent, useCallback } from "react";
-import ViewManager, { ViewManagerHandles } from "./view-manager";
 import Slider from "./slider/slider";
 import InfiniteDaySlider from "./slider/infinite-day-slider";
 import CitySelect from "./city-select";
 import getURLParam from "../utils/utils";
+import OrbitViewComp from "./orbit-view-comp";
+import RaysViewComp from "./rays-view-comp";
 import t, { Language } from "../translation/translate";
-import { ISimState, IViewState, ViewType } from "../types";
+import { ISimState } from "../types";
 import { useAnimation } from "../hooks/use-animation";
-import CCLogoImg from "../assets/concord-consortium.png";
 
 import "./seasons.scss";
 
 const ANIM_SPEED = 0.02;
 const DAILY_ROTATION_ANIM_SPEED = 0.0003;
-const ROTATION_SPEED = 0.0004;
 
 const DEFAULT_SIM_STATE: ISimState = {
   day: 171,
@@ -27,13 +26,8 @@ const DEFAULT_SIM_STATE: ISimState = {
   sunrayDistMarker: false,
   dailyRotation: false,
   earthGridlines: false,
+  showCamera: false,
   lang: "en_us"
-};
-
-const DEFAULT_VIEW_STATE: IViewState = {
-  "main": "orbit",
-  "small-top": "raysGround",
-  "small-bottom": "nothing"
 };
 
 function capitalize(string: string) {
@@ -47,7 +41,7 @@ interface IProps {
 }
 
 const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (action: string, data?: any) => {} }) => {
-  const viewRef = useRef<ViewManagerHandles>(null);
+  const orbitViewRef = useRef<OrbitViewComp>(null);
 
   // State
   const [simState, setSimState] = useState<ISimState>({
@@ -55,7 +49,6 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
     ...initialState,
     lang: lang || (getURLParam("lang") as Language) || DEFAULT_SIM_STATE.lang
   });
-  const [viewState, setViewState] = useState<IViewState>(DEFAULT_VIEW_STATE);
 
   // Earth rotation animation controlled by "Play" button
   const { animationStarted: mainAnimationStarted, toggleState: toggleMainAnimation } = useAnimation({
@@ -70,20 +63,25 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
     speed: simState.dailyRotation ? DAILY_ROTATION_ANIM_SPEED : ANIM_SPEED
   });
 
-  // Rotation animation controlled by "Rotating" checkbox
-  const { animationStarted: rotationAnimationStarted, toggleState: toggleRotationAnimation } = useAnimation({
-    value: simState.earthRotation,
-    setValue: (newAngle: number) => {
-      if (!mainAnimationStarted) {
-        setSimState(prevState => ({ ...prevState, earthRotation: newAngle % (2 * Math.PI) }));
+  // Main animation loop
+  const rafId = useRef<number | undefined>(undefined);
+
+  const rafCallback = useCallback((timestamp: number) => {
+    orbitViewRef.current?.rafCallback(timestamp);
+    rafId.current = requestAnimationFrame(rafCallback);
+  }, []);
+
+  useEffect(() => {
+    requestAnimationFrame(rafCallback);
+    return () => {
+      if (rafId.current !== undefined) {
+        cancelAnimationFrame(rafId.current);
       }
-    },
-    speed: ROTATION_SPEED
-  });
+    }
+  }, [rafCallback]);
 
   // Derived state
   const simLang = simState.lang;
-  const earthVisible = Object.values(viewState).indexOf("earth") > -1;
   const playStopLabel = mainAnimationStarted ? t("~STOP", simLang) : t("~PLAY", simLang);
 
   // Log helpers
@@ -92,15 +90,6 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
       value: event.target.checked
     });
   };
-
-  const logButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    log(capitalize(event.currentTarget.name) + "ButtonClicked");
-  };
-
-  const lookAtSubsolarPoint = useCallback(() => {
-    viewRef.current?.lookAtSubsolarPoint();
-    setSimState(prevState => ({ ...prevState, earthRotation: (11.5 - simState.long) * Math.PI / 180 }));
-  }, [simState.long]);
 
   // Keep updating lang in simState when lang prop changes
   useEffect(() => {
@@ -142,21 +131,6 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
     setSimState(prevState => ({ ...prevState, ...newState }));
   };
 
-  const handleViewStateChange = (viewPosition: keyof IViewState, viewName: ViewType) => {
-    const newViewState: Partial<IViewState> = {};
-    newViewState[viewPosition] = viewName;
-    if (viewName !== "nothing") {
-      const oldView = viewState[viewPosition];
-      for (const key in viewState) {
-        if (viewState[key as keyof IViewState] === viewName) {
-          newViewState[key as keyof IViewState] = oldView;
-        }
-      }
-    }
-    setViewState(prevState => ({ ...prevState, ...newViewState }));
-    log("ViewsRearranged", viewState);
-  };
-
   const handleDaySliderChange = (event: any, ui: any) => {
     setSimState(prevState => ({ ...prevState, day: ui.value }));
   };
@@ -178,10 +152,6 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
     const rot = -long * Math.PI / 180;
     setSimState(prevState => ({ ...prevState, lat, long, earthRotation: rot }));
 
-    setTimeout(() => {
-      viewRef.current?.lookAtLatLongMarker();
-    }, 250);
-
     log("CityPulldownChanged", {
       value: city,
       lat,
@@ -189,24 +159,16 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
     });
   };
 
-  const handleSubpolarButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    lookAtSubsolarPoint();
-    logButtonClick(event);
-  };
+  const solarIntensityValue = 123; // TODO: Calculate solar intensity using lat, long, and time
 
   return (
     <div className="grasp-seasons">
-      <ViewManager
-        ref={viewRef}
-        view={viewState}
-        simulation={simState}
-        onSimStateChange={handleSimStateChange}
-        onViewChange={handleViewStateChange}
-        log={log}
-      />
-      <div className="controls">
-        <div className="left-col">
-          <div className="form-group">
+      <div className="left-col">
+        <div className="main-view">
+          <OrbitViewComp
+            ref={orbitViewRef} simulation={simState} onSimStateChange={handleSimStateChange} log={log} showCamera={false}
+          />
+          <div className="playback-controls">
             <button
               className="btn btn-default animation-btn"
               name={playStopLabel}
@@ -223,114 +185,60 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
               />
               { t("~DAILY_ROTATION", simLang) }
             </label>
-            <label className="day">{ t("~DAY", simLang) }: { getFormattedDay() }</label>
-            <div className="day-slider">
-              <InfiniteDaySlider
-                value={simState.day}
-                slide={handleDaySliderChange}
-                lang={simLang}
-                log={log}
-                logId="Day"
-              />
-            </div>
-          </div>
-          <div className="form-group pull-left">
-            <CitySelect
-              lat={simState.lat}
-              long={simState.long}
-              lang={simLang}
-              onCityChange={handleCitySelectChange}
-            />
-            <div className="earth-gridlines-toggle"></div>
           </div>
         </div>
-        <div className="right-col">
-          <button className="btn btn-default" onClick={handleSubpolarButtonClick} name="ViewSubpolarPoint">
-            { t("~VIEW_SUBSOLAR_POINT", simLang) }
-          </button>
-          <div className="long-lat-sliders">
-            <div className="form-group">
-              <label>{ t("~LATITUDE", simLang) }: { getFormattedLat() }</label>
-              <Slider
-                value={simState.lat}
-                min={-90}
-                max={90}
-                step={1}
-                slide={handleLatSliderChange}
-                log={log}
-                logId="Latitude"
-              />
-            </div>
-            <div className="form-group">
-              <label>{ t("~LONGITUDE", simLang) }: { getFormattedLong() }</label>
-              <Slider
-                value={simState.long}
-                min={-180}
-                max={180}
-                step={1}
-                slide={handleLongSliderChange}
-                log={log}
-                logId="Longitude"
-              />
-            </div>
-          </div>
-          <div className="checkboxes">
-            <label>
-              <input
-                type="checkbox"
-                name="EarthRotation"
-                checked={rotationAnimationStarted}
-                onChange={toggleRotationAnimation}
-              />
-              { t("~ROTATING", simLang) }
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                name="earthTilt"
-                checked={simState.earthTilt}
-                onChange={handleSimCheckboxChange}
-              />
-              { t("~TILTED", simLang) }
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                name="sunEarthLine"
-                checked={simState.sunEarthLine}
-                onChange={handleSimCheckboxChange}
-              />
-              { t("~SUN_EARTH_LINE", simLang) }
-            </label>
-            {
-              earthVisible &&
-              <label>
-                <input
-                  type="checkbox"
-                  name="earthGridlines"
-                  checked={simState.earthGridlines}
-                  onChange={handleSimCheckboxChange}
-                />
-                { t("~EARTH_GRIDLINES", simLang) }
-              </label>
-            }
-          </div>
+        <div className="day">
+          <label>{ t("~DAY", simLang) }:</label>
+          { getFormattedDay() }
+        </div>
+        <div className="day-slider">
+          <InfiniteDaySlider
+            value={simState.day}
+            slide={handleDaySliderChange}
+            lang={simLang}
+            log={log}
+            logId="Day"
+          />
         </div>
       </div>
-      <footer className="page-footer">
-        <section>
-          <a
-            className="cc-brand"
-            href="http://concord.org/"
-            target="_blank"
-            title="The Concord Consortium - Revolutionary digital learning for science, math and engineering"
-            rel="noreferrer"
-          >
-            <img src={CCLogoImg} alt="The Concord Consortium" />
-          </a>
-          <p>&copy; Copyright 2024 The Concord Consortium</p>
-        </section>
-      </footer>
+      <div className="right-col">
+        <div className="ground-view-label">{ t("~GROUND_VIEW", simLang) }</div>
+        <div className="ground-view">
+          <RaysViewComp type="ground" simulation={simState} onSimStateChange={handleSimStateChange} />
+        </div>
+        <div className="solar-intensity">
+          <label>{ t("~SOLAR_INTENSITY", simLang) }: </label>
+          { solarIntensityValue } { t("~SOLAR_INTENSITY_UNIT", simLang) }
+        </div>
+        <CitySelect
+          lat={simState.lat}
+          long={simState.long}
+          lang={simLang}
+          onCityChange={handleCitySelectChange}
+        />
+        <div className="long-lat-sliders">
+          <label>{ t("~LATITUDE", simLang) }: { getFormattedLat() }</label>
+          <Slider
+            value={simState.lat}
+            min={-90}
+            max={90}
+            step={1}
+            slide={handleLatSliderChange}
+            log={log}
+            logId="Latitude"
+          />
+          <label>{ t("~LONGITUDE", simLang) }: { getFormattedLong() }</label>
+          <Slider
+            value={simState.long}
+            min={-180}
+            max={180}
+            step={1}
+            slide={handleLongSliderChange}
+            log={log}
+            logId="Longitude"
+          />
+        </div>
+      </div>
     </div>
   );
 };
