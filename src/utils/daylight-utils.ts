@@ -81,6 +81,31 @@ function getSunrayAngleInDegrees(dayNum: number, earthTilt: number, lat:number):
   return degrees;
 }
 
+async function getClrskyIrradiance(latitude: number, longitude: number, year: number): Promise<any> {
+  const API_ENDPOINT = "https://power.larc.nasa.gov/api/temporal/daily/point";
+  const params = new URLSearchParams({
+    parameters: "CLRSKY_SFC_SW_DWN",
+    community: "RE",
+    longitude: longitude.toFixed(2),
+    latitude: latitude.toFixed(2),
+    start: `${year}0101`,
+    end: `${year}1231`,
+    format: "JSON"
+  });
+
+  try {
+    const response = await fetch(`${API_ENDPOINT}?${params.toString()}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data.properties.parameter.CLRSKY_SFC_SW_DWN;
+  } catch (error) {
+    console.error("Error fetching clear sky irradiance data:", error);
+    return {};
+  }
+}
+
 export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
   const { latitude, longitude, year, useRealTimeZones } = options;
   const results: DaylightInfo[] = [];
@@ -88,15 +113,22 @@ export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
   let currentDay = dayjs.utc(`${year}-01-01`);
   const endOfYear = dayjs.utc(`${year + 1}-01-01`);
 
+  // Fetch irradiance data synchronously (blocking)
+  let irradianceData: any = {};
+  try {
+    irradianceData = getClrskyIrradiance(latitude, longitude, year) as unknown as any;
+    console.log("| Initiated irradiance data fetch");
+  } catch (error) {
+    console.error("Error initiating irradiance data fetch:", error);
+  }
+
   while (currentDay.isBefore(endOfYear)) {
     const date = currentDay.toDate();
     const timeZone = tzlookup(latitude, longitude);
 
-    // TODO: handle above arctic circle and below antarctic circle
     const utcSunrise = dayjs(getSunrise(latitude, longitude, date));
     const utcSunset = dayjs(getSunset(latitude, longitude, date));
 
-    // TODO: Consider removing fake timezone option entirely
     const tzSunrise = useRealTimeZones
       ? utcSunrise.tz(timeZone)
       : utcSunrise.add(Math.round(longitude / 15), "hour");
@@ -104,6 +136,8 @@ export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
     const tzSunset = useRealTimeZones
       ? utcSunset.tz(timeZone)
       : utcSunset.add(Math.round(longitude / 15), "hour");
+
+    const dateString = currentDay.format("YYYYMMDD");
 
     const record: DaylightInfo = {
       day: currentDay.format("YYYY-MM-DD"),
@@ -113,8 +147,10 @@ export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
       dayAsInteger: currentDay.dayOfYear(),
       season: getSeasonName(currentDay, latitude),
       sunlightAngle: getSunrayAngleInDegrees(currentDay.dayOfYear(), kEarthTilt, latitude),
-      solarIntensity: getSolarNoonIntensity(currentDay.dayOfYear(), latitude)
+      solarIntensity: getSolarNoonIntensity(currentDay.dayOfYear(), latitude),
+      clearskyIrradiance: irradianceData[dateString] || 0 // TODO: fix typing so this is nullable
     };
+
     results.push(record);
     currentDay = currentDay.add(1, "day");
   }

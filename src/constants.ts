@@ -77,6 +77,11 @@ export const kChildCollectionAttributes = [
     name: "solarIntensity",
     title: "Solar Intensity",
     type: "numeric"
+  },
+  {
+    name: "clearskyIrradiance",
+    title: "Clear Sky Solar Irradiance",
+    type: "numeric"
   }
 ];
 
