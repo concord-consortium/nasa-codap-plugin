@@ -41,42 +41,50 @@ export const kChildCollectionAttributes = [
   {
     name: "date",
     title: "Date",
-    type: "date"
-  },
-  {
-    name: "sunrise",
-    title: "Sunrise",
-    type: "date"
-  },
-  {
-    name: "sunset",
-    title: "Sunset",
-    type: "date"
+    type: "date",
+    hasToken: true
   },
   {
     name: "dayLength",
     title: "Day Length",
-    type: "numeric"
+    type: "numeric",
+    hasToken: true
+  },
+  {
+    name: "sunrise",
+    title: "Sunrise",
+    type: "date",
+    hasToken: true
+  },
+  {
+    name: "sunset",
+    title: "Sunset",
+    type: "date",
+    hasToken: true
   },
   {
     name: "dayNumber",
     title: "Day Number",
-    type: "numeric"
+    type: "numeric",
+    hasToken: false
   },
   {
     name: "sunlightAngle",
     title: "Sunlight Angle",
-    type: "numeric"
-  },
-  {
-    name: "season",
-    title: "Season",
-    type: "categorical"
+    type: "numeric",
+    hasToken: true
   },
   {
     name: "solarIntensity",
     title: "Solar Intensity",
-    type: "numeric"
+    type: "numeric",
+    hasToken: true
+  },
+  {
+    name: "season",
+    title: "Season",
+    type: "categorical",
+    hasToken: true
   }
 ];
 
