@@ -19,6 +19,7 @@ interface LocationTabProps {
   setLocationSearch: (search: string) => void;
   setSelectedAttributes: (attrs: string[]) => void;
   setDataContext: (context: any) => void; // TODO the type
+  setUserLocations: () => void;
 }
 
 export const LocationTab: React.FC<LocationTabProps> = ({
@@ -31,7 +32,8 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   setLongitude,
   setLocation,
   setLocationSearch,
-  setSelectedAttributes
+  setSelectedAttributes,
+  setUserLocations
 }) => {
   const {
     dataContext,
@@ -85,8 +87,9 @@ export const LocationTab: React.FC<LocationTabProps> = ({
     }
   };
 
-  const handleGetDetaClick = () => {
-    getDayLengthData(Number(latitude), Number(longitude), location);
+  const handleGetDetaClick = async () => {
+    const tableCreated = await getDayLengthData(Number(latitude), Number(longitude), location);
+    if (tableCreated?.success) setUserLocations();
   };
 
   return (

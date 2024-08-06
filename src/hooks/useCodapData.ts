@@ -84,7 +84,7 @@ export const useCodapData = () => {
       });
 
       await createItems(kDataContextName, completeSolarRecords);
-      await createTable(kDataContextName);
+      return await createTable(kDataContextName);
     }
   };
 

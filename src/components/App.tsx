@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { clsx } from "clsx";
 import { ILocation } from "../types";
-import { kInitialDimensions, kVersion, kPluginName, kDefaultOnAttributes, kSimulationTabDimensions } from "../constants";
-import { initializePlugin, codapInterface } from "@concord-consortium/codap-plugin-api";
+import { kInitialDimensions, kVersion, kPluginName, kDefaultOnAttributes, kSimulationTabDimensions, kDataContextName, kParentCollectionName } from "../constants";
+import { initializePlugin, codapInterface, getAttribute } from "@concord-consortium/codap-plugin-api";
 import { LocationTab } from "./location-tab";
 import { SimulationTab } from "./simulation-tab";
 import { Header } from "./header";
@@ -15,6 +15,8 @@ export const App: React.FC = () => {
   const [longitude, setLongitude] = useState<string>("");
   const [dayOfYear, setDayOfYear] = useState<string>("280");
   const [location, setLocation] = useState<ILocation | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [locations, setLocations] = useState<ILocation[]>([]);
   const [locationSearch, setLocationSearch] = useState<string>("");
   const [selectedAttrs, setSelectedAttributes] = useState<string[]>(kDefaultOnAttributes);
   const [dataContext, setDataContext] = useState<any>(null);
@@ -34,6 +36,14 @@ export const App: React.FC = () => {
 
     initialize();
   }, []);
+
+  const setUserLocations = async () => {
+    console.log("| setUserLocations...");
+    const attr = await getAttribute(kDataContextName, kParentCollectionName, "location");
+    if (attr.success){
+      console.log("| attr.values", attr.values);
+    }
+  };
 
   const handleTabClick = (tab: "location" | "simulation") => {
     setActiveTab(tab);
@@ -67,6 +77,7 @@ export const App: React.FC = () => {
           setLocationSearch={setLocationSearch}
           setSelectedAttributes={setSelectedAttributes}
           setDataContext={setDataContext}
+          setUserLocations={setUserLocations}
         />
       </div>
       <div className={clsx("tab-content", { active: activeTab === "simulation" })}>
@@ -76,6 +87,7 @@ export const App: React.FC = () => {
           dayOfYear={dayOfYear}
           location={location}
           setDayOfYear={setDayOfYear}
+          userLocations={locations}
         />
       </div>
     </div>
