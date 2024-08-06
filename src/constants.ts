@@ -5,6 +5,10 @@ export const kInitialDimensions = {
   width: 380,
   height: 680
 };
+export const kSimulationTabDimensions = {
+  width: 690,
+  height: 630
+};
 
 export const kGeonamesService = "https://secure.geonames.org/search";
 export const kGeolocService = "https://secure.geonames.org/findNearbyPlaceNameJSON";
