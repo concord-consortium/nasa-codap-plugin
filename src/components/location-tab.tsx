@@ -120,15 +120,15 @@ export const LocationTab: React.FC<LocationTabProps> = ({
       <div className="plugin-row attributes-selection">
         <label>Attributes</label>
         <ul className="attribute-tokens">
-          {kChildCollectionAttributes.map((attr: any, i: number) => (
+          { kChildCollectionAttributes.map((attr: any, i: number) => (
             <li
               key={i}
               className={`token ${selectedAttrs.includes(attr.name) ? "on" : "off"}`}
               onClick={() => handleTokenClick(attr.name)}
             >
-              {attr.title}
+              { attr.title }
             </li>
-          ))}
+          )) }
         </ul>
       </div>
       <div className="plugin-row data-buttons">

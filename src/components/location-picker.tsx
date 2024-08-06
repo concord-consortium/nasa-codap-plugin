@@ -100,20 +100,20 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
           onChange={handleLocationChange}
           onKeyDown={handleKeyDown}
         />
-        {showLocationDropdown && locationCandidates.length > 0 && (
+        { showLocationDropdown && locationCandidates.length > 0 && (
           <ul className="location-dropdown">
-            {locationCandidates.map((place, index) => (
+            { locationCandidates.map((place, index) => (
               <li
                 key={index}
                 onClick={() => handleLocationSelect(place)}
                 onMouseEnter={() => setFocusedLocationIndex(index)}
                 className={focusedLocationIndex === index ? "focused" : ""}
               >
-                {place.name}
+                { place.name }
               </li>
-            ))}
+            )) }
           </ul>
-        )}
+        ) }
       </div>
     </>
   );
