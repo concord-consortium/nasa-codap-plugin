@@ -12,15 +12,8 @@ export interface ISimState {
   sunrayDistMarker: boolean;
   dailyRotation: boolean;
   earthGridlines: boolean;
+  showCamera: boolean;
   lang: Language;
-}
-
-export type ViewType = "earth" | "orbit" | "raysGround" | "raysSpace" | "nothing";
-
-export interface IViewState {
-  main: ViewType;
-  "small-top": ViewType;
-  "small-bottom": ViewType;
 }
 
 export type ModelType = "earth-view" | "orbit-view" | "unknown";

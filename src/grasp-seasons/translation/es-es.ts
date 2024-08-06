@@ -44,5 +44,12 @@ export default {
   "~DIR_EAST": "E",
   "~DIR_WEST": "O",
   "~NOON": "Mediodía",
-  "~EARTH_GRIDLINES": "Mostrar líneas de latitud / longitud"
+  "~EARTH_GRIDLINES": "Mostrar líneas de latitud / longitud",
+
+    // Day Length Plugin
+    "~GROUND_VIEW": "Vista del suelo",
+    "~SUNLIGHT_AT_NOOT": "Luz solar al mediodía",
+    "~SOLAR_INTENSITY": "Intensidad solar",
+    "~SOLAR_INTENSITY_UNIT": "Vatios/m²",
+    "~MY_LOCATIONS": "Mis localizaciones",
 };

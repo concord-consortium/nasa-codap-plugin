@@ -5,6 +5,10 @@ export const kInitialDimensions = {
   width: 380,
   height: 680
 };
+export const kSimulationTabDimensions = {
+  width: 690,
+  height: 630
+};
 
 // These are only used in the simplified sunray angle calc
 // solstice dates in season calc are based on astronomy-engine Seasons()
