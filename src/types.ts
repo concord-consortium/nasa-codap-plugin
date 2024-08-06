@@ -18,6 +18,9 @@ export interface DaylightInfo {
   sunset: string;
   dayLength: number;
   dayAsInteger: number;
+  season: string;
+  sunlightAngle: number;
+  solarIntensity: number;
 }
 
 export interface GeoNameSearchOptions {
