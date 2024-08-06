@@ -19,11 +19,19 @@ export const App: React.FC = () => {
   const [dataContext, setDataContext] = useState<any>(null);
 
   useEffect(() => {
-    initializePlugin({
-      pluginName: kPluginName,
-      version: kVersion,
-      dimensions: kInitialDimensions
-    });
+    const initialize = async () => {
+      try {
+        await initializePlugin({
+          pluginName: kPluginName,
+          version: kVersion,
+          dimensions: kInitialDimensions
+        });
+      } catch (e) {
+        console.error("Failed to initialize plugin, error:", e);
+      }
+    };
+
+    initialize();
   }, []);
 
   const handleTabClick = (tab: "location" | "simulation") => {
