@@ -10,6 +10,7 @@ interface LocationTabProps {
   latitude: string;
   longitude: string;
   location: ILocation | null;
+  locations: ILocation[];
   locationSearch: string;
   selectedAttrs: string[];
   dataContext: any; // TODO the type
@@ -28,6 +29,7 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   location,
   locationSearch,
   selectedAttrs,
+  locations,
   setLatitude,
   setLongitude,
   setLocation,
@@ -88,6 +90,8 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   };
 
   const handleGetDetaClick = async () => {
+    if (!latitude || !longitude) return
+
     const tableCreated = await getDayLengthData(Number(latitude), Number(longitude), location);
     if (tableCreated?.success) setUserLocations();
   };
@@ -144,6 +148,18 @@ export const LocationTab: React.FC<LocationTabProps> = ({
           Get Data
         </button>
       </div>
+      { locations && locations.length > 0 && (
+        <div className="plugin-row user-locations">
+          <label>User Locations</label>
+          <ul>
+            {locations.map((loc, i) => (
+              <li key={i}>
+                {loc.name} ({loc.latitude}, {loc.longitude})
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };

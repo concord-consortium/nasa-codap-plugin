@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { clsx } from "clsx";
 import { ILocation } from "../types";
 import { kInitialDimensions, kVersion, kPluginName, kDefaultOnAttributes, kSimulationTabDimensions, kDataContextName, kParentCollectionName } from "../constants";
-import { initializePlugin, codapInterface, getAttribute } from "@concord-consortium/codap-plugin-api";
+import { initializePlugin, codapInterface, getAttribute, getAllItems } from "@concord-consortium/codap-plugin-api";
 import { LocationTab } from "./location-tab";
 import { SimulationTab } from "./simulation-tab";
 import { Header } from "./header";
@@ -15,7 +15,6 @@ export const App: React.FC = () => {
   const [longitude, setLongitude] = useState<string>("");
   const [dayOfYear, setDayOfYear] = useState<string>("280");
   const [location, setLocation] = useState<ILocation | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [locations, setLocations] = useState<ILocation[]>([]);
   const [locationSearch, setLocationSearch] = useState<string>("");
   const [selectedAttrs, setSelectedAttributes] = useState<string[]>(kDefaultOnAttributes);
@@ -37,11 +36,35 @@ export const App: React.FC = () => {
     initialize();
   }, []);
 
+  const extractUniqueLocations = (allItems: any): ILocation[] => {
+    const allCases = allItems.values;
+    const uniqueLocations: ILocation[] = [];
+
+    allCases.forEach((c: any) => {
+      const locationObj: ILocation = {
+        name: c.values.location,
+        latitude: c.values.latitude,
+        longitude: c.values.longitude,
+        coordinatePair: `(${c.values.latitude},${c.values.longitude})`
+      };
+
+      if (!uniqueLocations.some((l) => l.coordinatePair === locationObj.coordinatePair)) {
+        uniqueLocations.push(locationObj);
+      }
+    });
+
+    return uniqueLocations;
+  }
+
+
   const setUserLocations = async () => {
-    console.log("| setUserLocations...");
-    const attr = await getAttribute(kDataContextName, kParentCollectionName, "location");
-    if (attr.success){
-      console.log("| attr.values", attr.values);
+    const locationAttr = await getAttribute(kDataContextName, kParentCollectionName, "location");
+    if (locationAttr.success){
+      const allItems = await getAllItems(kDataContextName);
+      if (allItems.success){
+        const uniqeLocations: ILocation[] = extractUniqueLocations(allItems.values);
+        setLocations(uniqeLocations);
+      }
     }
   };
 
@@ -77,6 +100,7 @@ export const App: React.FC = () => {
           setLocationSearch={setLocationSearch}
           setSelectedAttributes={setSelectedAttributes}
           setDataContext={setDataContext}
+          locations={locations}
           setUserLocations={setUserLocations}
         />
       </div>
