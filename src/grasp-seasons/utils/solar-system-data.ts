@@ -23,16 +23,18 @@ export function earthEllipseLocationByDay(day: any) {
   return new THREE.Vector3(x, 0, z);
 }
 
-export function sunrayAngle(day: number, earthTilt: number, lat: number) {
-  // Angle of tilt axis, looked at from above (i.e., projected onto xy plane).
-  // June solstice = 0, September equinox = pi/2, December solstice = pi, March equinox = 3pi/2.
-  const tiltAxisZRadians = 2 * Math.PI * (day - SUMMER_SOLSTICE) / 365;
-  // How much is a given latitude tilted up (+) or down (-) toward the ecliptic?
-  // -23.5 degrees on June solstice, 0 degrees at equinoxes, +23.5 degrees on December solstice.
-  const orbitalTiltDegrees = earthTilt ? EARTH_TILT * RAD_2_DEG : 0;
-  const effectiveTiltDegrees = -Math.cos(tiltAxisZRadians) * orbitalTiltDegrees;
-  return 90 - (lat + effectiveTiltDegrees);
-}
+// Use `getSunrayAngleInDegrees` from src/utils/daylight-utils.ts instead so we guarantee the same result in the
+// ground view and in the calculated values in the CODAP table.
+// export function sunrayAngle(day: number, earthTilt: number, lat: number) {
+//   // Angle of tilt axis, looked at from above (i.e., projected onto xy plane).
+//   // June solstice = 0, September equinox = pi/2, December solstice = pi, March equinox = 3pi/2.
+//   const tiltAxisZRadians = 2 * Math.PI * (day - SUMMER_SOLSTICE) / 365;
+//   // How much is a given latitude tilted up (+) or down (-) toward the ecliptic?
+//   // -23.5 degrees on June solstice, 0 degrees at equinoxes, +23.5 degrees on December solstice.
+//   const orbitalTiltDegrees = earthTilt ? EARTH_TILT * RAD_2_DEG : 0;
+//   const effectiveTiltDegrees = -Math.cos(tiltAxisZRadians) * orbitalTiltDegrees;
+//   return 90 - (lat + effectiveTiltDegrees);
+// }
 
 export function angleToDay(angle: number, earthTilt: number, lat: number) {
   // Inverse sunrayAngle function.

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, ChangeEvent, useCallback } from "react";
 import Slider from "./slider/slider";
+import { getSolarNoonIntensity } from "../../utils/daylight-utils";
 import InfiniteDaySlider from "./slider/infinite-day-slider";
 import CitySelect from "./city-select";
 import getURLParam from "../utils/utils";
@@ -159,7 +160,7 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
     });
   };
 
-  const solarIntensityValue = 123; // TODO: Calculate solar intensity using lat, long, and time
+  const solarIntensityValue = getSolarNoonIntensity(simState.day, simState.lat).toFixed(2);
 
   return (
     <div className="grasp-seasons">
@@ -206,6 +207,7 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
         <div className="ground-view">
           <RaysViewComp type="ground" simulation={simState} onSimStateChange={handleSimStateChange} />
         </div>
+        <div className="sunlight-at-noon">{ t("~SUNLIGHT_AT_NOON", simLang) }</div>
         <div className="solar-intensity">
           <label>{ t("~SOLAR_INTENSITY", simLang) }: </label>
           { solarIntensityValue } { t("~SOLAR_INTENSITY_UNIT", simLang) }

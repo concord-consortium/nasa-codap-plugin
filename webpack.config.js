@@ -6,6 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const os = require('os');
+const { cli } = require("webpack-dev-server");
 
 // DEPLOY_PATH is set by the s3-deploy-action its value will be:
 // `branch/[branch-name]/` or `version/[tag-name]/`
@@ -25,6 +26,9 @@ module.exports = (env, argv) => {
         key: path.resolve(os.homedir(), '.localhost-ssl/localhost.key'),
         cert: path.resolve(os.homedir(), '.localhost-ssl/localhost.pem'),
       },
+      client: {
+        overlay: false
+      }
     },
     devtool: devMode ? 'eval-cheap-module-source-map' : 'source-map',
     entry: './src/index.tsx',
