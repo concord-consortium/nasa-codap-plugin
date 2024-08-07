@@ -20,7 +20,7 @@ interface LocationTabProps {
   setLocationSearch: (search: string) => void;
   setSelectedAttributes: (attrs: string[]) => void;
   setDataContext: (context: any) => void; // TODO the type
-  setUserLocations: () => void;
+  setLocations: (locations: ILocation[]) => void;
 }
 
 export const LocationTab: React.FC<LocationTabProps> = ({
@@ -35,13 +35,14 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   setLocation,
   setLocationSearch,
   setSelectedAttributes,
-  setUserLocations
+  setLocations
 }) => {
   const {
     dataContext,
     handleClearDataClick,
     getDayLengthData,
-    updateAttributeVisibility
+    updateAttributeVisibility,
+    calculateUniqueUserLocations
   } = useCodapData();
 
   useEffect(() => {
@@ -93,7 +94,13 @@ export const LocationTab: React.FC<LocationTabProps> = ({
     if (!latitude || !longitude) return
 
     const tableCreated = await getDayLengthData(Number(latitude), Number(longitude), location);
-    if (tableCreated?.success) setUserLocations();
+    if (tableCreated?.success) {
+
+      const uniqeLocations = await calculateUniqueUserLocations();
+      if (uniqeLocations) {
+        setLocations(uniqeLocations);
+      }
+    }
   };
 
   return (

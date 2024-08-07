@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { kDataContextName, kChildCollectionName, kParentCollectionName, kParentCollectionAttributes, kChildCollectionAttributes } from "../constants";
-import { DaylightCalcOptions } from "../types";
+import { DaylightCalcOptions, ILocation } from "../types";
 import { getDayLightInfo } from "../utils/daylight-utils";
 import {
-  // getAllItems,
-  // getAttribute,
+  getAllItems,
+  getAttribute,
   getDataContext,
   codapInterface,
   createItems,
@@ -106,10 +106,43 @@ export const useCodapData = () => {
     }
   };
 
+  const extractUniqueLocations = (allItems: any): ILocation[] => {
+    const uniqueLocations: ILocation[] = [];
+
+    allItems.forEach((c: any) => {
+      const locationObj: ILocation = {
+        name: c.values.location,
+        latitude: c.values.latitude,
+        longitude: c.values.longitude,
+        coordinatePair: `(${c.values.latitude},${c.values.longitude})`
+      };
+
+      if (!uniqueLocations.some((l) => l.coordinatePair === locationObj.coordinatePair)) {
+        uniqueLocations.push(locationObj);
+      }
+    });
+
+    return uniqueLocations;
+  }
+
+
+  const calculateUniqueUserLocations = async () => {
+    const locationAttr = await getAttribute(kDataContextName, kParentCollectionName, "location");
+    if (locationAttr.success){
+      const allItems = await getAllItems(kDataContextName);
+      if (allItems.success){
+        const uniqeLocations: ILocation[] = extractUniqueLocations(allItems.values);
+        return uniqeLocations;
+      }
+    }
+  };
+
   return {
     dataContext,
     updateAttributeVisibility,
     handleClearDataClick,
-    getDayLengthData
+    getDayLengthData,
+    calculateUniqueUserLocations,
+    extractUniqueLocations
   };
 };
