@@ -91,7 +91,15 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   };
 
   const handleGetDataClick = async () => {
-    if (!latitude || !longitude) return
+    const locationExists = locations.some(item =>
+      item.latitude === location?.latitude && item.longitude === location.longitude
+    );
+    if (locationExists || !latitude || !longitude) return;
+    // TODO separate this logic above ...
+    // TODO we should be doing this on an effect not on this click
+    // then we could be removing items when the location is removed without a listener, we'd
+    // just circle back to the CODAP data reliably.
+
     const tableCreated = await getDayLengthData(Number(latitude), Number(longitude), location);
     if (tableCreated?.success) {
       const uniqeLocations = await calculateUniqueUserLocations();
