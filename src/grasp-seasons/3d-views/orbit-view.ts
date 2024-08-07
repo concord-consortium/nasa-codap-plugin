@@ -13,14 +13,39 @@ const DEF_PROPERTIES = {
   sunEarthLine: true
 };
 
+const CAMERA_TWEEN_LENGTH = 1000;
+
+// Cubic Bezier function
+function cubicBezier(t: number, p0: number, p1: number, p2: number, p3: number): number {
+  const oneMinusT = 1 - t;
+  return Math.pow(oneMinusT, 3) * p0 +
+         3 * Math.pow(oneMinusT, 2) * t * p1 +
+         3 * oneMinusT * Math.pow(t, 2) * p2 +
+         Math.pow(t, 3) * p3;
+}
+
+// Ease-in-out function
+function easeInOut(t: number): number {
+  const p0 = 0, p1 = 0.25, p2 = 0.75, p3 = 1;
+  return cubicBezier(t, p0, p1, p2, p3);
+}
+
 export default class OrbitView extends BaseView {
   cameraSymbol!: THREE.Object3D;
   latLine!: LatitudeLine;
   latLongMarker!: LatLongMarker;
   monthLabels!: THREE.Object3D[];
+  earthDraggingInteraction: EarthDraggingInteraction = new EarthDraggingInteraction(this);
+
+  startingCameraPos?: THREE.Vector3;
+  desiredCameraPos?: THREE.Vector3;
+  startingCameraLookAt?: THREE.Vector3;
+  desiredCameraLookAt?: THREE.Vector3;
+  cameraSwitchTimestamp?: number;
+
   constructor(parentEl: HTMLElement, props = DEF_PROPERTIES) {
     super(parentEl, props, "orbit-view");
-    this.registerInteractionHandler(new EarthDraggingInteraction(this));
+    this.registerInteractionHandler(this.earthDraggingInteraction);
   }
 
   setViewAxis(vec3: THREE.Vector3) {
@@ -55,10 +80,50 @@ export default class OrbitView extends BaseView {
     };
   }
 
+  getCloseUpCameraPosition() {
+    const cameraOffset = new THREE.Vector3(0, 0, 40000000 / data.SCALE_FACTOR);
+    return this.earth.posObject.position.clone().add(cameraOffset);
+  }
+
+  setupEarthCloseUpView() {
+    this.registerInteractionHandler(null); // disable dragging interaction in close-up view
+    this.sunEarthLine.rootObject.visible = false;
+    this.monthLabels.forEach((label) => label.visible = false);
+  }
+
+  setupOrbitView() {
+    this.registerInteractionHandler(this.earthDraggingInteraction);
+    this.sunEarthLine.rootObject.visible = true;
+    this.monthLabels.forEach((label) => label.visible = true);
+  }
+
+  render(timestamp: number) {
+    super.render(timestamp);
+
+    if (this.desiredCameraPos && this.startingCameraPos && this.desiredCameraLookAt && this.startingCameraLookAt &&
+      this.cameraSwitchTimestamp !== undefined
+    ) {
+      const progress = Math.max(0, Math.min(1, (Date.now() - this.cameraSwitchTimestamp) / CAMERA_TWEEN_LENGTH));
+      const progressEased = easeInOut(progress);
+
+      this.camera.position.lerpVectors(this.startingCameraPos, this.desiredCameraPos, progressEased);
+      this.controls.target.lerpVectors(this.startingCameraLookAt, this.desiredCameraLookAt, progressEased);
+      if (progress === 1) {
+        this.startingCameraPos = undefined;
+        this.desiredCameraPos = undefined;
+        this.startingCameraLookAt = undefined;
+        this.desiredCameraLookAt = undefined;
+        this.cameraSwitchTimestamp = undefined;
+      }
+    }
+  }
+
+  getInitialCameraPosition() {
+    return new THREE.Vector3(0, 360000000 / data.SCALE_FACTOR, 0);
+  }
+
   _setInitialCamPos() {
-    this.camera.position.x = 0;
-    this.camera.position.y = 360000000 / data.SCALE_FACTOR;
-    this.camera.position.z = 0;
+    this.camera.position.copy(this.getInitialCameraPosition());
   }
 
   toggleCameraModel(show: boolean) {
@@ -89,6 +154,35 @@ export default class OrbitView extends BaseView {
 
   _updateLong() {
     this.latLongMarker.setLatLong(this.props.lat, this.props.long);
+  }
+
+  _updateEarthCloseUpView() {
+    this.startingCameraPos = this.camera.position.clone();
+    this.startingCameraLookAt = this.controls.target.clone();
+    this.cameraSwitchTimestamp = Date.now();
+
+    if (this.props.earthCloseUpView) {
+      this.desiredCameraPos = this.getCloseUpCameraPosition();
+      this.desiredCameraLookAt = this.earth.posObject.position.clone();
+      this.setupEarthCloseUpView();
+    } else {
+      this.desiredCameraPos = this.getInitialCameraPosition();
+      this.desiredCameraLookAt = new THREE.Vector3(0, 0, 0);
+      this.setupOrbitView();
+    }
+  }
+
+  _updateDay(): void {
+    super._updateDay();
+    if (this.props.earthCloseUpView) {
+      if (this.desiredCameraPos && this.desiredCameraLookAt) {
+        this.desiredCameraPos.copy(this.getCloseUpCameraPosition());
+        this.desiredCameraLookAt.copy(this.earth.posObject.position);
+      } else {
+        this.camera.position.copy(this.getCloseUpCameraPosition());
+        this.controls.target.copy(this.earth.posObject.position);
+      }
+    }
   }
 
   _initScene() {
