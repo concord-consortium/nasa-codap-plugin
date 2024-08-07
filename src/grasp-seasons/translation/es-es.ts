@@ -48,7 +48,7 @@ export default {
 
     // Day Length Plugin
     "~GROUND_VIEW": "Vista del suelo",
-    "~SUNLIGHT_AT_NOOT": "Luz solar al mediodía",
+    "~SUNLIGHT_AT_NOON": "Luz solar al mediodía",
     "~SOLAR_INTENSITY": "Intensidad solar",
     "~SOLAR_INTENSITY_UNIT": "Vatios/m²",
     "~MY_LOCATIONS": "Mis localizaciones",

@@ -1,6 +1,7 @@
 import $ from "jquery";
-import { sunrayAngle } from "../utils/solar-system-data";
 import { colorInterpolation } from "../utils/utils";
+import { kEarthTilt } from "../../constants";
+import { getSunrayAngleInDegrees } from "../../utils/daylight-utils";
 
 const DEG_2_RAD = Math.PI / 180;
 
@@ -75,7 +76,7 @@ export default class {
   }
 
   get solarAngle() {
-    return sunrayAngle(this.props.day, this.props.earthTilt, this.props.lat) * DEG_2_RAD;
+    return getSunrayAngleInDegrees(this.props.day, this.props.earthTilt ? kEarthTilt : 0, this.props.lat) * DEG_2_RAD;
   }
 
   get polarNight() {
@@ -109,7 +110,7 @@ export default class {
         this.ctx.save();
         this.ctx.translate(x, skyHeight);
         this.drawLine(lineRotationRadians, 5, maxLength);
-        this.drawArrow(lineRotationRadians);
+        this.drawArrow(lineRotationRadians, 0.7, 0.7);
         this.ctx.restore();
       }
     }
@@ -174,7 +175,7 @@ export default class {
 
   drawLine(angle: any, lengthAdjustment: any, length: any) {
     this.ctx.save();
-    this.ctx.lineWidth = 4;
+    this.ctx.lineWidth = 2;
     this.ctx.rotate(angle);
     this.ctx.beginPath();
     this.ctx.moveTo(0, -lengthAdjustment);
@@ -191,7 +192,7 @@ export default class {
     this.ctx.beginPath();
     this.ctx.moveTo(0, 0);
     this.ctx.lineTo(-10, -20);
-    this.ctx.lineTo(0, -16);
+    this.ctx.lineTo(0, -20);
     this.ctx.lineTo(10, -20);
     this.ctx.lineTo(0, 0);
     this.ctx.fill();

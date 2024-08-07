@@ -53,13 +53,13 @@
       gap: 3px;
 
       li.token {
-        padding: 6px 20px;
+        padding: 6px 12px;
         border-radius: 20px;
         cursor: pointer;
         transition: background-color 0.3s, color 0.3s;
         background-color: white;
         list-style: none;
-        margin:4px;
+        margin:3px;
 
         &.on {
           background-color: $codap-teal-lightest;
@@ -70,7 +70,7 @@
         &.off {
           background-color: white;
           color: #aaa;
-          border: 1px solid silver;
+          border: 1px solid $codap-teal;
         }
       }
     }

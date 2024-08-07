@@ -134,6 +134,7 @@
   },
   "dependencies": {
     "@types/tz-lookup": "^6.1.2",
+    "astronomy-engine": "^2.1.19",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.12",
     "eventemitter2": "^6.4.9",
