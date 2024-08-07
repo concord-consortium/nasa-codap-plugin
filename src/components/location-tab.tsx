@@ -90,16 +90,12 @@ export const LocationTab: React.FC<LocationTabProps> = ({
     }
   };
 
-  const handleGetDetaClick = async () => {
+  const handleGetDataClick = async () => {
     if (!latitude || !longitude) return
-
     const tableCreated = await getDayLengthData(Number(latitude), Number(longitude), location);
     if (tableCreated?.success) {
-
       const uniqeLocations = await calculateUniqueUserLocations();
-      if (uniqeLocations) {
-        setLocations(uniqeLocations);
-      }
+      if (uniqeLocations) setLocations(uniqeLocations);
     }
   };
 
@@ -151,7 +147,7 @@ export const LocationTab: React.FC<LocationTabProps> = ({
         <button onClick={handleClearDataClick} disabled={!dataContext}>
           Clear Data
         </button>
-        <button onClick={handleGetDetaClick}>
+        <button onClick={handleGetDataClick}>
           Get Data
         </button>
       </div>
