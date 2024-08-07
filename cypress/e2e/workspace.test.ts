@@ -7,7 +7,8 @@ context("Test the overall app", () => {
 
   describe("Desktop functionalities", () => {
     it("renders with text", () => {
-      ae.getApp().should("have.text", "Hello World");
+      // Check if the text includes "Location"
+      ae.getApp().should("contain.text", "Location");
     });
   });
 });
