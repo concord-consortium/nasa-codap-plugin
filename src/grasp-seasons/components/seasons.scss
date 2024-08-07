@@ -22,6 +22,7 @@ body {
 
   .right-col {
     width: 280px;
+    position: relative;
   }
 
   .left-col, .right-col {
@@ -52,6 +53,18 @@ body {
   .ground-view-label {
     margin-top: 5px;
     margin-bottom: 5px;
+  }
+
+  .sunlight-at-noon {
+    position: absolute;
+    top: 36px;
+    width: 126px;
+    height: 24px;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .ground-view {

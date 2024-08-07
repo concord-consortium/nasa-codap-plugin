@@ -57,7 +57,7 @@ function getSeasonName(dayJsDay: Dayjs, latitude: number): string {
   return season;
 }
 
-function getSolarNoonIntensity(dayNum: number, latitude: number): number {
+export function getSolarNoonIntensity(dayNum: number, latitude: number): number {
   const solarConstant = 1361;
   const latitudeRad = latitude * Math.PI / 180;
   const declination = 23.45 * Math.sin((360/365) * (dayNum - 81) * Math.PI / 180);
@@ -73,7 +73,7 @@ function getSolarNoonIntensity(dayNum: number, latitude: number): number {
   return Math.max(0, solarNoonIntensity); // Ensure non-negative value
 }
 
-function getSunrayAngleInDegrees(dayNum: number, earthTilt: number, lat:number): number {
+export function getSunrayAngleInDegrees(dayNum: number, earthTilt: number, lat:number): number {
   const tiltAxisZRadians = 2 * Math.PI * (dayNum - kBasicSummerSolstice) / 365;
   const orbitalTiltDegrees = earthTilt ? earthTilt : 0;
   const effectiveTiltDegrees = -Math.cos(tiltAxisZRadians) * orbitalTiltDegrees;
