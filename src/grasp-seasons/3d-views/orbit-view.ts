@@ -119,7 +119,7 @@ export default class OrbitView extends BaseView {
   }
 
   getInitialCameraPosition() {
-    return new THREE.Vector3(0, 360000000 / data.SCALE_FACTOR, 0);
+    return new THREE.Vector3(0, 440000000 / data.SCALE_FACTOR, 0);
   }
 
   _setInitialCamPos() {
@@ -200,12 +200,12 @@ export default class OrbitView extends BaseView {
     const months = this.months;
     const segments = months.length;
     const arc = 2 * Math.PI / segments;
-    const labelRadius = data.EARTH_ORBITAL_RADIUS * 1.15;
+    const labelRadius = data.EARTH_ORBITAL_RADIUS * 1.22;
 
     const monthLabels: THREE.Object3D[] = [];
 
     for (let i = 0; i < months.length; i++) {
-      const monthLbl = models.label(months[i], months[i].length === 3);
+      const monthLbl = models.label(months[i], i % 3 !== 0);
       const angle = i * arc;
       monthLbl.position.x = labelRadius * Math.sin(angle);
       monthLbl.position.z = labelRadius * Math.cos(angle);

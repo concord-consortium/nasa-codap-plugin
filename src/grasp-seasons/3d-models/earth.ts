@@ -16,6 +16,7 @@ export default class Earth {
   _orbitRotationObject: THREE.Object3D;
   _posObject: THREE.Object3D;
   _tiltObject: THREE.Object3D;
+
   constructor(params: IModelParams) {
     const simple = params.type === "orbit-view";
     const RADIUS = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;

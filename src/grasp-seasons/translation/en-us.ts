@@ -13,10 +13,10 @@ export default {
     "Oct", "Nov", "Dec"
   ],
   "~MONTHS_MIXED": [
-    "March", "Apr", "May",
-    "June", "Jul", "Aug",
-    "September", "Oct", "Nov",
-    "December", "Jan", "Feb"
+    "Mar", "Apr", "May",
+    "Jun", "Jul", "Aug",
+    "Sep", "Oct", "Nov",
+    "Dec", "Jan", "Feb"
   ],
   "~VIEW_SUBSOLAR_POINT": "View Subsolar Point",
   "~ROTATING":"Rotating",

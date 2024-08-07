@@ -6,6 +6,8 @@ import * as data from "../utils/solar-system-data";
 import * as c from "./constants";
 import { IModelParams } from "../types";
 
+import SunPNG from "../assets/orbital-sun@3x.png";
+
 function addEdges(mesh: THREE.Mesh) {
   const geometry = new THREE.EdgesGeometry(mesh.geometry);
   const material = new THREE.LineBasicMaterial({ color: 0x000000 });
@@ -56,12 +58,21 @@ export default {
     return light;
   },
 
-  sun (params: IModelParams) {
+  sun2 (params: IModelParams) {
     const radius = params.type === "orbit-view" ? c.SIMPLE_SUN_RADIUS : c.SUN_RADIUS;
     const geometry = new THREE.SphereGeometry(radius, 32, 32);
     const material = new THREE.MeshPhongMaterial({ emissive: c.SUN_COLOR, color: 0x000000 });
     const mesh = new THREE.Mesh(geometry, material);
     return mesh;
+  },
+
+  sun (params: IModelParams) {
+    const texture = new THREE.TextureLoader().load(SunPNG);
+    const material = new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false });
+    const sprite = new THREE.Sprite(material);
+    sprite.renderOrder = 1;
+    sprite.scale.set(100000000 * c.SF, 100000000 * c.SF, 1);
+    return sprite;
   },
 
   earth (params: IModelParams) {
@@ -96,13 +107,13 @@ export default {
     // Load font in a sync way, using webpack raw-loader. Based on async THREE JS loader:
     // https://github.com/mrdoob/three.js/blob/ddab1fda4fd1e21babf65aa454fc0fe15bfabc33/src/loaders/FontLoader.js#L20
     const font = new Font(museo500FontDef as any);
-    const SIZE = 16000000;
+    const SIZE = 13000000;
     const HEIGHT = 1000000;
-    const SIZE_SMALL = SIZE / 2;
-    const HEIGHT_SMALL = HEIGHT / 2;
+    const SIZE_SMALL = SIZE;
+    const HEIGHT_SMALL = HEIGHT;
 
     const COLOR = 0xffff00;
-    const COLOR_SMALL = 0x999966;
+    const COLOR_SMALL = 0xffffff;
 
     const geometry = new TextGeometry(txt, {
       size: small ? SIZE_SMALL * c.SF : SIZE * c.SF,
@@ -122,12 +133,11 @@ export default {
   },
 
   grid (params: IModelParams) {
-    const simple = params.type === "orbit-view";
-    const RAY_COUNT = 24;
+    const RAY_COUNT = 12;
     const DAY_COUNT = 365;
     const STEP = DAY_COUNT / RAY_COUNT;
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.LineBasicMaterial({ color: 0xffff00, transparent: true, opacity: simple ? 0.4 : 0.6 });
+    const material = new THREE.LineBasicMaterial({ color: 0xffff00, transparent: true, opacity: 0.7 });
     const vertices = new Float32Array(2 * RAY_COUNT * 3);
     for (let i = 0; i < RAY_COUNT; ++i) {
       vertices[i * 6] = 0;
