@@ -137,7 +137,7 @@ export default class BaseView {
     }
   }
 
-  registerInteractionHandler(handler: BaseInteraction) {
+  registerInteractionHandler(handler: BaseInteraction | null) {
     this._interactionHandler = handler;
   }
 

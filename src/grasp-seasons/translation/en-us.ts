@@ -52,4 +52,9 @@ export default {
   "~SOLAR_INTENSITY": "Solar Intensity",
   "~SOLAR_INTENSITY_UNIT": "Watts/m²",
   "~MY_LOCATIONS": "My Locations",
+  "~VIEW": "View",
+  "~EARTH_ORBIT": "Earth Orbit",
+  "~EARTH_CLOSE_UP": "Earth Close-up",
+  "~TILT_VIEW": "Tilt View",
+  "~ORBIT_BUTTON": "Orbit",
 };

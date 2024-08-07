@@ -27,8 +27,14 @@ const DEFAULT_SIM_STATE: ISimState = {
   sunrayDistMarker: false,
   dailyRotation: false,
   earthGridlines: false,
+  lang: "en_us",
+  // -- Day Length Plugin extra state ---
+  // It could be ported back to GRASP Seasons too to handle camera model cleaner way.
   showCamera: false,
-  lang: "en_us"
+  // A new type of view where the camera is locked on Earth. It is different from GRASP Seasons Earth View because the
+  // camera follows Earth's position but does not rotate. As the year passes, we'll see different parts of Earth,
+  // including its night side. This is useful for keeping the Earth's axis constant.
+  earthCloseUpView: false,
 };
 
 function capitalize(string: string) {
@@ -83,7 +89,7 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
 
   // Derived state
   const simLang = simState.lang;
-  const playStopLabel = mainAnimationStarted ? t("~STOP", simLang) : t("~PLAY", simLang);
+  const playStopLabel = mainAnimationStarted ? t("~STOP", simLang) : t("~ORBIT_BUTTON", simLang);
 
   // Log helpers
   const logCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -160,6 +166,11 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
     });
   };
 
+  const handleViewChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const earthCloseUpView = event.target.value === "true";
+    setSimState(prevState => ({ ...prevState, earthCloseUpView }));
+  }
+
   const solarIntensityValue = getSolarNoonIntensity(simState.day, simState.lat).toFixed(2);
 
   return (
@@ -169,6 +180,14 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
           <OrbitViewComp
             ref={orbitViewRef} simulation={simState} onSimStateChange={handleSimStateChange} log={log} showCamera={false}
           />
+          <div className="view-type-dropdown">
+            <label>{ t("~VIEW", simLang) }
+              <select value={simState.earthCloseUpView.toString()} onChange={handleViewChange}>
+                <option value="false">{ t("~EARTH_ORBIT", simLang) }</option>
+                <option value="true">{ t("~EARTH_CLOSE_UP", simLang) }</option>
+              </select>
+            </label>
+          </div>
           <div className="playback-controls">
             <button
               className="btn btn-default animation-btn"

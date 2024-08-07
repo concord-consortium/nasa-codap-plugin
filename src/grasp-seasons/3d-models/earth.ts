@@ -3,7 +3,6 @@ import * as data from "../utils/solar-system-data";
 import * as c from "./constants";
 import earthLargeImg from "../assets/earth-2k.jpg";//'../assets/earth-grid-2k.jpg';
 import earthLargeGridImg from "../assets/earth-grid-2k.jpg";
-import earthSimpleImg from "../assets/earth-equator-0.5k.jpg";//'../assets/earth-0.5k.jpg';
 import earthBumpImg from "../assets/earth-bump-2k.jpg";
 import { IModelParams } from "../types";
 // import earthSpecularImg from '../assets/earth-specular-2k.png';
@@ -24,11 +23,9 @@ export default class Earth {
     const geometry = new THREE.SphereGeometry(RADIUS, 64, 64);
     this._material = new THREE.MeshPhongMaterial(COLORS);
     const textureLoader = new THREE.TextureLoader();
-    this._material.map = textureLoader.load(simple ? earthSimpleImg : earthLargeImg);
-    if (!simple) {
-      this._material.bumpMap = textureLoader.load(earthBumpImg);
-      this._material.bumpScale = 100000 * c.SF;
-    }
+    this._material.map = textureLoader.load(earthLargeImg);
+    this._material.bumpMap = textureLoader.load(earthBumpImg);
+    this._material.bumpScale = 100000 * c.SF;
     this._earthObject = new THREE.Mesh(geometry, this._material);
     this._orbitRotationObject = new THREE.Object3D();
     this._orbitRotationObject.add(this._earthObject);
