@@ -52,4 +52,9 @@ export default {
     "~SOLAR_INTENSITY": "Intensidad solar",
     "~SOLAR_INTENSITY_UNIT": "Vatios/m²",
     "~MY_LOCATIONS": "Mis localizaciones",
+    "~VIEW": "Vista",
+    "~EARTH_ORBIT": "Órbita de la Tierra",
+    "~EARTH_CLOSE_UP": "Acercamiento a la Tierra",
+    "~TILT_VIEW": "Vista inclinada",
+    "~ORBIT_BUTTON": "Órbita",
 };

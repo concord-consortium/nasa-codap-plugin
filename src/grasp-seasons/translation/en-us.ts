@@ -13,10 +13,10 @@ export default {
     "Oct", "Nov", "Dec"
   ],
   "~MONTHS_MIXED": [
-    "March", "Apr", "May",
-    "June", "Jul", "Aug",
-    "September", "Oct", "Nov",
-    "December", "Jan", "Feb"
+    "Mar", "Apr", "May",
+    "Jun", "Jul", "Aug",
+    "Sep", "Oct", "Nov",
+    "Dec", "Jan", "Feb"
   ],
   "~VIEW_SUBSOLAR_POINT": "View Subsolar Point",
   "~ROTATING":"Rotating",
@@ -52,4 +52,9 @@ export default {
   "~SOLAR_INTENSITY": "Solar Intensity",
   "~SOLAR_INTENSITY_UNIT": "Watts/m²",
   "~MY_LOCATIONS": "My Locations",
+  "~VIEW": "View",
+  "~EARTH_ORBIT": "Earth Orbit",
+  "~EARTH_CLOSE_UP": "Earth Close-up",
+  "~TILT_VIEW": "Tilt View",
+  "~ORBIT_BUTTON": "Orbit",
 };

@@ -83,9 +83,9 @@ export default class {
   }
 
   _initArrow(simple: boolean) {
-    const HEIGHT = simple ? 25000000 * c.SF : 2500000 * c.SF;
+    const HEIGHT = simple ? 115000000 * c.SF : 2500000 * c.SF;
     const RADIUS = simple ? 1500000 * c.SF : 100000 * c.SF;
-    const HEAD_RADIUS = RADIUS * (simple ? 2.5 : 2);
+    const HEAD_RADIUS = RADIUS * (simple ? 7 : 2);
     const HEAD_HEIGHT = HEIGHT * 0.2;
     const geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, HEIGHT, 32);
     const material = new THREE.MeshPhongMaterial({ color: 0xff0000, emissive: c.SUN_COLOR });

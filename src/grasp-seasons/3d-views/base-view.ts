@@ -32,6 +32,7 @@ export default class BaseView {
   scene: THREE.Scene;
   sunEarthLine!: SunEarthLine;
   type: ModelType;
+
   constructor(parentEl: HTMLElement, props: Partial<ISimState> = DEF_PROPERTIES, modelType: ModelType = "unknown") {
     const width = parentEl.clientWidth;
     const height = parentEl.clientHeight;
@@ -137,7 +138,7 @@ export default class BaseView {
     }
   }
 
-  registerInteractionHandler(handler: BaseInteraction) {
+  registerInteractionHandler(handler: BaseInteraction | null) {
     this._interactionHandler = handler;
   }
 
