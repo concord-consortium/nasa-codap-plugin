@@ -29,17 +29,17 @@ export default class MyLocations extends Component<IProps> {
 
   getOptions() {
     const { locations } = this.props;
-    const options = this.selectedCity === "" ? [
+    const options = this.selectedLocation === "" ? [
       <option key="unsaved" value="" disabled={true}>Custom Location (unsaved)</option>
     ] : [];
     for (let i = 0; i < locations.length; i++) {
       const loc = locations[i];
-      options.push(<option key={i} value={i}>{ loc.name }</option>);
+      options.push(<option key={i} value={i}>{ loc.name || `(${loc.latitude}, ${loc.longitude})` }</option>);
     }
     return options;
   }
 
-  get selectedCity() {
+  get selectedLocation() {
     const { lat, long, locations } = this.props;
     const currentLocation: ILocation = { latitude: lat, longitude: long, name: "" };
     for (let i = 0; i < locations.length; i++) {
@@ -54,7 +54,7 @@ export default class MyLocations extends Component<IProps> {
     return (
       <div className="my-locations">
         <label>{ t("~MY_LOCATIONS", this.props.lang) }</label>
-        <select className="form-control" value={this.selectedCity} onChange={this.selectChange}>
+        <select className="form-control" value={this.selectedLocation} onChange={this.selectChange}>
           { this.getOptions() }
         </select>
       </div>
