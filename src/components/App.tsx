@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { clsx } from "clsx";
 import { ILocation } from "../types";
 import { kInitialDimensions, kVersion, kPluginName, kDefaultOnAttributes, kSimulationTabDimensions, kDataContextName } from "../constants";
@@ -21,6 +21,8 @@ export const App: React.FC = () => {
   const [dataContext, setDataContext] = useState<any>(null);
 
   const { getUniqueLocationsInCodapData } = useCodapData();
+  // Store a ref to getUniqueLocationsInCodapData so we can call inside useEffect without triggering unnecessary re-runs
+  const getUniqueLocationsRef = useRef(getUniqueLocationsInCodapData);
 
   useEffect(() => {
     const initialize = async () => {
@@ -42,7 +44,7 @@ export const App: React.FC = () => {
         const casesDeleted = values.operation === "selectCases" && values.result.cases.length === 0 && values.result.success;
 
         if ( casesDeleted ) {
-          const uniqeLocations = await getUniqueLocationsInCodapData();
+          const uniqeLocations = await getUniqueLocationsRef.current();
           if (uniqeLocations) setLocations(uniqeLocations);
         }
       };
@@ -50,7 +52,7 @@ export const App: React.FC = () => {
     };
 
     initialize();
-  }, [getUniqueLocationsInCodapData]);
+  }, []);
 
   const handleTabClick = (tab: "location" | "simulation") => {
     setActiveTab(tab);
