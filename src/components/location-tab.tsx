@@ -10,6 +10,7 @@ interface LocationTabProps {
   latitude: string;
   longitude: string;
   location: ILocation | null;
+  locations: ILocation[];
   locationSearch: string;
   selectedAttrs: string[];
   dataContext: any; // TODO the type
@@ -19,6 +20,7 @@ interface LocationTabProps {
   setLocationSearch: (search: string) => void;
   setSelectedAttributes: (attrs: string[]) => void;
   setDataContext: (context: any) => void; // TODO the type
+  setLocations: (locations: ILocation[]) => void;
 }
 
 export const LocationTab: React.FC<LocationTabProps> = ({
@@ -27,17 +29,20 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   location,
   locationSearch,
   selectedAttrs,
+  locations,
   setLatitude,
   setLongitude,
   setLocation,
   setLocationSearch,
-  setSelectedAttributes
+  setSelectedAttributes,
+  setLocations
 }) => {
   const {
     dataContext,
-    handleClearDataClick,
+    handleClearData,
     getDayLengthData,
-    updateAttributeVisibility
+    updateAttributeVisibility,
+    getUniqueLocationsInCodapData
   } = useCodapData();
 
   useEffect(() => {
@@ -85,8 +90,23 @@ export const LocationTab: React.FC<LocationTabProps> = ({
     }
   };
 
-  const handleGetDetaClick = () => {
-    getDayLengthData(Number(latitude), Number(longitude), location);
+  const handleClearDataClick = async () => {
+    await handleClearData();
+    setLocations([]);
+  };
+
+  const handleGetDataClick = async () => {
+    const locationExists = locations.some(item =>
+      item.latitude === location?.latitude && item.longitude === location.longitude
+    );
+    if (locationExists || !latitude || !longitude) return;
+
+    // if the location does not already exist, and we have params, get the data
+    const tableCreated = await getDayLengthData(Number(latitude), Number(longitude), location);
+    if (tableCreated?.success) {
+      const uniqeLocations = await getUniqueLocationsInCodapData();
+      if (uniqeLocations) setLocations(uniqeLocations);
+    }
   };
 
   return (
@@ -137,7 +157,7 @@ export const LocationTab: React.FC<LocationTabProps> = ({
         <button onClick={handleClearDataClick} disabled={!dataContext}>
           Clear Data
         </button>
-        <button onClick={handleGetDetaClick}>
+        <button onClick={handleGetDataClick}>
           Get Data
         </button>
       </div>

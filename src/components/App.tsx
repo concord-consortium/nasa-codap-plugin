@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { clsx } from "clsx";
 import { ILocation } from "../types";
-import { kInitialDimensions, kVersion, kPluginName, kDefaultOnAttributes, kSimulationTabDimensions } from "../constants";
-import { initializePlugin, codapInterface } from "@concord-consortium/codap-plugin-api";
+import { kInitialDimensions, kVersion, kPluginName, kDefaultOnAttributes, kSimulationTabDimensions, kDataContextName } from "../constants";
+import { initializePlugin, codapInterface, addDataContextChangeListener, ClientNotification } from "@concord-consortium/codap-plugin-api";
+import { useCodapData } from "../hooks/useCodapData";
 import { LocationTab } from "./location-tab";
 import { SimulationTab } from "./simulation-tab";
 import { Header } from "./header";
@@ -15,9 +16,12 @@ export const App: React.FC = () => {
   const [longitude, setLongitude] = useState<string>("");
   const [dayOfYear, setDayOfYear] = useState<string>("280");
   const [location, setLocation] = useState<ILocation | null>(null);
+  const [locations, setLocations] = useState<ILocation[]>([]);
   const [locationSearch, setLocationSearch] = useState<string>("");
   const [selectedAttrs, setSelectedAttributes] = useState<string[]>(kDefaultOnAttributes);
   const [dataContext, setDataContext] = useState<any>(null);
+
+  const { getUniqueLocationsInCodapData } = useCodapData();
 
   useEffect(() => {
     const initialize = async () => {
@@ -30,10 +34,24 @@ export const App: React.FC = () => {
       } catch (e) {
         console.error("Failed to initialize plugin, error:", e);
       }
+
+      const casesDeletedFromCodapListener = async (listenerRes: ClientNotification) => {
+        const { resource, values } = listenerRes;
+        const isResource = resource === `dataContextChangeNotice[${kDataContextName}]`;
+        if (!isResource) return;
+
+        const casesDeleted = values.operation === "selectCases" && values.result.cases.length === 0 && values.result.success;
+
+        if ( casesDeleted ) {
+          const uniqeLocations = await getUniqueLocationsInCodapData();
+          if (uniqeLocations) setLocations(uniqeLocations);
+        }
+      };
+      addDataContextChangeListener(kDataContextName, casesDeletedFromCodapListener);
     };
 
     initialize();
-  }, []);
+  }, [getUniqueLocationsInCodapData]);
 
   const handleTabClick = (tab: "location" | "simulation") => {
     setActiveTab(tab);
@@ -67,6 +85,8 @@ export const App: React.FC = () => {
           setLocationSearch={setLocationSearch}
           setSelectedAttributes={setSelectedAttributes}
           setDataContext={setDataContext}
+          locations={locations}
+          setLocations={setLocations}
         />
       </div>
       <div className={clsx("tab-content", { active: activeTab === "simulation" })}>
@@ -76,6 +96,7 @@ export const App: React.FC = () => {
           dayOfYear={dayOfYear}
           location={location}
           setDayOfYear={setDayOfYear}
+          locations={locations}
         />
       </div>
     </div>

@@ -82,7 +82,7 @@ export function getSunrayAngleInDegrees(dayNum: number, earthTilt: number, lat:n
 }
 
 export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
-  const { latitude, longitude, year, useRealTimeZones } = options;
+  const { latitude, longitude, year } = options;
   const results: DaylightInfo[] = [];
 
   let currentDay = dayjs.utc(`${year}-01-01`);
@@ -95,15 +95,8 @@ export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
     // TODO: handle above arctic circle and below antarctic circle
     const utcSunrise = dayjs(getSunrise(latitude, longitude, date));
     const utcSunset = dayjs(getSunset(latitude, longitude, date));
-
-    // TODO: Consider removing fake timezone option entirely
-    const tzSunrise = useRealTimeZones
-      ? utcSunrise.tz(timeZone)
-      : utcSunrise.add(Math.round(longitude / 15), "hour");
-
-    const tzSunset = useRealTimeZones
-      ? utcSunset.tz(timeZone)
-      : utcSunset.add(Math.round(longitude / 15), "hour");
+    const tzSunrise = utcSunrise.tz(timeZone)
+    const tzSunset = utcSunset.tz(timeZone)
 
     const record: DaylightInfo = {
       day: currentDay.format("YYYY-MM-DD"),

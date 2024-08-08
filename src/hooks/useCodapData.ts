@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { kDataContextName, kChildCollectionName, kParentCollectionName, kParentCollectionAttributes, kChildCollectionAttributes } from "../constants";
-import { DaylightCalcOptions } from "../types";
+import { DaylightCalcOptions, ILocation } from "../types";
 import { getDayLightInfo } from "../utils/daylight-utils";
 import {
+  getAllItems,
+  getAttribute,
   getDataContext,
   codapInterface,
   createItems,
@@ -16,7 +18,7 @@ import {
 export const useCodapData = () => {
   const [dataContext, setDataContext] = useState<any>(null);
 
-  const handleClearDataClick = async () => {
+  const handleClearData = async () => {
     let result = await getDataContext(kDataContextName);
     if (result.success) {
       let dc = result.values;
@@ -40,8 +42,7 @@ export const useCodapData = () => {
     const calcOptions: DaylightCalcOptions = {
       latitude: Number(latitude),
       longitude: Number(longitude),
-      year: 2024, //TODO: If data are to be historical, add dynamic year attribute
-      useRealTimeZones: true
+      year: 2024 // NOTE: If data are to be historical, add dynamic year attribute
     };
 
     const solarEvents = getDayLightInfo(calcOptions);
@@ -84,7 +85,7 @@ export const useCodapData = () => {
       });
 
       await createItems(kDataContextName, completeSolarRecords);
-      await createTable(kDataContextName);
+      return await createTable(kDataContextName);
     }
   };
 
@@ -104,10 +105,43 @@ export const useCodapData = () => {
     }
   };
 
+  const extractUniqueLocations = (allItems: any): ILocation[] => {
+    const uniqueLocations: ILocation[] = [];
+
+    allItems.forEach((c: any) => {
+      const locationObj: ILocation = {
+        name: c.values.location,
+        latitude: c.values.latitude,
+        longitude: c.values.longitude,
+        coordinatePair: `(${c.values.latitude},${c.values.longitude})`
+      };
+
+      if (!uniqueLocations.some((l) => l.coordinatePair === locationObj.coordinatePair)) {
+        uniqueLocations.push(locationObj);
+      }
+    });
+
+    return uniqueLocations;
+  }
+
+
+  const getUniqueLocationsInCodapData = async () => {
+    const locationAttr = await getAttribute(kDataContextName, kParentCollectionName, "location");
+    if (locationAttr.success){
+      const allItems = await getAllItems(kDataContextName);
+      if (allItems.success){
+        const uniqeLocations: ILocation[] = extractUniqueLocations(allItems.values);
+        return uniqeLocations;
+      }
+    }
+  };
+
   return {
     dataContext,
     updateAttributeVisibility,
-    handleClearDataClick,
-    getDayLengthData
+    handleClearData,
+    getDayLengthData,
+    getUniqueLocationsInCodapData,
+    extractUniqueLocations
   };
 };

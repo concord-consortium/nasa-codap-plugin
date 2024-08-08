@@ -3,13 +3,13 @@ export interface ILocation {
   name: string;
   latitude: number;
   longitude: number;
+  coordinatePair?: string;
 }
 
 export interface DaylightCalcOptions {
   latitude: number;
   longitude: number;
   year: number;
-  useRealTimeZones: boolean;
 }
 
 export interface DaylightInfo {
