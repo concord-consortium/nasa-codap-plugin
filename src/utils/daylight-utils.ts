@@ -134,3 +134,32 @@ export function isValidLatitude(latitude: string): boolean {
   const parsed = Number(latitude);
   return !isNaN(parsed) && parsed >= -90 && parsed <= 90;
 }
+
+export function changeMonthOfDayOfYear(dayOfYearIndex: number, monthsToAdd: number): number {
+  if (dayOfYearIndex < 0 || dayOfYearIndex >= 365) {
+      throw new Error("dayOfYearIndex must be between 0 and 364");
+  }
+
+  // Days in each month for a leap year
+  const daysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+  // Calculate the current month and the day of the month
+  let accumulatedDays = 0;
+  let currentMonth = 0;
+  for (currentMonth = 0; currentMonth < daysInMonth.length; currentMonth++) {
+      if (dayOfYearIndex < accumulatedDays + daysInMonth[currentMonth]) {
+          break;
+      }
+      accumulatedDays += daysInMonth[currentMonth];
+  }
+
+  const dayOfMonth = dayOfYearIndex - accumulatedDays;
+  let newMonth = (currentMonth + monthsToAdd + 12) % 12;
+
+  let newDayOfYearIndex = dayOfMonth;
+  for (let i = 0; i < newMonth; i++) {
+      newDayOfYearIndex += daysInMonth[i];
+  }
+
+  return newDayOfYearIndex % 365;
+}

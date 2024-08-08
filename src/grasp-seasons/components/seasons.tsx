@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, ChangeEvent, useCallback } from "react";
 import Slider from "./slider/slider";
-import { getSolarNoonIntensity, isValidLatitude, isValidLongitude } from "../../utils/daylight-utils";
+import { changeMonthOfDayOfYear, getSolarNoonIntensity, isValidLatitude, isValidLongitude } from "../../utils/daylight-utils";
 import InfiniteDaySlider from "./slider/infinite-day-slider";
 import MyLocations from "./my-locations";
 import getURLParam from "../utils/utils";
@@ -13,6 +13,7 @@ import { useAnimation } from "../hooks/use-animation";
 import { ILocation } from "../../types";
 
 import ForwardBackIcon from "../../assets/images/forward-back-icon.svg";
+import ForwardBackJumpIcon from "../../assets/images/forward-back-jump-icon.svg";
 
 import "./seasons.scss";
 
@@ -165,6 +166,21 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
     setSimState(prevState => ({ ...prevState, day: ui.value }));
   };
 
+  const handleDayIncrement = (increment: number) => () => {
+    setSimState(prevState => {
+      // Make sure day is within [0, 364] range
+      const day = (prevState.day + increment + 365) % 365;
+      return { ...prevState, day };
+    });
+  };
+
+  const handleMonthIncrement = (monthIncrement: number) => () => {
+    setSimState(prevState => {
+      const day = changeMonthOfDayOfYear(prevState.day, monthIncrement);
+      return { ...prevState, day };
+    });
+  };
+
   const handleSimCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSimState(prevState => ({ ...prevState, [event.target.name as any as keyof ISimState]: event.target.checked }));
     logCheckboxChange(event);
@@ -274,9 +290,15 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
             </div>
           </div>
         </div>
-        <div className="day">
-          <label>{ t("~DAY", simLang) }:</label>
-          { getFormattedDay() }
+        <div className="day-row">
+          <SquareButton onClick={handleMonthIncrement(-1)}><ForwardBackJumpIcon /></SquareButton>
+          <SquareButton onClick={handleDayIncrement(-1)}><ForwardBackIcon /></SquareButton>
+          <div className="day">
+            <label>{ t("~DAY", simLang) }:</label>
+            { getFormattedDay() }
+          </div>
+          <SquareButton onClick={handleDayIncrement(1)}><ForwardBackIcon style={{transform: "rotate(180deg"}} /></SquareButton>
+          <SquareButton onClick={handleMonthIncrement(1)}><ForwardBackJumpIcon style={{transform: "rotate(180deg"}} /></SquareButton>
         </div>
         <div className="day-slider">
           <InfiniteDaySlider

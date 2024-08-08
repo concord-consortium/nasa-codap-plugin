@@ -125,9 +125,20 @@ body {
     height: 20px;
   }
 
-  .day {
-    margin-top: 20px;
-    margin-bottom: 12px;
+  .day-row {
+    margin-top: 10px;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 290px;
+
+    .day {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 130px;
+    }
   }
 
   .day-slider {
