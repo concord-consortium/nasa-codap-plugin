@@ -5,7 +5,7 @@ import timezone from "dayjs/plugin/timezone";
 import tzlookup from "tz-lookup";
 import { getSunrise, getSunset } from "sunrise-sunset-js";
 import { Seasons } from "astronomy-engine";
-import { DaylightInfo, DaylightCalcOptions } from "../types";
+import { DaylightInfo, DaylightCalcOptions, ILocation } from "../types";
 import { kBasicSummerSolstice, kEarthTilt } from "../constants";
 
 extend(utc);
@@ -113,4 +113,24 @@ export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
   }
 
   return results;
+}
+
+// Tolerance is currently used mostly to account for floating point errors. However, we can also use it to match
+// locations with some degree of error, e.g. when user is manually entering a location and hoping to match one of the
+// saved locations.
+export function locationsEqual(a?: ILocation | null, b?: ILocation | null, tolerance: number = 1e-5): boolean {
+  if (!a || !b) return false;
+  const latitudeEqual = Math.abs(a.latitude - b.latitude) < tolerance;
+  const longitudeEqual = Math.abs(a.longitude - b.longitude) < tolerance;
+  return latitudeEqual && longitudeEqual;
+}
+
+export function isValidLongitude(longitude: string): boolean {
+  const parsed = Number(longitude);
+  return !isNaN(parsed) && parsed >= -180 && parsed <= 180;
+}
+
+export function isValidLatitude(latitude: string): boolean {
+  const parsed = Number(latitude);
+  return !isNaN(parsed) && parsed >= -90 && parsed <= 90;
 }

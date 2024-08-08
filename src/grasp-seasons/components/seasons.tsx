@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef, ChangeEvent, useCallback } from "react";
 import Slider from "./slider/slider";
-import { getSolarNoonIntensity } from "../../utils/daylight-utils";
+import { getSolarNoonIntensity, isValidLatitude, isValidLongitude } from "../../utils/daylight-utils";
 import InfiniteDaySlider from "./slider/infinite-day-slider";
-import CitySelect from "./city-select";
+import MyLocations from "./my-locations";
 import getURLParam from "../utils/utils";
 import OrbitViewComp from "./orbit-view-comp";
 import RaysViewComp from "./rays-view-comp";
 import t, { Language } from "../translation/translate";
 import { ISimState } from "../types";
 import { useAnimation } from "../hooks/use-animation";
+import { ILocation } from "../../types";
 
 import "./seasons.scss";
 
@@ -41,13 +42,25 @@ function capitalize(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+function formatLatLongNumber(value: number) {
+  return value.toFixed(5);
+}
+
 interface IProps {
   lang?: Language;
   initialState?: Partial<ISimState>;
   log?: (action: string, data?: any) => void;
+
+  latitude: string;
+  longitude: string;
+  locations: ILocation[];
+  setLatitude: (latitude: string) => void;
+  setLongitude: (longitude: string) => void;
+  setLocationSearch: (name: string) => void;
 }
 
-const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (action: string, data?: any) => {} }) => {
+const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (action: string, data?: any) => {},
+  latitude, longitude, locations, setLatitude, setLongitude, setLocationSearch }) => {
   const orbitViewRef = useRef<OrbitViewComp>(null);
 
   // State
@@ -87,6 +100,19 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
     }
   }, [rafCallback]);
 
+  // Handle props coming from the parent and update local state accordingly
+  useEffect(() => {
+    if (isValidLatitude(latitude)) {
+      setSimState(prevState => ({ ...prevState, lat: Number(latitude) }));
+    }
+  }, [latitude]);
+
+  useEffect(() => {
+    if (isValidLongitude(longitude)) {
+      setSimState(prevState => ({ ...prevState, long: Number(longitude) }));
+    }
+  }, [longitude]);
+
   // Derived state
   const simLang = simState.lang;
   const playStopLabel = mainAnimationStarted ? t("~STOP", simLang) : t("~ORBIT_BUTTON", simLang);
@@ -120,8 +146,8 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
     const lat = simState.lat;
     if (lat > 0) dir = t("~DIR_NORTH", simLang);
     else if (lat < 0) dir = t("~DIR_SOUTH", simLang);
-    const latitude = Math.abs(lat).toFixed(2);
-    return `${latitude}°${dir}`;
+    const _latitude = Math.abs(lat).toFixed(2);
+    return `${_latitude}°${dir}`;
   };
 
   const getFormattedLong = () => {
@@ -136,6 +162,15 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
   // Event handlers
   const handleSimStateChange = (newState: Partial<ISimState>) => {
     setSimState(prevState => ({ ...prevState, ...newState }));
+    // Latitude and longitude can be changed when user drags the Earth in the Orbit view
+    if (newState.lat !== undefined) {
+      setLatitude(formatLatLongNumber(newState.lat));
+      setLocationSearch("");
+    }
+    if (newState.long !== undefined) {
+      setLongitude(formatLatLongNumber(newState.long));
+      setLocationSearch("");
+    }
   };
 
   const handleDaySliderChange = (event: any, ui: any) => {
@@ -149,21 +184,22 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
 
   const handleLatSliderChange = (event: any, ui: any) => {
     setSimState(prevState => ({ ...prevState, lat: ui.value }));
+    setLatitude(formatLatLongNumber(ui.value));
+    setLocationSearch("");
   };
 
   const handleLongSliderChange = (event: any, ui: any) => {
     setSimState(prevState => ({ ...prevState, long: ui.value }));
+    setLongitude(formatLatLongNumber(ui.value));
+    setLocationSearch("");
   };
 
-  const handleCitySelectChange = (lat: number, long: number, city: string) => {
+  const handleMyLocationChange = (lat: number, long: number, name: string) => {
     const rot = -long * Math.PI / 180;
     setSimState(prevState => ({ ...prevState, lat, long, earthRotation: rot }));
-
-    log("CityPulldownChanged", {
-      value: city,
-      lat,
-      long
-    });
+    setLatitude(formatLatLongNumber(lat));
+    setLongitude(formatLatLongNumber(long));
+    setLocationSearch(name);
   };
 
   const handleViewChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -231,11 +267,12 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
           <label>{ t("~SOLAR_INTENSITY", simLang) }: </label>
           { solarIntensityValue } { t("~SOLAR_INTENSITY_UNIT", simLang) }
         </div>
-        <CitySelect
+        <MyLocations
           lat={simState.lat}
           long={simState.long}
           lang={simLang}
-          onCityChange={handleCitySelectChange}
+          locations={locations}
+          onLocationChange={handleMyLocationChange}
         />
         <div className="long-lat-sliders">
           <label>{ t("~LATITUDE", simLang) }: { getFormattedLat() }</label>

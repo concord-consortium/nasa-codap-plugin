@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import BaseView from "./base-view";
 import EarthDraggingInteraction from "./orbit-view-interaction";
+import LatLongMarkerDraggingInteraction from "./earth-view-interaction";
 import LatitudeLine from "../3d-models/latitude-line";
 import LatLongMarker from "../3d-models/lat-long-marker";
 import models from "../3d-models/common-models";
@@ -36,6 +37,7 @@ export default class OrbitView extends BaseView {
   latLongMarker!: LatLongMarker;
   monthLabels!: THREE.Object3D[];
   earthDraggingInteraction: EarthDraggingInteraction = new EarthDraggingInteraction(this);
+  latLogDraggingInteraction: LatLongMarkerDraggingInteraction = new LatLongMarkerDraggingInteraction(this);
 
   startingCameraPos?: THREE.Vector3;
   desiredCameraPos?: THREE.Vector3;
@@ -86,7 +88,7 @@ export default class OrbitView extends BaseView {
   }
 
   setupEarthCloseUpView() {
-    this.registerInteractionHandler(null); // disable dragging interaction in close-up view
+    this.registerInteractionHandler(this.latLogDraggingInteraction);
     this.sunEarthLine.rootObject.visible = false;
     this.monthLabels.forEach((label) => label.visible = false);
   }

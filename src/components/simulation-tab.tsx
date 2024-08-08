@@ -8,24 +8,34 @@ interface SimulationTabProps {
   latitude: string;
   longitude: string;
   dayOfYear: string;
-  location: ILocation | null;
   locations: ILocation[];
+  setLatitude: (latitude: string) => void;
+  setLongitude: (longitude: string) => void;
+  setLocationSearch: (search: string) => void;
   setDayOfYear: (day: string) => void;
 }
 
 export const SimulationTab: React.FC<SimulationTabProps> = ({
   latitude,
   longitude,
+  locations,
   dayOfYear,
   setDayOfYear,
-  location,
-  locations
+  setLatitude,
+  setLongitude,
+  setLocationSearch
 }) => {
-
   return (
     <div className="simulation-tab">
       <div className="seasons-container">
-        <Seasons />
+        <Seasons
+          latitude={latitude}
+          longitude={longitude}
+          setLatitude={setLatitude}
+          setLongitude={setLongitude}
+          setLocationSearch={setLocationSearch}
+          locations={locations}
+        />
       </div>
     </div>
   );

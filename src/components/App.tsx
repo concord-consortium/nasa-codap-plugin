@@ -12,10 +12,9 @@ import "../assets/scss/App.scss";
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"location" | "simulation">("location");
-  const [latitude, setLatitude] = useState<string>("");
-  const [longitude, setLongitude] = useState<string>("");
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
   const [dayOfYear, setDayOfYear] = useState<string>("280");
-  const [location, setLocation] = useState<ILocation | null>(null);
   const [locations, setLocations] = useState<ILocation[]>([]);
   const [locationSearch, setLocationSearch] = useState<string>("");
   const [selectedAttrs, setSelectedAttributes] = useState<string[]>(kDefaultOnAttributes);
@@ -75,13 +74,11 @@ export const App: React.FC = () => {
         <LocationTab
           latitude={latitude}
           longitude={longitude}
-          location={location}
           locationSearch={locationSearch}
           selectedAttrs={selectedAttrs}
           dataContext={dataContext}
           setLatitude={setLatitude}
           setLongitude={setLongitude}
-          setLocation={setLocation}
           setLocationSearch={setLocationSearch}
           setSelectedAttributes={setSelectedAttributes}
           setDataContext={setDataContext}
@@ -93,8 +90,10 @@ export const App: React.FC = () => {
         <SimulationTab
           latitude={latitude}
           longitude={longitude}
+          setLatitude={setLatitude}
+          setLongitude={setLongitude}
+          setLocationSearch={setLocationSearch}
           dayOfYear={dayOfYear}
-          location={location}
           setDayOfYear={setDayOfYear}
           locations={locations}
         />

@@ -3,20 +3,19 @@ import { useCodapData } from "../hooks/useCodapData";
 import { kChildCollectionAttributes } from "../constants";
 import { ILocation } from "../types";
 import { LocationPicker } from "./location-picker";
+import { locationsEqual } from "../utils/daylight-utils";
 
 import "../assets/scss/location-tab.scss";
 
 interface LocationTabProps {
   latitude: string;
   longitude: string;
-  location: ILocation | null;
   locations: ILocation[];
   locationSearch: string;
   selectedAttrs: string[];
   dataContext: any; // TODO the type
   setLatitude: (latitude: string) => void;
   setLongitude: (longitude: string) => void;
-  setLocation: (location: ILocation | null) => void;
   setLocationSearch: (search: string) => void;
   setSelectedAttributes: (attrs: string[]) => void;
   setDataContext: (context: any) => void; // TODO the type
@@ -26,13 +25,11 @@ interface LocationTabProps {
 export const LocationTab: React.FC<LocationTabProps> = ({
   latitude,
   longitude,
-  location,
   locationSearch,
   selectedAttrs,
   locations,
   setLatitude,
   setLongitude,
-  setLocation,
   setLocationSearch,
   setSelectedAttributes,
   setLocations
@@ -58,18 +55,15 @@ export const LocationTab: React.FC<LocationTabProps> = ({
 
   const handleLatChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLatitude(event.target.value);
-    setLocation(null);
     setLocationSearch("");
   };
 
   const handleLongChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLongitude(event.target.value);
-    setLocation(null);
     setLocationSearch("");
   };
 
   const handleLocationSelect = (selectedLocation: ILocation) => {
-    setLocation(selectedLocation);
     setLatitude(selectedLocation.latitude.toString());
     setLongitude(selectedLocation.longitude.toString());
     setLocationSearch(selectedLocation.name);
@@ -77,9 +71,6 @@ export const LocationTab: React.FC<LocationTabProps> = ({
 
   const handleLocationSearchChange = (searchString: string) => {
     setLocationSearch(searchString);
-    if (searchString === "") {
-      setLocation(null);
-    }
   };
 
   const handleTokenClick = (attribute: string) => {
@@ -96,13 +87,13 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   };
 
   const handleGetDataClick = async () => {
-    const locationExists = locations.some(item =>
-      item.latitude === location?.latitude && item.longitude === location.longitude
-    );
+    const name = locationSearch || `(${latitude}, ${longitude})`;
+    const currentLocation: ILocation = { name, latitude: Number(latitude), longitude: Number(longitude) };
+    const locationExists = locations.some(item => locationsEqual(item, currentLocation));
     if (locationExists || !latitude || !longitude) return;
 
     // if the location does not already exist, and we have params, get the data
-    const tableCreated = await getDayLengthData(Number(latitude), Number(longitude), location);
+    const tableCreated = await getDayLengthData(currentLocation);
     if (tableCreated?.success) {
       const uniqeLocations = await getUniqueLocationsInCodapData();
       if (uniqeLocations) setLocations(uniqeLocations);
