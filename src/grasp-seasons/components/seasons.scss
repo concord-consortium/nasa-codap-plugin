@@ -143,6 +143,27 @@ body {
   .long-lat-sliders {
     margin-top: 26px;
     width: 220px;
+
+    .slider-container {
+      margin-bottom: 30px;
+
+      .top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 17px;
+
+        input {
+          border-radius: 3px;
+          border: solid 1px rgba(23, 121, 145, 0.75);
+          background-color: #fff;
+          width: 37px;
+          height: 24px;
+          padding: 3px 10px;
+        }
+      }
+    }
+
   }
 
   .btn {
