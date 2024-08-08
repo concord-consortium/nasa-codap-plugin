@@ -57,6 +57,10 @@ export default class BaseView {
     this.controls.enablePan = false;
     this.controls.enableZoom = false;
     this.controls.rotateSpeed = 0.5;
+    // Very important: 0 degrees would place the camera in a position where it is impossible to determine
+    // the desired direction of the camera tilt action.
+    this.controls.minPolarAngle = THREE.MathUtils.degToRad(1);
+    this.controls.maxPolarAngle = THREE.MathUtils.degToRad(179);
 
     this.dispatch = new EventEmitter();
 

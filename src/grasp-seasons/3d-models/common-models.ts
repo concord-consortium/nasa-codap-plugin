@@ -68,7 +68,7 @@ export default {
 
   sun (params: IModelParams) {
     const texture = new THREE.TextureLoader().load(SunPNG);
-    const material = new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false });
+    const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
     const sprite = new THREE.Sprite(material);
     sprite.renderOrder = 1;
     sprite.scale.set(100000000 * c.SF, 100000000 * c.SF, 1);

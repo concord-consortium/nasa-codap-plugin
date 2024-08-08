@@ -14,7 +14,7 @@ const DEF_PROPERTIES = {
   sunEarthLine: true
 };
 
-const CAMERA_TWEEN_LENGTH = 1000;
+const CAMERA_TWEEN_LENGTH = 1500;
 
 // Cubic Bezier function
 function cubicBezier(t: number, p0: number, p1: number, p2: number, p3: number): number {
@@ -48,6 +48,10 @@ export default class OrbitView extends BaseView {
   constructor(parentEl: HTMLElement, props = DEF_PROPERTIES) {
     super(parentEl, props, "orbit-view");
     this.registerInteractionHandler(this.earthDraggingInteraction);
+
+    this.controls.addEventListener("change", () => {
+      this.dispatch.emit("props.change", { cameraTiltAngle: this.getCameraTiltAngle() });
+    });
   }
 
   setViewAxis(vec3: THREE.Vector3) {
@@ -55,12 +59,40 @@ export default class OrbitView extends BaseView {
     this.cameraSymbol.rotateX(Math.PI * 0.5);
   }
 
-  getCameraAngle() {
-    const refVec = this.camera.position.clone().setY(0);
-    let angle = this.camera.position.angleTo(refVec) * 180 / Math.PI;
+  getCameraTiltAngle() {
+    const targetPos = this.controls.target.clone();
+    const refVec = this.camera.position.clone().sub(targetPos).setY(0);
+    let angle = this.camera.position.clone().sub(targetPos).angleTo(refVec);
     if (this.camera.position.y < 0) angle *= -1;
-    return angle;
+    const angleInDeg = angle * 180 / Math.PI;
+    return angleInDeg;
   }
+
+  setCameraTiltAngle(angleInDeg: number) {
+    const angleInRad = angleInDeg * Math.PI / 180;
+
+    const targetPos = this.controls.target.clone();
+    const cameraToTarget = this.camera.position.clone().sub(targetPos);
+    const cameraToTargetLen = cameraToTarget.length();
+
+    // Calculate reference vector with zero y-component
+    const refVec = cameraToTarget.clone().setY(0);
+
+    // Calculate the axis of rotation (cross product of the Y-axis and refVec)
+    const axisOfRotation = new THREE.Vector3(0, 1, 0).cross(refVec).normalize();
+
+    // Rotate the reference vector to achieve the desired tilt angle
+    const newPos = refVec.applyAxisAngle(axisOfRotation, -angleInRad);
+
+    // Set the length of the new position vector to the original distance from target
+    newPos.setLength(cameraToTargetLen);
+
+    // Translate the new position back to the world coordinates
+    newPos.add(targetPos);
+
+    // Update the camera's position
+    this.camera.position.copy(newPos);
+}
 
   getEarthPosition() {
     const vector = this.earth.posObject.position.clone();
@@ -83,7 +115,7 @@ export default class OrbitView extends BaseView {
   }
 
   getCloseUpCameraPosition() {
-    const cameraOffset = new THREE.Vector3(0, 0, 40000000 / data.SCALE_FACTOR);
+    const cameraOffset = new THREE.Vector3(0, 1000000 / data.SCALE_FACTOR, 40000000 / data.SCALE_FACTOR);
     return this.earth.posObject.position.clone().add(cameraOffset);
   }
 
@@ -110,6 +142,7 @@ export default class OrbitView extends BaseView {
 
       this.camera.position.lerpVectors(this.startingCameraPos, this.desiredCameraPos, progressEased);
       this.controls.target.lerpVectors(this.startingCameraLookAt, this.desiredCameraLookAt, progressEased);
+
       if (progress === 1) {
         this.startingCameraPos = undefined;
         this.desiredCameraPos = undefined;
@@ -121,7 +154,7 @@ export default class OrbitView extends BaseView {
   }
 
   getInitialCameraPosition() {
-    return new THREE.Vector3(0, 440000000 / data.SCALE_FACTOR, 0);
+    return new THREE.Vector3(0, 440000000 / data.SCALE_FACTOR, 10);
   }
 
   _setInitialCamPos() {
@@ -174,15 +207,25 @@ export default class OrbitView extends BaseView {
     }
   }
 
+  _updateCameraTiltAngle() {
+    if (this.desiredCameraPos || this.desiredCameraLookAt) {
+      // Do not try to update camera tilt angle while transitioning camera position
+      return;
+    }
+    this.setCameraTiltAngle(this.props.cameraTiltAngle ?? 0);
+  }
+
   _updateDay(): void {
+    const oldEarthPosition = this.earth.posObject.position.clone();
     super._updateDay();
     if (this.props.earthCloseUpView) {
+      const positionDiff = this.earth.posObject.position.clone().sub(oldEarthPosition);
       if (this.desiredCameraPos && this.desiredCameraLookAt) {
-        this.desiredCameraPos.copy(this.getCloseUpCameraPosition());
-        this.desiredCameraLookAt.copy(this.earth.posObject.position);
+        this.desiredCameraPos.add(positionDiff);
+        this.desiredCameraLookAt.add(positionDiff);
       } else {
-        this.camera.position.copy(this.getCloseUpCameraPosition());
-        this.controls.target.copy(this.earth.posObject.position);
+        this.camera.position.add(positionDiff);
+        this.controls.target.add(positionDiff);
       }
     }
   }

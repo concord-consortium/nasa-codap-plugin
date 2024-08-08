@@ -21,8 +21,8 @@ const DEFAULT_SIM_STATE: ISimState = {
   earthTilt: true,
   earthRotation: 1.539,
   sunEarthLine: true,
-  lat: 40.11,
-  long: -88.2,
+  lat: 0,
+  long: 0,
   sunrayColor: "#D8D8AC",
   groundColor: "#4C7F19", // 'auto' will make color different for each season
   sunrayDistMarker: false,
@@ -36,6 +36,7 @@ const DEFAULT_SIM_STATE: ISimState = {
   // camera follows Earth's position but does not rotate. As the year passes, we'll see different parts of Earth,
   // including its night side. This is useful for keeping the Earth's axis constant.
   earthCloseUpView: false,
+  cameraTiltAngle: 89
 };
 
 function capitalize(string: string) {
@@ -195,6 +196,7 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
   };
 
   const handleTiltSliderChange = (event: any, ui: any) => {
+    setSimState(prevState => ({ ...prevState, cameraTiltAngle: ui.value }));
   };
 
   const handleMyLocationChange = (lat: number, long: number, name: string) => {
@@ -250,9 +252,11 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
             <div className="slider-container">
               <Slider
                 orientation="vertical"
-                value={0}
+                value={simState.cameraTiltAngle}
                 min={0}
-                max={90}
+                // Very important: 90 degrees would place the camera in a position where it is impossible to determine
+                // the desired direction of the camera tilt action.
+                max={89}
                 step={1}
                 slide={handleTiltSliderChange}
                 log={log}
