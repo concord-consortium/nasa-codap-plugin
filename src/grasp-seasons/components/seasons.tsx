@@ -6,10 +6,13 @@ import MyLocations from "./my-locations";
 import getURLParam from "../utils/utils";
 import OrbitViewComp from "./orbit-view-comp";
 import RaysViewComp from "./rays-view-comp";
+import { SquareButton } from "../../components/square-button";
 import t, { Language } from "../translation/translate";
 import { ISimState } from "../types";
 import { useAnimation } from "../hooks/use-animation";
 import { ILocation } from "../../types";
+
+import ForwardBackIcon from "../../assets/images/forward-back-icon.svg";
 
 import "./seasons.scss";
 
@@ -44,7 +47,9 @@ function capitalize(string: string) {
 }
 
 function formatLatLongNumber(value: number) {
-  return value.toFixed(5);
+  // This function ensures that the number is formatted up to 5 decimal points and removes any trailing zeros and
+  // the decimal point if not necessary.
+  return value.toFixed(2).replace(/\.?0+$/, "");
 }
 
 interface IProps {
@@ -142,24 +147,6 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
     return `${getMonth(date)} ${date.getDate()}`;
   };
 
-  const getFormattedLat = () => {
-    let dir = "";
-    const lat = simState.lat;
-    if (lat > 0) dir = t("~DIR_NORTH", simLang);
-    else if (lat < 0) dir = t("~DIR_SOUTH", simLang);
-    const _latitude = Math.abs(lat).toFixed(2);
-    return `${_latitude}°${dir}`;
-  };
-
-  const getFormattedLong = () => {
-    let dir = "";
-    const lng = simState.long;
-    if (lng > 0) dir = t("~DIR_EAST", simLang);
-    else if (lng < 0) dir = t("~DIR_WEST", simLang);
-    const long = Math.abs(lng).toFixed(2);
-    return `${long}°${dir}`;
-  };
-
   // Event handlers
   const handleSimStateChange = (newState: Partial<ISimState>) => {
     setSimState(prevState => ({ ...prevState, ...newState }));
@@ -189,11 +176,33 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
     setLocationSearch("");
   };
 
+  const handleLatInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setLatitude(event.target.value);
+    setLocationSearch("");
+  }
+
+  const handleLatIncrement = (increment: number) => () => {
+    setSimState(prevState => ({ ...prevState, lat: prevState.lat + increment }));
+    setLatitude(formatLatLongNumber(simState.lat + increment));
+    setLocationSearch("");
+  }
+
   const handleLongSliderChange = (event: any, ui: any) => {
     setSimState(prevState => ({ ...prevState, long: ui.value }));
     setLongitude(formatLatLongNumber(ui.value));
     setLocationSearch("");
   };
+
+  const handleLongInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setLongitude(event.target.value);
+    setLocationSearch("");
+  }
+
+  const handleLongIncrement = (increment: number) => () => {
+    setSimState(prevState => ({ ...prevState, long: prevState.long + increment }));
+    setLongitude(formatLatLongNumber(simState.long + increment));
+    setLocationSearch("");
+  }
 
   const handleTiltSliderChange = (event: any, ui: any) => {
     setSimState(prevState => ({ ...prevState, cameraTiltAngle: ui.value }));
@@ -297,7 +306,13 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
           onLocationChange={handleMyLocationChange}
         />
         <div className="long-lat-sliders">
-          <label>{ t("~LATITUDE", simLang) }: { getFormattedLat() }</label>
+          <div className="slider-container">
+            <div className="top-row">
+              <SquareButton onClick={handleLatIncrement(-5)}><ForwardBackIcon /></SquareButton>
+              <label>{ t("~LATITUDE", simLang) }</label>
+              <input type="text" value={latitude} onChange={handleLatInputChange} />
+              <SquareButton onClick={handleLatIncrement(5)}><ForwardBackIcon style={{transform: "rotate(180deg"}} /></SquareButton>
+            </div>
           <Slider
             value={simState.lat}
             min={-90}
@@ -307,16 +322,24 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
             log={log}
             logId="Latitude"
           />
-          <label>{ t("~LONGITUDE", simLang) }: { getFormattedLong() }</label>
-          <Slider
-            value={simState.long}
-            min={-180}
-            max={180}
-            step={1}
-            slide={handleLongSliderChange}
-            log={log}
-            logId="Longitude"
-          />
+          </div>
+          <div className="slider-container">
+            <div className="top-row">
+              <SquareButton onClick={handleLongIncrement(-5)}><ForwardBackIcon /></SquareButton>
+              <label>{ t("~LONGITUDE", simLang) }</label>
+              <input type="text" value={longitude} onChange={handleLongInputChange} />
+              <SquareButton onClick={handleLongIncrement(5)}><ForwardBackIcon style={{transform: "rotate(180deg"}} /></SquareButton>
+            </div>
+            <Slider
+              value={simState.long}
+              min={-180}
+              max={180}
+              step={1}
+              slide={handleLongSliderChange}
+              log={log}
+              logId="Longitude"
+            />
+          </div>
         </div>
       </div>
     </div>
