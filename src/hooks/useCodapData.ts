@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { kDataContextName, kChildCollectionName, kParentCollectionName, kParentCollectionAttributes, kChildCollectionAttributes } from "../constants";
 import { DaylightCalcOptions, ILocation } from "../types";
-import { getDayLightInfo } from "../utils/daylight-utils";
+import { getDayLightInfo, locationsEqual } from "../utils/daylight-utils";
 import {
   getAllItems,
   getAttribute,
@@ -32,16 +32,11 @@ export const useCodapData = () => {
     }
   };
 
-  const getDayLengthData = async (latitude: number, longitude: number, location: any) => {
-    if (!latitude || !longitude) {
-      alert("Please enter both latitude and longitude.");
-      return;
-    }
-
+  const getDayLengthData = async (location: ILocation) => {
     let createDC;
     const calcOptions: DaylightCalcOptions = {
-      latitude: Number(latitude),
-      longitude: Number(longitude),
+      latitude: location.latitude,
+      longitude: location.longitude,
       year: 2024 // NOTE: If data are to be historical, add dynamic year attribute
     };
 
@@ -68,9 +63,9 @@ export const useCodapData = () => {
 
       const completeSolarRecords = solarEvents.map(solarEvent => {
         const record: Record<string, any> = {
-          latitude: Number(latitude),
-          longitude: Number(longitude),
-          location: location?.name,
+          latitude: location.latitude,
+          longitude: location.longitude,
+          location: location.name,
           dayNumber: solarEvent.dayAsInteger,
           date: solarEvent.day,
           sunrise: solarEvent.sunrise,
@@ -113,10 +108,9 @@ export const useCodapData = () => {
         name: c.values.location,
         latitude: c.values.latitude,
         longitude: c.values.longitude,
-        coordinatePair: `(${c.values.latitude},${c.values.longitude})`
       };
 
-      if (!uniqueLocations.some((l) => l.coordinatePair === locationObj.coordinatePair)) {
+      if (!uniqueLocations.some((l) => locationsEqual(l, locationObj))) {
         uniqueLocations.push(locationObj);
       }
     });
