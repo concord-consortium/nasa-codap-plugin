@@ -9,7 +9,7 @@ interface SimulationTabProps {
   longitude: string;
   dayOfYear: string;
   location: ILocation | null;
-  userLocations: ILocation[];
+  locations: ILocation[];
   setDayOfYear: (day: string) => void;
 }
 
@@ -19,7 +19,7 @@ export const SimulationTab: React.FC<SimulationTabProps> = ({
   dayOfYear,
   setDayOfYear,
   location,
-  userLocations
+  locations
 }) => {
 
   return (

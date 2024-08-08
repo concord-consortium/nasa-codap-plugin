@@ -99,10 +99,9 @@ export const LocationTab: React.FC<LocationTabProps> = ({
     const locationExists = locations.some(item =>
       item.latitude === location?.latitude && item.longitude === location.longitude
     );
-    // if we already have the location or not all required fields are filled out, return
     if (locationExists || !latitude || !longitude) return;
 
-    // otherwise, get the data and set the locations
+    // if the location does not already exist, and we have params, get the data
     const tableCreated = await getDayLengthData(Number(latitude), Number(longitude), location);
     if (tableCreated?.success) {
       const uniqeLocations = await getUniqueLocationsInCodapData();
@@ -162,18 +161,6 @@ export const LocationTab: React.FC<LocationTabProps> = ({
           Get Data
         </button>
       </div>
-      { locations && locations.length > 0 && (
-        <div className="plugin-row user-locations">
-          <label>User Locations</label>
-          <ul>
-            {locations.map((loc, i) => (
-              <li key={i}>
-                {loc.name} ({loc.latitude}, {loc.longitude})
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
     </div>
   );
 };

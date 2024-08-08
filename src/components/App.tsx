@@ -96,7 +96,7 @@ export const App: React.FC = () => {
           dayOfYear={dayOfYear}
           location={location}
           setDayOfYear={setDayOfYear}
-          userLocations={locations}
+          locations={locations}
         />
       </div>
     </div>
