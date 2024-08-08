@@ -194,6 +194,9 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
     setLocationSearch("");
   };
 
+  const handleTiltSliderChange = (event: any, ui: any) => {
+  };
+
   const handleMyLocationChange = (lat: number, long: number, name: string) => {
     const rot = -long * Math.PI / 180;
     setSimState(prevState => ({ ...prevState, lat, long, earthRotation: rot }));
@@ -241,6 +244,21 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
               />
               { t("~DAILY_ROTATION", simLang) }
             </label>
+          </div>
+          <div className="tilt-slider">
+            <label>{ t("~TILT_VIEW", simLang) }</label>
+            <div className="slider-container">
+              <Slider
+                orientation="vertical"
+                value={0}
+                min={0}
+                max={90}
+                step={1}
+                slide={handleTiltSliderChange}
+                log={log}
+                logId="Tilt"
+              />
+            </div>
           </div>
         </div>
         <div className="day">

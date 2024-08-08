@@ -15,6 +15,7 @@ interface IProps {
   log: ((action: string, data: any) => void) | null;
   start?: (event: any, ui: any) => void;
   stop?: (event: any, ui: any) => void;
+  orientation?: "horizontal" | "vertical";
 }
 interface IOptions extends IProps {
   _slideStart: number;
