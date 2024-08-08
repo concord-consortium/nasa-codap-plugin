@@ -31,4 +31,16 @@
   .ui-slider-tick-label {
     margin-top: 15px;
   }
+
+  &.ui-slider-vertical {
+    width: 8px;
+    height: 100%;
+    margin-top: 0;
+    margin-bottom: 0;
+
+    .ui-slider-handle {
+      margin-left: -10px;
+      margin-bottom: -15px;
+    }
+  }
 }

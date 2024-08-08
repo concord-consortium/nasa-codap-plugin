@@ -39,11 +39,11 @@ export default class OrbitViewComp extends CanvasView<IProps> {
 
   _setupLogging() {
     this.externalView.on("camera.changeStart", () => {
-      this._startAngle = this.externalView.getCameraAngle();
+      this._startAngle = this.externalView.getCameraTiltAngle();
     });
     this.externalView.on("camera.changeEnd", () => {
       this.props.log?.("OrbitViewAngleChanged", {
-        value: this.externalView.getCameraAngle(),
+        value: this.externalView.getCameraTiltAngle(),
         prevValue: this._startAngle
       });
     });

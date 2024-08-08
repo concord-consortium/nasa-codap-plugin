@@ -20,6 +20,7 @@ export interface ISimState {
   // camera follows Earth's position but does not rotate. As the year passes, we'll see different parts of Earth,
   // including its night side. This is useful for keeping the Earth's axis constant.
   earthCloseUpView: boolean;
+  cameraTiltAngle: number;
 }
 
 export type ModelType = "earth-view" | "orbit-view" | "unknown";
