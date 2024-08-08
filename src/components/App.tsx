@@ -11,7 +11,7 @@ import { Header } from "./header";
 import "../assets/scss/App.scss";
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"location" | "simulation">("simulation");
+  const [activeTab, setActiveTab] = useState<"location" | "simulation">("location");
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
   const [dayOfYear, setDayOfYear] = useState<string>("280");
