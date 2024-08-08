@@ -39,10 +39,10 @@ export const LocationTab: React.FC<LocationTabProps> = ({
 }) => {
   const {
     dataContext,
-    handleClearDataClick,
+    handleClearData,
     getDayLengthData,
     updateAttributeVisibility,
-    calculateUniqueUserLocations
+    getUniqueLocationsInCodapData
   } = useCodapData();
 
   useEffect(() => {
@@ -90,19 +90,22 @@ export const LocationTab: React.FC<LocationTabProps> = ({
     }
   };
 
+  const handleClearDataClick = async () => {
+    await handleClearData();
+    setLocations([]);
+  };
+
   const handleGetDataClick = async () => {
     const locationExists = locations.some(item =>
       item.latitude === location?.latitude && item.longitude === location.longitude
     );
+    // if we already have the location or not all required fields are filled out, return
     if (locationExists || !latitude || !longitude) return;
-    // TODO separate this logic above ...
-    // TODO we should be doing this on an effect not on this click
-    // then we could be removing items when the location is removed without a listener, we'd
-    // just circle back to the CODAP data reliably.
 
+    // otherwise, get the data and set the locations
     const tableCreated = await getDayLengthData(Number(latitude), Number(longitude), location);
     if (tableCreated?.success) {
-      const uniqeLocations = await calculateUniqueUserLocations();
+      const uniqeLocations = await getUniqueLocationsInCodapData();
       if (uniqeLocations) setLocations(uniqeLocations);
     }
   };

@@ -18,7 +18,7 @@ import {
 export const useCodapData = () => {
   const [dataContext, setDataContext] = useState<any>(null);
 
-  const handleClearDataClick = async () => {
+  const handleClearData = async () => {
     let result = await getDataContext(kDataContextName);
     if (result.success) {
       let dc = result.values;
@@ -125,7 +125,7 @@ export const useCodapData = () => {
   }
 
 
-  const calculateUniqueUserLocations = async () => {
+  const getUniqueLocationsInCodapData = async () => {
     const locationAttr = await getAttribute(kDataContextName, kParentCollectionName, "location");
     if (locationAttr.success){
       const allItems = await getAllItems(kDataContextName);
@@ -139,9 +139,9 @@ export const useCodapData = () => {
   return {
     dataContext,
     updateAttributeVisibility,
-    handleClearDataClick,
+    handleClearData,
     getDayLengthData,
-    calculateUniqueUserLocations,
+    getUniqueLocationsInCodapData,
     extractUniqueLocations
   };
 };
