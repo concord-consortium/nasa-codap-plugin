@@ -123,12 +123,16 @@ export default class OrbitView extends BaseView {
     this.registerInteractionHandler(this.latLogDraggingInteraction);
     this.sunEarthLine.rootObject.visible = false;
     this.monthLabels.forEach((label) => label.visible = false);
+    this.earthAxis.setCloseUpStyle();
+    this.latLongMarker.setCloseUpStyle();
   }
 
   setupOrbitView() {
     this.registerInteractionHandler(this.earthDraggingInteraction);
     this.sunEarthLine.rootObject.visible = true;
     this.monthLabels.forEach((label) => label.visible = true);
+    this.earthAxis.setOrbitViewStyle();
+    this.latLongMarker.setOrbitViewStyle();
   }
 
   render(timestamp: number) {

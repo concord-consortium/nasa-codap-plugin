@@ -12,7 +12,7 @@ export default class LatLongMarker {
   mesh: THREE.Mesh;
   rootObject: THREE.Object3D;
   constructor(simple?: boolean) {
-    this.markerRadius = simple ? c.LATLNG_MARKER_RADIUS * 5 : c.LATLNG_MARKER_RADIUS;
+    this.markerRadius = simple ? c.LATLNG_MARKER_RADIUS * 9 : c.LATLNG_MARKER_RADIUS;
     const geometry = new THREE.SphereGeometry(this.markerRadius, 32, 32);
     const material = new THREE.MeshPhongMaterial({ emissive: DEF_EMISSIVE });
     const mesh = new THREE.Mesh(geometry, material);
@@ -40,5 +40,13 @@ export default class LatLongMarker {
   setHighlighted(v: boolean) {
     this.material.color.setHex(v ? c.HIGHLIGHT_COLOR : DEF_COLOR);
     this.material.emissive.setHex(v ? c.HIGHLIGHT_EMISSIVE : DEF_EMISSIVE);
+  }
+
+  setCloseUpStyle() {
+    this.mesh.scale.set(0.5, 0.5, 0.5);
+  }
+
+  setOrbitViewStyle() {
+    this.mesh.scale.set(1, 1, 1);
   }
 }

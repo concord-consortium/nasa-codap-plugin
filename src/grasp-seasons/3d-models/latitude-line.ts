@@ -13,7 +13,9 @@ export default class LatitudeLine {
   constructor(equator?: boolean, simple?: boolean) {
     let torusRadius = equator ? c.LAT_LINE_THICKNESS / 5 : c.LAT_LINE_THICKNESS;
     this.earthRadius = simple ? c.SIMPLE_EARTH_RADIUS * 1.03: c.EARTH_RADIUS;
-    if (simple) torusRadius = torusRadius * 6;
+    if (simple) {
+      torusRadius = torusRadius * 3;
+    }
     const geometry = new THREE.TorusGeometry(this.earthRadius, this.earthRadius * torusRadius, 16, 100);
     const material = new THREE.MeshPhongMaterial({ emissive: DEF_EMISSIVE });
     const mesh = new THREE.Mesh(geometry, material);
