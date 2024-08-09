@@ -9,6 +9,7 @@ import SunEarthLine from "../3d-models/sun-earth-line";
 import * as data from "../utils/solar-system-data";
 import t, { Language } from "../translation/translate";
 import { ISimState, ModelType } from "../types";
+import EarthAxis from "../3d-models/earth-axis";
 
 const DEF_PROPERTIES = {
   lang: "en_us",
@@ -24,7 +25,7 @@ export default class BaseView {
   controls: OrbitControls;
   dispatch: EventEmitter;
   earth!: Earth;
-  earthAxis!: THREE.Mesh;
+  earthAxis!: EarthAxis;
   lang: Language;
   months: string[];
   props: Partial<ISimState>;
@@ -190,8 +191,8 @@ export default class BaseView {
     this.scene.add(models.sun(basicProps));
 
     this.earth = new Earth(basicProps);
-    this.earthAxis = models.earthAxis(basicProps);
-    this.earth.earthObject.add(this.earthAxis);
+    this.earthAxis = new EarthAxis();
+    this.earth.earthObject.add(this.earthAxis.rootObject);
     this.scene.add(this.earth.rootObject);
 
     this.sunEarthLine = new SunEarthLine(basicProps);
