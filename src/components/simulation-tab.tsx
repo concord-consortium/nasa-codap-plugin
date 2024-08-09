@@ -5,30 +5,32 @@ import Seasons from "../grasp-seasons/components/seasons";
 import "../assets/scss/simulation-tab.scss";
 
 interface SimulationTabProps {
+  locations: ILocation[];
   latitude: string;
   longitude: string;
-  dayOfYear: string;
-  locations: ILocation[];
   setLatitude: (latitude: string) => void;
   setLongitude: (longitude: string) => void;
   setLocationSearch: (search: string) => void;
-  setDayOfYear: (day: string) => void;
+  dayOfYear: number;
+  setDayOfYear: (day: number) => void;
 }
 
 export const SimulationTab: React.FC<SimulationTabProps> = ({
+  locations,
   latitude,
   longitude,
-  locations,
-  dayOfYear,
-  setDayOfYear,
   setLatitude,
   setLongitude,
-  setLocationSearch
+  setLocationSearch,
+  dayOfYear,
+  setDayOfYear,
 }) => {
   return (
     <div className="simulation-tab">
       <div className="seasons-container">
         <Seasons
+          dayOfYear={dayOfYear}
+          setDayOfYear={setDayOfYear}
           latitude={latitude}
           longitude={longitude}
           setLatitude={setLatitude}
