@@ -58,16 +58,18 @@ interface IProps {
   initialState?: Partial<ISimState>;
   log?: (action: string, data?: any) => void;
 
+  locations: ILocation[];
   latitude: string;
   longitude: string;
-  locations: ILocation[];
   setLatitude: (latitude: string) => void;
   setLongitude: (longitude: string) => void;
   setLocationSearch: (name: string) => void;
+  dayOfYear: number;
+  setDayOfYear: (day: number) => void;
 }
 
 const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (action: string, data?: any) => {},
-  latitude, longitude, locations, setLatitude, setLongitude, setLocationSearch }) => {
+  locations, latitude, longitude, setLatitude, setLongitude, setLocationSearch, dayOfYear, setDayOfYear }) => {
   const orbitViewRef = useRef<OrbitViewComp>(null);
 
   // State
@@ -81,11 +83,13 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
   const { animationStarted: mainAnimationStarted, toggleState: toggleMainAnimation } = useAnimation({
     value: simState.day,
     setValue: (newDay: number) => {
-      const stateUpdate: Partial<ISimState> = { day: newDay % 365 };
+      const day = newDay % 365;
+      const stateUpdate: Partial<ISimState> = { day };
       if (simState.dailyRotation) {
         stateUpdate.earthRotation = (newDay % 1) * 2 * Math.PI;
       }
       setSimState(prevState => ({ ...prevState, ...stateUpdate }));
+      setDayOfYear(day);
     },
     speed: simState.dailyRotation ? DAILY_ROTATION_ANIM_SPEED : ANIM_SPEED
   });
@@ -119,6 +123,10 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
       setSimState(prevState => ({ ...prevState, long: Number(longitude) }));
     }
   }, [longitude]);
+
+  useEffect(() => {
+    setSimState(prevState => ({ ...prevState, day: dayOfYear }));
+  }, [dayOfYear]);
 
   // Derived state
   const simLang = simState.lang;
@@ -160,10 +168,14 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
       setLongitude(formatLatLongNumber(newState.long));
       setLocationSearch("");
     }
+    if (newState.day !== undefined) {
+      setDayOfYear(newState.day);
+    }
   };
 
   const handleDaySliderChange = (event: any, ui: any) => {
     setSimState(prevState => ({ ...prevState, day: ui.value }));
+    setDayOfYear(ui.value);
   };
 
   const handleDayIncrement = (increment: number) => () => {

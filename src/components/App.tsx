@@ -10,15 +10,44 @@ import { Header } from "./header";
 
 import "../assets/scss/App.scss";
 
+const updateRowSelectionInCodap = (latitude: string, longitude: string, day: number) => {
+  // TODO: Issue CODAP API request to highlight appropriate case in the case table, using combination of
+  // Math.floor(day), latitude, and longitude.
+}
+
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"location" | "simulation">("location");
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
-  const [dayOfYear, setDayOfYear] = useState<string>("280");
+  const [dayOfYear, setDayOfYear] = useState(171);
   const [locations, setLocations] = useState<ILocation[]>([]);
   const [locationSearch, setLocationSearch] = useState<string>("");
   const [selectedAttrs, setSelectedAttributes] = useState<string[]>(kDefaultOnAttributes);
   const [dataContext, setDataContext] = useState<any>(null);
+
+  const handleDayUpdateInTheSimTab = (day: number) => {
+    console.log("The day of the year has been updated in the simulation tab to: ", day); // TODO: remove it later
+    // We might to debounce this call, as if the animation is on, or user is dragging the slider, there will be
+    // lot of events and API calls to CODAP.
+    updateRowSelectionInCodap(latitude, longitude, Math.floor(day));
+    // Note that we do not need to update dayOfYear state variable. It's useful only for the opposite direction
+    // of the sync process, when user select a row in CODAP and we want to update the day in the simulation tab.
+  };
+
+  const handleCaseSelectionInCodap = (_latitude: string, _longitude: string, day: number) => {
+    // Option 1. Update as much of the plugin state as we can when user selects a case in CODAP. I think this might
+    // be too much, as it'll clear all the inputs in all the tabs and the user will have to re-enter everything
+    // if they were in the middle of something.
+    // setDayOfYear(day);
+    // setLatitude(_latitude);
+    // setLongitude(_longitude);
+    // ...OR...
+    // Option 2. Update only the day of the year, as that's reasonably unobtrusive and useful. We can first check
+    // if user actually selected the case from the same location, and only then update the day of the year.
+    if (latitude === _latitude && longitude === _longitude) {
+      setDayOfYear(day);
+    }
+  }
 
   const { getUniqueLocationsInCodapData } = useCodapData();
   // Store a ref to getUniqueLocationsInCodapData so we can call inside useEffect without triggering unnecessary re-runs
@@ -90,14 +119,14 @@ export const App: React.FC = () => {
       </div>
       <div className={clsx("tab-content", { active: activeTab === "simulation" })}>
         <SimulationTab
+          locations={locations}
           latitude={latitude}
           longitude={longitude}
           setLatitude={setLatitude}
           setLongitude={setLongitude}
           setLocationSearch={setLocationSearch}
           dayOfYear={dayOfYear}
-          setDayOfYear={setDayOfYear}
-          locations={locations}
+          setDayOfYear={handleDayUpdateInTheSimTab}
         />
       </div>
     </div>
