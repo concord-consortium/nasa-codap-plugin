@@ -95,3 +95,35 @@ export const kChildCollectionAttributes = [
 export const kDefaultOnAttributes = [
   "date", "sunrise", "sunset", "dayLength"
 ];
+
+// This is configurable because still have some development and iteration
+// to do in terms of best fit for v3 and v2 use cases for this plugin.
+export const kDateWithTimeFormats = {
+
+  // (UTC) Do not use unless CODAP or plugin has mechanism to translate to a given TZ
+  // 1982-01-23T10:45Z
+  asZuluISO: "YYYY-MM-DDTHH:mm[Z]",
+
+  // Use if both v2 and v3 will display clock time as expected, be okay with offset as programmatic asset
+  // 1982-01-23T10:45-07:00 (example offset -07:00)
+  asLocalISOWithTZOffset: "YYYY-MM-DDTHH:mmZ", // currently using this
+
+  // Use if truly no offset is included/needed, local time only
+  // 1982-01-23T10:45
+  asLocalISO: "YYYY-MM-DDTHH:mm",
+
+  // use if we must display time as a string AND we have a CODAP way to treat As if needed to graph etc.
+  // 10:45
+  asClockTimeString: "HH:mm",
+}
+
+export const kDateFormats = {
+
+  // Use if we need the real ISO date with year for graphing, etc.
+  // 1982-01-23
+  asLocalISODate: "YYYY-MM-DD", // currently using this
+
+  // Use if we must display date as a string AND we have a CODAP way to treat As if needed to graph etc.
+  // 01-23
+  asCalendarDateString: "MM-DD",
+}

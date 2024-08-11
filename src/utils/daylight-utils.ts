@@ -6,7 +6,7 @@ import tzlookup from "tz-lookup";
 import { getSunrise, getSunset } from "sunrise-sunset-js";
 import { Seasons } from "astronomy-engine";
 import { DaylightInfo, DaylightCalcOptions, ILocation } from "../types";
-import { kBasicSummerSolstice, kEarthTilt } from "../constants";
+import { kBasicSummerSolstice, kDateFormats, kDateWithTimeFormats, kEarthTilt } from "../constants";
 
 extend(utc);
 extend(dayOfYear);
@@ -85,24 +85,27 @@ export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
   const { latitude, longitude, year } = options;
   const results: DaylightInfo[] = [];
 
-  let currentDay = dayjs.utc(`${year}-01-01`);
-  const endOfYear = dayjs.utc(`${year + 1}-01-01`);
+  const timeZone = tzlookup(latitude, longitude);
+  let currentDay = dayjs.tz(`${year}-01-01`, timeZone).startOf("day");
+  const endOfYear = dayjs.tz(`${year + 1}-01-01`, timeZone).startOf("day");
 
   while (currentDay.isBefore(endOfYear)) {
-    const date = currentDay.toDate();
-    const timeZone = tzlookup(latitude, longitude);
+    // Calculate for noon of the current day to ensure correct astronomical day
+    const noonDate = currentDay.hour(12).toDate();
 
-    // TODO: handle above arctic circle and below antarctic circle
-    const utcSunrise = dayjs(getSunrise(latitude, longitude, date));
-    const utcSunset = dayjs(getSunset(latitude, longitude, date));
-    const tzSunrise = utcSunrise.tz(timeZone)
-    const tzSunset = utcSunset.tz(timeZone)
+    // Calculate sunrise and sunset in UTC
+    const utcSunrise = dayjs.utc(getSunrise(latitude, longitude, noonDate));
+    const utcSunset = dayjs.utc(getSunset(latitude, longitude, noonDate));
+
+    // Convert to local time
+    const localSunrise = utcSunrise.tz(timeZone);
+    const localSunset = utcSunset.tz(timeZone);
 
     const record: DaylightInfo = {
-      day: currentDay.format("YYYY-MM-DD"),
-      sunrise: tzSunrise.format("YYYY-MM-DDTHH:mmZ"),
-      sunset: tzSunset.format("YYYY-MM-DDTHH:mmZ"),
-      dayLength: getDayLength(tzSunrise, tzSunset),
+      day: currentDay.format(kDateFormats.asLocalISODate),
+      sunrise: localSunrise.format(kDateWithTimeFormats.asLocalISOWithTZOffset),
+      sunset: localSunset.format(kDateWithTimeFormats.asLocalISOWithTZOffset),
+      dayLength: getDayLength(localSunrise, localSunset),
       dayAsInteger: currentDay.dayOfYear(),
       season: getSeasonName(currentDay, latitude),
       sunlightAngle: getSunrayAngleInDegrees(currentDay.dayOfYear(), kEarthTilt, latitude),
