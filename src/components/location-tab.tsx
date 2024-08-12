@@ -42,16 +42,17 @@ export const LocationTab: React.FC<LocationTabProps> = ({
     getUniqueLocationsInCodapData
   } = useCodapData();
 
-  useEffect(() => {
-    const updateAttributesVisibility = async () => {
-      for (const attr of kChildCollectionAttributes) {
-        const isSelected = selectedAttrs.includes(attr.name);
-        await updateAttributeVisibility(attr.name, !isSelected);
-      }
-    };
+  // TODO - this is causing re-render issues in v2, need to address attr visibility in a different way
+  // useEffect(() => {
+  //   const updateAttributesVisibility = async () => {
+  //     for (const attr of kChildCollectionAttributes) {
+  //       const isSelected = selectedAttrs.includes(attr.name);
+  //       await updateAttributeVisibility(attr.name, !isSelected);
+  //     }
+  //   };
 
-    updateAttributesVisibility();
-  }, [selectedAttrs, updateAttributeVisibility]);
+  //   updateAttributesVisibility();
+  // }, [selectedAttrs, updateAttributeVisibility]);
 
   const handleLatChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLatitude(event.target.value);

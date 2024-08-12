@@ -107,8 +107,8 @@ export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
 
     const record: DaylightInfo = {
       day: currentDay.format(kDateFormats.asLocalISODate),
-      sunrise: localSunrise.format(kDateWithTimeFormats.asLocalISOWithTZOffset),
-      sunset: localSunset.format(kDateWithTimeFormats.asLocalISOWithTZOffset),
+      sunrise: localSunrise.format(kDateWithTimeFormats.asClockTimeStringAMPM),
+      sunset: localSunset.format(kDateWithTimeFormats.asClockTimeStringAMPM),
       dayLength: getDayLength(localSunrise, localSunset),
       dayAsInteger: currentDay.dayOfYear(),
       season: getSeasonName(currentDay, latitude),
@@ -117,7 +117,7 @@ export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
       sunriseMinSinceMidnight: getMinutesSinceMidnight(localSunrise),
       sunsetMinSinceMidnight: getMinutesSinceMidnight(localSunset)
     };
-    console.log("| record: ", record);
+
     results.push(record);
     currentDay = currentDay.add(1, "day");
   }

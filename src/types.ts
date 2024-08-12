@@ -12,7 +12,7 @@ export interface DaylightCalcOptions {
 }
 
 export interface DaylightInfo {
-  day: string;
+  day: string; // read into CODAP as an ISO date
   sunrise: string;
   sunset: string;
   dayLength: number;
