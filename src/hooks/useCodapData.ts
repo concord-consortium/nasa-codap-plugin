@@ -86,11 +86,11 @@ export const useCodapData = () => {
     }
   };
 
-  const updateAttributeVisibility = async (attributeName: string, hidden: boolean) => {
+  const updateAttributeVisibility = (attributeName: string, hidden: boolean) => {
     if (!dataContext) return;
 
     try {
-      await updateAttribute(
+      updateAttribute(
         kDataContextName,
         kChildCollectionName,
         attributeName,
