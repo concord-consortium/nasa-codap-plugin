@@ -57,7 +57,7 @@ function getSeasonName(dayJsDay: Dayjs, latitude: number): string {
   return season;
 }
 
-export function getSolarNoonIntensity(dayNum: number, latitude: number): number {
+export function getSolarNoonIntensity(dayNum: number, latitude: number): number | null {
   const solarConstant = 1361;
   const latitudeRad = latitude * Math.PI / 180;
   const declination = 23.45 * Math.sin((360/365) * (dayNum - 81) * Math.PI / 180);
@@ -70,10 +70,10 @@ export function getSolarNoonIntensity(dayNum: number, latitude: number): number 
                               Math.cos(latitudeRad) * Math.cos(declinationRad);
 
   const solarNoonIntensity = solarConstant * eccentricityFactor * cosSolarZenithAngle;
-  return Math.max(0, solarNoonIntensity); // Ensure non-negative value
+  return solarNoonIntensity;
 }
 
-export function getSunrayAngleInDegrees(dayNum: number, earthTilt: number, lat:number): number {
+export function getSunrayAngleInDegrees(dayNum: number, earthTilt: number, lat:number): number | null {
   const tiltAxisZRadians = 2 * Math.PI * (dayNum - kBasicSummerSolstice) / 365;
   const orbitalTiltDegrees = earthTilt ? earthTilt : 0;
   const effectiveTiltDegrees = -Math.cos(tiltAxisZRadians) * orbitalTiltDegrees;
@@ -82,6 +82,9 @@ export function getSunrayAngleInDegrees(dayNum: number, earthTilt: number, lat:n
 }
 
 export function getMinutesSinceMidnight(time: Dayjs): number {
+  if (!time.isValid()) {
+    return 0;
+  }
   return time.hour() * 60 + time.minute();
 }
 
@@ -102,21 +105,55 @@ export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
     const utcSunset = dayjs.utc(getSunset(latitude, longitude, noonDate));
 
     // Convert to local time
-    const localSunrise = utcSunrise.tz(timeZone);
-    const localSunset = utcSunset.tz(timeZone);
+    const localSunriseObj = utcSunrise.tz(timeZone);
+    const localSunsetObj = utcSunset.tz(timeZone);
+
+    const seasonName = getSeasonName(currentDay, latitude);
+
+    const sunsetFormatted = localSunsetObj.format(kDateWithTimeFormats.asClockTimeStringAMPM);
+    const sunriseFormatted = localSunriseObj.format(kDateWithTimeFormats.asClockTimeStringAMPM);
+
+    const validSunrise = typeof sunriseFormatted === "string" && sunriseFormatted !== "Invalid Date";
+    const validSunset = typeof sunsetFormatted === "string" && sunsetFormatted !== "Invalid Date";
+
+    const startPolarSummer = validSunrise && !validSunset;
+    const startPolarWinter = !validSunrise && validSunset;
+
+    const midPolarWinter = !validSunrise && !validSunset && (seasonName === "Winter" || seasonName === "Fall");
+    const midPolarSummer = !validSunrise && !validSunset && (seasonName === "Summer" || seasonName === "Spring");
+
+    let finalDayLength = 0;
+
+    if (midPolarSummer) {
+      finalDayLength = 24;
+    }
+    else if (midPolarWinter) {
+      finalDayLength = 0;
+    }
+    else if (startPolarSummer) {
+      finalDayLength = 24 - getMinutesSinceMidnight(localSunriseObj) / 60;
+    }
+    else if (startPolarWinter) {
+      finalDayLength = getMinutesSinceMidnight(localSunsetObj) / 60;
+    }
+    else {
+      finalDayLength = getDayLength(localSunriseObj, localSunsetObj);
+    }
 
     const record: DaylightInfo = {
       day: currentDay.format(kDateFormats.asLocalISODate),
-      sunrise: localSunrise.format(kDateWithTimeFormats.asClockTimeStringAMPM),
-      sunset: localSunset.format(kDateWithTimeFormats.asClockTimeStringAMPM),
-      dayLength: getDayLength(localSunrise, localSunset),
+      sunrise: validSunrise ? localSunriseObj.format(kDateWithTimeFormats.asClockTimeStringAMPM) : null,
+      sunset: validSunset ? localSunsetObj.format(kDateWithTimeFormats.asClockTimeStringAMPM) : null,
+      dayLength: finalDayLength,
       dayAsInteger: currentDay.dayOfYear(),
-      season: getSeasonName(currentDay, latitude),
+      season: seasonName,
       sunlightAngle: getSunrayAngleInDegrees(currentDay.dayOfYear(), kEarthTilt, latitude),
       solarIntensity: getSolarNoonIntensity(currentDay.dayOfYear(), latitude),
-      sunriseMinSinceMidnight: getMinutesSinceMidnight(localSunrise),
-      sunsetMinSinceMidnight: getMinutesSinceMidnight(localSunset)
+      sunriseMinSinceMidnight: getMinutesSinceMidnight(localSunriseObj),
+      sunsetMinSinceMidnight: getMinutesSinceMidnight(localSunsetObj)
     };
+
+    console.log("| record: ", record);
 
     results.push(record);
     currentDay = currentDay.add(1, "day");
