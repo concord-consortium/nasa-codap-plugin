@@ -70,7 +70,11 @@ export const App: React.FC = () => {
         const isResource = resource === `dataContextChangeNotice[${kDataContextName}]`;
         if (!isResource) return;
 
-        const casesDeleted = values.operation === "selectCases" && values.result.cases && values.result.cases.length === 0 && values.result.success;
+        const casesDeleted =
+          values.operation === "selectCases"
+          && values.result.cases
+          && values.result.cases.length === 0
+          && values.result.success;
 
         if ( casesDeleted ) {
           const uniqeLocations = await getUniqueLocationsRef.current();
