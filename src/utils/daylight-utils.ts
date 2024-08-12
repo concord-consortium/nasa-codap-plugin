@@ -81,6 +81,10 @@ export function getSunrayAngleInDegrees(dayNum: number, earthTilt: number, lat:n
   return degrees;
 }
 
+export function getMinutesSinceMidnight(time: Dayjs): number {
+  return time.hour() * 60 + time.minute();
+}
+
 export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
   const { latitude, longitude, year } = options;
   const results: DaylightInfo[] = [];
@@ -109,8 +113,11 @@ export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
       dayAsInteger: currentDay.dayOfYear(),
       season: getSeasonName(currentDay, latitude),
       sunlightAngle: getSunrayAngleInDegrees(currentDay.dayOfYear(), kEarthTilt, latitude),
-      solarIntensity: getSolarNoonIntensity(currentDay.dayOfYear(), latitude)
+      solarIntensity: getSolarNoonIntensity(currentDay.dayOfYear(), latitude),
+      sunriseMinSinceMidnight: getMinutesSinceMidnight(localSunrise),
+      sunsetMinSinceMidnight: getMinutesSinceMidnight(localSunset)
     };
+    console.log("| record: ", record);
     results.push(record);
     currentDay = currentDay.add(1, "day");
   }

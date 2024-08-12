@@ -89,6 +89,18 @@ export const kChildCollectionAttributes = [
     title: "Season",
     type: "categorical",
     hasToken: true
+  },
+  {
+    name: "sunriseMinSinceMidnight",
+    title: "Sunrise Minutes Since Midnight",
+    type: "numeric",
+    hasToken: true
+  },
+  {
+    name: "sunsetMinSinceMidnight",
+    title: "Sunset Minutes Since Midnight",
+    type: "numeric",
+    hasToken: true
   }
 ];
 
