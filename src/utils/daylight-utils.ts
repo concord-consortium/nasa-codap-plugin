@@ -12,12 +12,28 @@ extend(utc);
 extend(dayOfYear);
 extend(timezone);
 
+
 function getDayLength(sunrise: Dayjs, sunset: Dayjs): number {
-  const utcMidnight = sunrise.startOf("day");
-  const utcSunriseSinceMidnight = sunrise.diff(utcMidnight, "hour", true);
-  const utcSunsetSinceMidnight = sunset.diff(utcMidnight, "hour", true);
-  let dayLength = utcSunsetSinceMidnight - utcSunriseSinceMidnight;
-  return dayLength < 0 ? dayLength + 24 : dayLength;
+  const utcSunrise = sunrise.utc(true);
+  const utcSunset = sunset.utc(true);
+
+  const utcMidnight = utcSunrise.startOf("day");
+
+  const utcSunriseSinceMidnight = utcSunrise.diff(utcMidnight, "hour", true);
+  const utcSunsetSinceMidnight = utcSunset.diff(utcMidnight, "hour", true);
+
+  const initialDayLength = utcSunsetSinceMidnight - utcSunriseSinceMidnight;
+  const dayLength = initialDayLength < 0 ? initialDayLength + 24 : initialDayLength;
+
+  return dayLength;
+}
+
+function hasDST(latitude: number, longitude: number, year: number): boolean {
+  const timeZone = tzlookup(latitude, longitude);
+  const winterDate = dayjs.tz(`${year}-01-01`, timeZone);
+  const summerDate = dayjs.tz(`${year}-07-01`, timeZone);
+
+  return winterDate.utcOffset() !== summerDate.utcOffset();
 }
 
 function getSeasonName(dayJsDay: Dayjs, latitude: number): string {
@@ -104,7 +120,6 @@ export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
     const utcSunrise = dayjs.utc(getSunrise(latitude, longitude, noonDate));
     const utcSunset = dayjs.utc(getSunset(latitude, longitude, noonDate));
 
-    // Convert to local time
     const localSunriseObj = utcSunrise.tz(timeZone);
     const localSunsetObj = utcSunset.tz(timeZone);
 
@@ -116,6 +131,7 @@ export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
     const validSunrise = typeof sunriseFormatted === "string" && sunriseFormatted !== "Invalid Date";
     const validSunset = typeof sunsetFormatted === "string" && sunsetFormatted !== "Invalid Date";
 
+    // Transition days for midnight sun or polar night periods
     const startPolarSummer = validSunrise && !validSunset;
     const startPolarWinter = !validSunrise && validSunset;
 
@@ -138,6 +154,11 @@ export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
     }
     else {
       finalDayLength = getDayLength(localSunriseObj, localSunsetObj);
+      const tzHasDST = hasDST(latitude, longitude, year);
+      const isSpringForward = localSunriseObj.utcOffset() < localSunsetObj.utcOffset();
+      if (isSpringForward && tzHasDST) {
+        finalDayLength -= 1; // Subtract the extra hour added due to DST
+      }
     }
 
     const record: DaylightInfo = {
@@ -152,9 +173,6 @@ export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
       sunriseMinSinceMidnight: getMinutesSinceMidnight(localSunriseObj),
       sunsetMinSinceMidnight: getMinutesSinceMidnight(localSunsetObj)
     };
-
-    console.log("| record: ", record);
-
     results.push(record);
     currentDay = currentDay.add(1, "day");
   }

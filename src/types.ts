@@ -20,8 +20,8 @@ export interface DaylightInfo {
   season: string;
   sunlightAngle: number | null;
   solarIntensity: number | null;
-  sunriseMinSinceMidnight: number;
-  sunsetMinSinceMidnight: number;
+  sunriseMinSinceMidnight: number | null;
+  sunsetMinSinceMidnight: number | null;
 }
 
 export interface GeoNameSearchOptions {
