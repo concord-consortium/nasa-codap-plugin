@@ -154,11 +154,13 @@ export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
     }
     else {
       finalDayLength = getDayLength(localSunriseObj, localSunsetObj);
-      const tzHasDST = hasDST(latitude, longitude, year);
-      const isSpringForward = localSunriseObj.utcOffset() < localSunsetObj.utcOffset();
-      if (isSpringForward && tzHasDST) {
-        finalDayLength -= 1; // Subtract the extra hour added due to DST
-      }
+      // uncomment to pretend DST spring forward does not lose us an hour one day of year
+      // removing the outlier in places where DST transition happens post sunrise
+      // const tzHasDST = hasDST(latitude, longitude, year);
+      // const isSpringForward = localSunriseObj.utcOffset() < localSunsetObj.utcOffset();
+      // if (isSpringForward && tzHasDST) {
+      //   finalDayLength -= 1; // Subtract the extra hour added due to DST
+      // }
     }
 
     const record: DaylightInfo = {
