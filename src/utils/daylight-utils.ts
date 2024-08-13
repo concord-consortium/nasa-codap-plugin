@@ -79,9 +79,7 @@ export function getSolarNoonIntensity(dayNum: number, latitude: number): number 
   const declination = 23.45 * Math.sin((360/365) * (dayNum - 81) * Math.PI / 180);
   const declinationRad = declination * Math.PI / 180;
   const dayAngle = 2 * Math.PI * (dayNum - 1) / 365;
-  // correction factor for Earth's elliptical orbit
-  const eccentricityFactor = 1 + 0.033 * Math.cos(dayAngle);
-  // cosine of the solar zenith angle at solar noon
+  const eccentricityFactor = 1 + 0.033 * Math.cos(dayAngle); // correction factor for Earth's elliptical orbit
   const cosSolarZenithAngle = Math.sin(latitudeRad) * Math.sin(declinationRad) +
                               Math.cos(latitudeRad) * Math.cos(declinationRad);
 

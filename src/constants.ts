@@ -47,6 +47,13 @@ export const kChildCollectionAttributes = [
     precision: "day"
   },
   {
+    name: "monthDay",
+    title: "Day of Month",
+    type: "categorical",
+    hasToken: true,
+    formula: "monthName(date) + ' ' + dayOfMonth(date)"
+  },
+  {
     name: "dayLength",
     title: "Day Length",
     type: "numeric",
