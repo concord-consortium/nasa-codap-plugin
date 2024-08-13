@@ -28,13 +28,14 @@ function getDayLength(sunrise: Dayjs, sunset: Dayjs): number {
   return dayLength;
 }
 
-function hasDST(latitude: number, longitude: number, year: number): boolean {
-  const timeZone = tzlookup(latitude, longitude);
-  const winterDate = dayjs.tz(`${year}-01-01`, timeZone);
-  const summerDate = dayjs.tz(`${year}-07-01`, timeZone);
+// Uncomment this to use in the DST adjustment commented out below
+// function hasDST(latitude: number, longitude: number, year: number): boolean {
+//   const timeZone = tzlookup(latitude, longitude);
+//   const winterDate = dayjs.tz(`${year}-01-01`, timeZone);
+//   const summerDate = dayjs.tz(`${year}-07-01`, timeZone);
 
-  return winterDate.utcOffset() !== summerDate.utcOffset();
-}
+//   return winterDate.utcOffset() !== summerDate.utcOffset();
+// }
 
 function getSeasonName(dayJsDay: Dayjs, latitude: number): string {
   const year = dayJsDay.year();
@@ -73,7 +74,7 @@ function getSeasonName(dayJsDay: Dayjs, latitude: number): string {
   return season;
 }
 
-export function getSolarNoonIntensity(dayNum: number, latitude: number): number | null {
+export function getSolarNoonIntensity(dayNum: number, latitude: number): number {
   const solarConstant = 1361;
   const latitudeRad = latitude * Math.PI / 180;
   const declination = 23.45 * Math.sin((360/365) * (dayNum - 81) * Math.PI / 180);
@@ -87,7 +88,7 @@ export function getSolarNoonIntensity(dayNum: number, latitude: number): number 
   return solarNoonIntensity;
 }
 
-export function getSunrayAngleInDegrees(dayNum: number, earthTilt: number, lat:number): number | null {
+export function getSunrayAngleInDegrees(dayNum: number, earthTilt: number, lat:number): number {
   const tiltAxisZRadians = 2 * Math.PI * (dayNum - kBasicSummerSolstice) / 365;
   const orbitalTiltDegrees = earthTilt ? earthTilt : 0;
   const effectiveTiltDegrees = -Math.cos(tiltAxisZRadians) * orbitalTiltDegrees;
