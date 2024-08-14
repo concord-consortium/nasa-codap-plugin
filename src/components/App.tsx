@@ -26,7 +26,7 @@ export const App: React.FC = () => {
   const [dataContext, setDataContext] = useState<any>(null);
 
   const handleDayUpdateInTheSimTab = (day: number) => {
-    console.log("The day of the year has been updated in the simulation tab to: ", day); // TODO: remove it later
+    // console.log("The day of the year has been updated in the simulation tab to: ", day); // TODO: implement this
     // We might to debounce this call, as if the animation is on, or user is dragging the slider, there will be
     // lot of events and API calls to CODAP.
     updateRowSelectionInCodap(latitude, longitude, Math.floor(day));

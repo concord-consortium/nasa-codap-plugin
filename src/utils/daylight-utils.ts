@@ -84,7 +84,14 @@ export function getSolarNoonIntensity(dayNum: number, latitude: number): number 
                               Math.cos(latitudeRad) * Math.cos(declinationRad);
 
   const solarNoonIntensity = solarConstant * eccentricityFactor * cosSolarZenithAngle;
-  return solarNoonIntensity;
+
+  // Note: This calculation returns theoretical intensity at the top of the atmosphere.
+  // Negative values are clamped to zero, which
+  // represents times when the sun is below the horizon
+  // In reality, some diffuse light might still be present due to atmospheric scattering.
+  // None of the calculations in this plugin use "civil twighlight" or associated definitions
+  // For day length either, so this is consistent with the rest of the calculations.
+  return Math.max(0, solarNoonIntensity);
 }
 
 export function getSunrayAngleInDegrees(dayNum: number, earthTilt: number, lat:number): number {
@@ -96,10 +103,7 @@ export function getSunrayAngleInDegrees(dayNum: number, earthTilt: number, lat:n
 }
 
 export function getMinutesSinceMidnight(time: Dayjs): number {
-  if (!time.isValid()) {
-    return 0;
-  }
-  return time.hour() * 60 + time.minute();
+  return !time.isValid() ? 0 : time.hour() * 60 + time.minute();
 }
 
 export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
