@@ -15,6 +15,8 @@ export interface DaylightInfo {
   day: string;          // read into CODAP as an ISO date
   rawSunrise: string;   // read into CODAP as an ISO date
   rawSunset: string;    // read into CODAP as an ISO date
+  sunrise: number;      // read into CODAP as a number
+  sunset: number;       // read into CODAP as a number
   dayLength: number;
   season: string;
   sunlightAngle: number;

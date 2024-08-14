@@ -96,10 +96,23 @@ export function getSunrayAngleInDegrees(dayNum: number, earthTilt: number, lat:n
 }
 
 export function getMinutesSinceMidnight(time: Dayjs): number {
-  if (!time.isValid()) {
-    return 0;
+  return !time.isValid() ? 0 : time.hour() * 60 + time.minute();
+}
+
+export function getDecimalTime(time: Dayjs): number {
+  const hours = time.hour();
+  const minutes = time.minute();
+  const seconds = time.second();
+
+  let decimalTime = hours + minutes / 60 + seconds / 3600;
+  let roundedTime = Math.round(decimalTime * 100) / 100;
+
+  // Adjust for edge cases
+  if (roundedTime % 1 === 0.99) {
+    roundedTime = Math.ceil(roundedTime);
   }
-  return time.hour() * 60 + time.minute();
+
+  return roundedTime;
 }
 
 export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
@@ -152,6 +165,8 @@ export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
       day: currentDay.format(kDateFormats.asLocalISODate),
       rawSunrise: localSunriseObj.format(kDateWithTimeFormats.asLocalISOWithTZOffset),
       rawSunset: localSunsetObj.format(kDateWithTimeFormats.asLocalISOWithTZOffset),
+      sunrise: getDecimalTime(localSunriseObj),
+      sunset: getDecimalTime(localSunsetObj),
       dayLength: finalDayLength,
       season: seasonName,
       sunlightAngle: getSunrayAngleInDegrees(currentDay.dayOfYear(), kEarthTilt, latitude),

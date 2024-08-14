@@ -81,8 +81,8 @@ export const kChildCollectionAttributes = [
     type: "numeric",
     hasToken: true,
     unit: "decimal hours",
-    formula: "hours(rawSunrise)+minutes(rawSunrise)/60",
-    description: "time in decimal hours"
+    description: "time in decimal hours",
+    precision: "4"
   },
   {
     name: "Sunset",
@@ -90,8 +90,8 @@ export const kChildCollectionAttributes = [
     type: "numeric",
     hasToken: true,
     unit: "decimal hours",
-    formula: "hours(rawSunset)+minutes(rawSunset)/60",
-    description: "time in decimal hours"
+    description: "time in decimal hours",
+    precision: "4"
   },
   {
     name: "Sunlight angle",
