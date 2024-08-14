@@ -23,6 +23,8 @@ export const kDefaultMaxRows = 4;
 export const kParentCollectionName = "Locations";
 export const kChildCollectionName = "Daylight Info";
 
+export const kAdjustSpringForwardOutlier = false;
+
 export const kParentCollectionAttributes = [
   {
     name: "latitude",
@@ -44,73 +46,79 @@ export const kChildCollectionAttributes = [
     title: "Date",
     type: "date",
     hasToken: true,
-    precision: "day"
+    precision: "day",
+    description: "Date"
   },
   {
-    name: "monthDay",
-    title: "Day of Month",
-    type: "categorical",
+    name: "Day length",
+    title: "Day length",
+    type: "numeric",
     hasToken: true,
-    formula: "monthName(date) + ' ' + dayOfMonth(date)"
+    unit: "hours",
+    description: "Day length in hours"
   },
   {
-    name: "dayLength",
-    title: "Day Length",
-    type: "numeric",
-    hasToken: true
+    name: "rawSunrise",
+    title: "rawSunrise",
+    type: "date",
+    hasToken: false,
+    hidden: true,
+    precision: "seconds",
+    description: "sunrise as date object"
   },
   {
-    name: "sunrise",
+    name: "rawSunset",
+    title: "rawSunset",
+    type: "date",
+    hasToken: false,
+    hidden: true,
+    precision: "seconds",
+    description: "sunset as date object"
+  },
+  {
+    name: "Sunrise",
     title: "Sunrise",
-    type: "categorical",
-    hasToken: true
+    type: "numeric",
+    hasToken: true,
+    unit: "decimal hours",
+    formula: "hours(rawSunrise)+minutes(rawSunrise)/60",
+    description: "time in decimal hours"
   },
   {
-    name: "sunset",
+    name: "Sunset",
     title: "Sunset",
-    type: "categorical",
-    hasToken: true
-  },
-  {
-    name: "dayNumber",
-    title: "Day Number",
     type: "numeric",
-    hasToken: true
+    hasToken: true,
+    unit: "decimal hours",
+    formula: "hours(rawSunset)+minutes(rawSunset)/60",
+    description: "time in decimal hours"
   },
   {
-    name: "sunlightAngle",
-    title: "Sunlight Angle",
+    name: "Sunlight angle",
+    title: "Sunlight angle",
     type: "numeric",
-    hasToken: true
+    hasToken: true,
+    unit: "°",
+    description: "angle in degrees of sunlight at solar noon"
   },
   {
-    name: "solarIntensity",
-    title: "Solar Intensity",
+    name: "Solar intensity",
+    title: "Solar intensity",
     type: "numeric",
-    hasToken: true
+    hasToken: true,
+    unit: "W/㎡",
+    description: "intensity of solar energy in watts per square meter at solar noon, disregarding all atmospheric effects"
   },
   {
-    name: "season",
+    name: "Season",
     title: "Season",
     type: "categorical",
-    hasToken: true
-  },
-  {
-    name: "sunriseMinSinceMidnight",
-    title: "Sunrise Minutes Since Midnight",
-    type: "numeric",
-    hasToken: true
-  },
-  {
-    name: "sunsetMinSinceMidnight",
-    title: "Sunset Minutes Since Midnight",
-    type: "numeric",
     hasToken: true
   }
 ];
 
 export const kDefaultOnAttributes = [
-  "date", "sunrise", "sunset", "dayLength", "season", "sunlightAngle", "solarIntensity", "sunriseMinSinceMidnight", "sunsetMinSinceMidnight", "dayNumber"
+  "date", "Day length"
 ];
 
 export const kDateWithTimeFormats = {
@@ -122,5 +130,4 @@ export const kDateWithTimeFormats = {
 
 export const kDateFormats = {
   asLocalISODate: "YYYY-MM-DD",
-  asCalendarDateString: "MM-DD",
 }

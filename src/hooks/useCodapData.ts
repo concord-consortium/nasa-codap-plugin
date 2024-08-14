@@ -66,16 +66,13 @@ export const useCodapData = () => {
           latitude: location.latitude,
           longitude: location.longitude,
           location: location.name,
-          dayNumber: solarEvent.dayAsInteger,
           date: solarEvent.day,
-          sunrise: solarEvent.sunrise,
-          sunset: solarEvent.sunset,
-          dayLength: solarEvent.dayLength,
-          season: solarEvent.season,
-          sunlightAngle: solarEvent.sunlightAngle,
-          solarIntensity: solarEvent.solarIntensity,
-          sunriseMinSinceMidnight: solarEvent.sunriseMinSinceMidnight,
-          sunsetMinSinceMidnight: solarEvent.sunsetMinSinceMidnight
+          rawSunrise: solarEvent.rawSunrise,
+          rawSunset: solarEvent.rawSunset,
+          "Day length": solarEvent.dayLength,
+          "Season": solarEvent.season,
+          "Sunlight angle": solarEvent.sunlightAngle,
+          "Solar intensity": solarEvent.solarIntensity
         };
 
         return record;

@@ -12,16 +12,13 @@ export interface DaylightCalcOptions {
 }
 
 export interface DaylightInfo {
-  day: string; // read into CODAP as an ISO date
-  sunrise: string | null;
-  sunset: string | null;
-  dayLength?: number | null;
-  dayAsInteger: number;
+  day: string;          // read into CODAP as an ISO date
+  rawSunrise: string;   // read into CODAP as an ISO date
+  rawSunset: string;    // read into CODAP as an ISO date
+  dayLength: number;
   season: string;
-  sunlightAngle: number | null;
-  solarIntensity: number | null;
-  sunriseMinSinceMidnight: number | null;
-  sunsetMinSinceMidnight: number | null;
+  sunlightAngle: number;
+  solarIntensity: number;
 }
 
 export interface GeoNameSearchOptions {
