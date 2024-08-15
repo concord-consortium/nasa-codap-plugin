@@ -3,7 +3,7 @@ import { clsx } from "clsx";
 import { ILocation } from "../types";
 import { debounce } from "../grasp-seasons/utils/utils";
 import { kInitialDimensions, kVersion, kPluginName, kDefaultOnAttributes, kSimulationTabDimensions, kDataContextName } from "../constants";
-import { initializePlugin, codapInterface, selectSelf, addDataContextChangeListener, ClientNotification } from "@concord-consortium/codap-plugin-api";
+import { initializePlugin, codapInterface, selectSelf, addDataContextChangeListener, ClientNotification, getCaseByID } from "@concord-consortium/codap-plugin-api";
 import { useCodapData } from "../hooks/useCodapData";
 import { LocationTab } from "./location-tab";
 import { SimulationTab } from "./simulation-tab";
@@ -40,11 +40,19 @@ export const App: React.FC = () => {
   };
 
   const handleCaseSelectionInCodap = (_latitude: string, _longitude: string, day: number) => {
-    console.log("| calling handleCaseSelectionInCodap with: ", _latitude, _longitude, day);
-    // if user actually selected the case from the same location, then update the day of the year.
-    if (latitude === _latitude && longitude === _longitude) {
-      setDayOfYear(day);
+    console.log("| calling handleCaseSelectionInCodap with selected values: ", _latitude, _longitude, day);
+    console.log("| matching lat long?: \n    current location: ", latitude, longitude, "\n   selected location: ", _latitude, _longitude);
+    console.log("| matching day?: \n    current dayOfYear in sim: ", dayOfYear, "\n  selected day in codap: ", day);
+    const correctLocation = latitude === _latitude && longitude === _longitude;
+    const isNewDay = dayOfYear !== day;
+    if (correctLocation && isNewDay) {
+      console.log("| we should update the dayOfYear in the sim tab to day, ", day);
+      //setDayOfYear(day);
     }
+    // if user actually selected the case from the same location, then update the day of the year.
+    // if (latitude === _latitude && longitude === _longitude) {
+    //   setDayOfYear(day);
+    // }
   }
 
 
@@ -65,23 +73,28 @@ export const App: React.FC = () => {
       }
 
       // TODO: make this more general, and then decipher what to do with the data
-      const casesDeletedFromCodapListener = async (listenerRes: ClientNotification) => {
+      const handleDataContextChange = async (listenerRes: ClientNotification) => {
         const { resource, values } = listenerRes;
         const isResource = resource === `dataContextChangeNotice[${kDataContextName}]`;
-        if (!isResource) return;
+        if (!isResource || !values.result.success) return;
 
-        const casesDeleted =
-          values.operation === "selectCases"
-          && values.result.cases
-          && values.result.cases.length === 0
-          && values.result.success;
+        // Checking if cases were deleted.  If they were, we need to update the locations list.
+        const casesDeleted = values.operation === "selectCases" && values.result.cases.length === 0
+        const caseSelected = values.operation === "selectCases" && values.result.cases.length === 1;
 
         if ( casesDeleted ) {
           const uniqeLocations = await getUniqueLocationsRef.current();
           if (uniqeLocations) setLocations(uniqeLocations);
+        } else if (caseSelected) {
+          const parentCaseId = values.result.cases[0].parent;
+          const selectedDay = values.result.cases[0].values.dayOfYear;
+          const parentCase = await getCaseByID(kDataContextName, parentCaseId);
+          const selectedLatitude = parentCase.values.case.values.latitude;
+          const selectedLongitude = parentCase.values.case.values.longitude;
+          handleCaseSelectionInCodap(selectedLatitude, selectedLongitude, selectedDay);
         }
       };
-      addDataContextChangeListener(kDataContextName, casesDeletedFromCodapListener);
+      addDataContextChangeListener(kDataContextName, handleDataContextChange);
     };
 
     initialize();
