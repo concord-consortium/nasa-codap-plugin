@@ -3,7 +3,7 @@ import { clsx } from "clsx";
 import { ILocation } from "../types";
 import { debounce } from "../grasp-seasons/utils/utils";
 import { kInitialDimensions, kVersion, kPluginName, kDefaultOnAttributes, kSimulationTabDimensions, kDataContextName } from "../constants";
-import { initializePlugin, codapInterface, addDataContextChangeListener, ClientNotification } from "@concord-consortium/codap-plugin-api";
+import { initializePlugin, codapInterface, selectSelf, addDataContextChangeListener, ClientNotification } from "@concord-consortium/codap-plugin-api";
 import { useCodapData } from "../hooks/useCodapData";
 import { LocationTab } from "./location-tab";
 import { SimulationTab } from "./simulation-tab";
@@ -96,6 +96,11 @@ export const App: React.FC = () => {
       values: {
         dimensions: tab === "location" ? kInitialDimensions : kSimulationTabDimensions
       }
+    }).then(() => {
+      // After updating dimensions, call selectSelf to bring the plugin to the front
+      selectSelf();
+    }).catch((error) => {
+      console.error("Error updating dimensions or selecting self:", error);
     });
   };
 
