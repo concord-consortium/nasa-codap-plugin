@@ -11,16 +11,20 @@ import { Header } from "./header";
 
 import "../assets/scss/App.scss";
 
-const updateRowSelectionInCodap = (latitude: string, longitude: string, day: number) => {
+const debouncedUpdateRowSelectionInCodap = debounce((latitude: string, longitude: string, day: number) => {
   console.log("\n| SIM day is: ", day, " so issue API request to update selected row in CODAP ",
     "\n latitude:       ", latitude,
     "\n longitude:      ", longitude,
     "\n day:            ", day,
     "\n Math.floor(day) ", Math.floor(day));
-}
 
-const debouncedUpdateRowSelection = debounce((latitude: string, longitude: string, day: number) => {
-  updateRowSelectionInCodap(latitude, longitude, Math.floor(day));
+  // Here, you would add the actual API call to update the row selection in CODAP
+  // For example:
+  // codapInterface.sendRequest({
+  //   action: "update",
+  //   resource: `dataContext[${kDataContextName}].selectionList`,
+  //   values: [{ latitude, longitude, dayOfYear: Math.floor(day) }]
+  // });
 }, 250);
 
 export const App: React.FC = () => {
@@ -34,7 +38,7 @@ export const App: React.FC = () => {
   const [dataContext, setDataContext] = useState<any>(null);
 
   const handleDayUpdateInTheSimTab = (day: number) => {
-    debouncedUpdateRowSelection(latitude, longitude, day);
+    debouncedUpdateRowSelectionInCodap(latitude, longitude, day);
     // NOTE: not need update dayOfYear state variable. It's useful only for the opposite direction
     // it's useful when user select a row in CODAP and we want to update the day in the sim
   };
