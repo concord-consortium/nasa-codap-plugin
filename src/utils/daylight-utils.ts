@@ -89,7 +89,7 @@ export function getSolarNoonIntensity(dayNum: number, latitude: number): number 
   // Negative values are clamped to zero, which
   // represents times when the sun is below the horizon
   // In reality, some diffuse light might still be present due to atmospheric scattering.
-  // None of the calculations in this plugin use "civil twighlight" or associated definitions
+  // None of the calculations in this plugin use "civil twilight" or associated definitions
   // For day length either, so this is consistent with the rest of the calculations.
   return Math.max(0, solarNoonIntensity);
 }
@@ -154,6 +154,7 @@ export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
 
     const record: DaylightInfo = {
       day: currentDay.format(kDateFormats.asLocalISODate),
+      dayOfYear: currentDay.dayOfYear(),
       rawSunrise: localSunriseObj.format(kDateWithTimeFormats.asLocalISOWithTZOffset),
       rawSunset: localSunsetObj.format(kDateWithTimeFormats.asLocalISOWithTZOffset),
       dayLength: finalDayLength,

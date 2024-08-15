@@ -50,6 +50,14 @@ export const kChildCollectionAttributes = [
     description: "Date"
   },
   {
+    name: "dayOfYear",
+    title: "Day of year",
+    type: "numeric",
+    // TODO: when not in dev, hasToken should be false, hidden should be true
+    hasToken: true,
+    description: "Day of year"
+  },
+  {
     name: "Day length",
     title: "Day length",
     type: "numeric",
@@ -118,7 +126,7 @@ export const kChildCollectionAttributes = [
 ];
 
 export const kDefaultOnAttributes = [
-  "date", "Day length"
+  "date", "Day length", "dayOfYear" // TODO: take off dayOfYear when done with development
 ];
 
 export const kDateWithTimeFormats = {

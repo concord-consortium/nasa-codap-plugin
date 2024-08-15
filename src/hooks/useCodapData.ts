@@ -67,6 +67,7 @@ export const useCodapData = () => {
           longitude: location.longitude,
           location: location.name,
           date: solarEvent.day,
+          dayOfYear: solarEvent.dayOfYear,
           rawSunrise: solarEvent.rawSunrise,
           rawSunset: solarEvent.rawSunset,
           "Day length": solarEvent.dayLength,
