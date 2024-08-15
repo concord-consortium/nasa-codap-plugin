@@ -19,14 +19,14 @@ export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"location" | "simulation">("location");
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
-  const [dayOfYear, setDayOfYear] = useState(171);
+  const [dayOfYear, /*setDayOfYear */] = useState(171);
   const [locations, setLocations] = useState<ILocation[]>([]);
   const [locationSearch, setLocationSearch] = useState<string>("");
   const [selectedAttrs, setSelectedAttributes] = useState<string[]>(kDefaultOnAttributes);
   const [dataContext, setDataContext] = useState<any>(null);
 
   const handleDayUpdateInTheSimTab = (day: number) => {
-    console.log("The day of the year has been updated in the simulation tab to: ", day); // TODO: remove it later
+    // console.log("The day of the year has been updated in the simulation tab to: ", day); // TODO: implement this
     // We might to debounce this call, as if the animation is on, or user is dragging the slider, there will be
     // lot of events and API calls to CODAP.
     updateRowSelectionInCodap(latitude, longitude, Math.floor(day));
@@ -34,20 +34,21 @@ export const App: React.FC = () => {
     // of the sync process, when user select a row in CODAP and we want to update the day in the simulation tab.
   };
 
-  const handleCaseSelectionInCodap = (_latitude: string, _longitude: string, day: number) => {
-    // Option 1. Update as much of the plugin state as we can when user selects a case in CODAP. I think this might
-    // be too much, as it'll clear all the inputs in all the tabs and the user will have to re-enter everything
-    // if they were in the middle of something.
-    // setDayOfYear(day);
-    // setLatitude(_latitude);
-    // setLongitude(_longitude);
-    // ...OR...
-    // Option 2. Update only the day of the year, as that's reasonably unobtrusive and useful. We can first check
-    // if user actually selected the case from the same location, and only then update the day of the year.
-    if (latitude === _latitude && longitude === _longitude) {
-      setDayOfYear(day);
-    }
-  }
+  // TODO: Handle case selection - sync sim tab with CODAP selection
+  // const handleCaseSelectionInCodap = (_latitude: string, _longitude: string, day: number) => {
+  //   // Option 1. Update as much of the plugin state as we can when user selects a case in CODAP. I think this might
+  //   // be too much, as it'll clear all the inputs in all the tabs and the user will have to re-enter everything
+  //   // if they were in the middle of something.
+  //   // setDayOfYear(day);
+  //   // setLatitude(_latitude);
+  //   // setLongitude(_longitude);
+  //   // ...OR...
+  //   // Option 2. Update only the day of the year, as that's reasonably unobtrusive and useful. We can first check
+  //   // if user actually selected the case from the same location, and only then update the day of the year.
+  //   if (latitude === _latitude && longitude === _longitude) {
+  //     setDayOfYear(day);
+  //   }
+  // }
 
   const { getUniqueLocationsInCodapData } = useCodapData();
   // Store a ref to getUniqueLocationsInCodapData so we can call inside useEffect without triggering unnecessary re-runs
@@ -70,7 +71,11 @@ export const App: React.FC = () => {
         const isResource = resource === `dataContextChangeNotice[${kDataContextName}]`;
         if (!isResource) return;
 
-        const casesDeleted = values.operation === "selectCases" && values.result.cases.length === 0 && values.result.success;
+        const casesDeleted =
+          values.operation === "selectCases"
+          && values.result.cases
+          && values.result.cases.length === 0
+          && values.result.success;
 
         if ( casesDeleted ) {
           const uniqeLocations = await getUniqueLocationsRef.current();

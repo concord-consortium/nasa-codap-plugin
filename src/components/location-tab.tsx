@@ -43,14 +43,14 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   } = useCodapData();
 
   useEffect(() => {
-    const updateAttributesVisibility = async () => {
+    const updateEachAttrVisibility = () => {
       for (const attr of kChildCollectionAttributes) {
         const isSelected = selectedAttrs.includes(attr.name);
-        await updateAttributeVisibility(attr.name, !isSelected);
+        updateAttributeVisibility(attr.name, !isSelected);
       }
     };
 
-    updateAttributesVisibility();
+    updateEachAttrVisibility();
   }, [selectedAttrs, updateAttributeVisibility]);
 
   const handleLatChange = (event: React.ChangeEvent<HTMLInputElement>) => {

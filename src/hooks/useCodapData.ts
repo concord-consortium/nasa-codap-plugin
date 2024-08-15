@@ -66,14 +66,13 @@ export const useCodapData = () => {
           latitude: location.latitude,
           longitude: location.longitude,
           location: location.name,
-          dayNumber: solarEvent.dayAsInteger,
           date: solarEvent.day,
-          sunrise: solarEvent.sunrise,
-          sunset: solarEvent.sunset,
-          dayLength: solarEvent.dayLength,
-          season: solarEvent.season,
-          sunlightAngle: solarEvent.sunlightAngle,
-          solarIntensity: solarEvent.solarIntensity
+          rawSunrise: solarEvent.rawSunrise,
+          rawSunset: solarEvent.rawSunset,
+          "Day length": solarEvent.dayLength,
+          "Season": solarEvent.season,
+          "Sunlight angle": solarEvent.sunlightAngle,
+          "Solar intensity": solarEvent.solarIntensity
         };
 
         return record;
@@ -84,11 +83,11 @@ export const useCodapData = () => {
     }
   };
 
-  const updateAttributeVisibility = async (attributeName: string, hidden: boolean) => {
+  const updateAttributeVisibility = (attributeName: string, hidden: boolean) => {
     if (!dataContext) return;
 
     try {
-      await updateAttribute(
+      updateAttribute(
         kDataContextName,
         kChildCollectionName,
         attributeName,
