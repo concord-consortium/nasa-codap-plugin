@@ -22,6 +22,7 @@ const debouncedUpdateRowSelectionInCodap = debounce((
   // But I was unable to find an example of how to select a case by its attribute values
   // Next thing for this might be to see if the case ids might be mapped somewhere to the dayOfYear
   // It could be a more direct way to select the case rather than two api requests
+  // TODO: also right now this is only using the dayOfYear attribute to select the case, but it needs to be restricted to location
   codapInterface.sendRequest({
     action: "get",
     resource: `dataContext[${kDataContextName}].collection[${kChildCollectionName}].caseSearch[dayOfYear==${Math.floor(day)}]`
@@ -80,6 +81,7 @@ export const App: React.FC = () => {
       setDayOfYear(selectedDay);
       // TODO: this works, but CODAP is also resetting the case table so we scroll away from selected row
       // Perhaps because it is re-rendering the table with the new case selected?
+      // TODO: We might consider resetting latitude, longitude here as well to get sliders back on track
     }
   };
 
@@ -103,6 +105,9 @@ export const App: React.FC = () => {
   useEffect(() => {
     const handleDataContextChange = async (listenerRes: ClientNotification) => {
       console.log("| dataContextChangeNotice: ", listenerRes);
+      // TODO : as per discussion with team, it might be more typical (and compatible with v3 today)
+      // to use the notificaiton as catalyst to ask for state we interested in from CODAP
+      // rather than try to parse the notification for the data we need
       const { resource, values } = listenerRes;
       const isResource = resource === `dataContextChangeNotice[${kDataContextName}]`;
       if (!isResource || !values.result.success) return;
