@@ -22,7 +22,7 @@ const debouncedUpdateRowSelectionInCodap = debounce((
   // But I was unable to find an example of how to select a case by its attribute values
   // Next thing for this might be to see if the case ids might be mapped somewhere to the dayOfYear
   // It could be a more direct way to select the case rather than two api requests
-  // TODO: also right now this is only using the dayOfYear attribute to select the case, but it needs to be restricted to location
+  // TODO: Right now this is only using the dayOfYear attribute to select the case, but it needs to be restricted to location
   codapInterface.sendRequest({
     action: "get",
     resource: `dataContext[${kDataContextName}].collection[${kChildCollectionName}].caseSearch[dayOfYear==${Math.floor(day)}]`
@@ -74,7 +74,7 @@ export const App: React.FC = () => {
     currentLongitude: string,
     currentDayOfYear: number
   ) => {
-    // TODO: this is a little hacky - we cooerce the numbers to strings to compare them
+    // TODO: this is a little hacky? we cooerce the numbers to strings to compare them
     const rowInLocation = `${currentLatitude},${currentLongitude}` === `${selectedLatitude},${selectedLongitude}`;
     const newDayChoice = `${currentDayOfYear}` !== `${selectedDay}`;
     if (rowInLocation && newDayChoice) {
@@ -105,9 +105,10 @@ export const App: React.FC = () => {
   useEffect(() => {
     const handleDataContextChange = async (listenerRes: ClientNotification) => {
       console.log("| dataContextChangeNotice: ", listenerRes);
-      // TODO : as per discussion with team, it might be more typical (and compatible with v3 today)
+      // TODO: as per discussion with team, it might be more typical
       // to use the notificaiton as catalyst to ask for state we interested in from CODAP
       // rather than try to parse the notification for the data we need
+
       const { resource, values } = listenerRes;
       const isResource = resource === `dataContextChangeNotice[${kDataContextName}]`;
       if (!isResource || !values.result.success) return;
@@ -115,10 +116,12 @@ export const App: React.FC = () => {
       const casesDeleted = values.operation === "selectCases" && values.result.cases.length === 0
       const caseSelected = values.operation === "selectCases" && values.result.cases.length === 1;
 
+      // If cases were deleted, we should update the locations list
       if (casesDeleted) {
         const uniqeLocations = await getUniqueLocationsRef.current();
         if (uniqeLocations) setLocations(uniqeLocations);
       }
+      // If a case was selected, we should update the dayOfYear
       else if (caseSelected) {
         const parentCaseId = values.result.cases[0].parent;
         const selectedDay = values.result.cases[0].values.dayOfYear;
@@ -136,7 +139,6 @@ export const App: React.FC = () => {
       }
     };
     addDataContextChangeListener(kDataContextName, handleDataContextChange);
-    // TODO: this is kind of working but not sure about how to clean up the listener?
   }, [latitude, longitude, dayOfYear]);
 
   const handleTabClick = (tab: "location" | "simulation") => {
