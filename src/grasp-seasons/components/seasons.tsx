@@ -201,7 +201,7 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
   const handleLatSliderChange = (event: any, ui: any) => {
     setSimState(prevState => ({ ...prevState, lat: ui.value }));
     setLatitude(formatLatLongNumber(ui.value));
-    setLocationSearch("");
+    // setLocationSearch("");
   };
 
   const handleLatInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -211,14 +211,17 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
 
   const handleLatIncrement = (increment: number) => () => {
     setSimState(prevState => ({ ...prevState, lat: prevState.lat + increment }));
-    setLatitude(formatLatLongNumber(simState.lat + increment));
-    setLocationSearch("");
+    // TODO: commenting these out prevents the "glitch"
+    // but lets test other examples of these being called and see if they are glitchy
+    // there might be something circular going on?
+    //setLatitude(formatLatLongNumber(simState.lat + increment));
+    //setLocationSearch("");
   }
 
   const handleLongSliderChange = (event: any, ui: any) => {
     setSimState(prevState => ({ ...prevState, long: ui.value }));
-    setLongitude(formatLatLongNumber(ui.value));
-    setLocationSearch("");
+    //setLongitude(formatLatLongNumber(ui.value));
+    //setLocationSearch("");
   };
 
   const handleLongInputChange = (event: ChangeEvent<HTMLInputElement>) => {
