@@ -33,8 +33,7 @@ export const SimulationTab: React.FC<SimulationTabProps> = ({
   const { getDayLengthData, getUniqueLocationsInCodapData } = useCodapData();
 
   const handleGetDataClick = async () => {
-    // console.log("| sim says to go ahead an get data with local lat, long: ", latitude, longitude);
-    // console.log("| also, if location is novel, we need to save it to the locations array");
+    console.log("||| SIM tab click");
     const name = `(${latitude}, ${longitude})`;
     const currentLocation: ILocation = { name, latitude: Number(latitude), longitude: Number(longitude) };
     const locationExists = locations.some(item => locationsEqual(item, currentLocation));
@@ -61,7 +60,7 @@ export const SimulationTab: React.FC<SimulationTabProps> = ({
           locations={locations}
         />
       </div>
-      <button onClick={handleGetDataClick}>
+      <button className="get-data-button" onClick={handleGetDataClick}>
         Get Data
       </button>
     </div>
