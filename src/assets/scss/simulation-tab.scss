@@ -1,1 +1,19 @@
 @import "./vars.scss";
+
+.simulation-tab {
+  .get-data-button {
+    position: relative;
+    top: -15px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 25px;
+    color: $codap-teal;
+    border-radius: 3px;
+    border: 1px solid $codap-teal;
+    background-color: white;
+    cursor: pointer;
+    margin-left: auto;
+  }
+}
