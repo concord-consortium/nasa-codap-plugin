@@ -66,10 +66,12 @@ export const App: React.FC = () => {
       }
 
       const casesDeletedFromCodapListener = async (listenerRes: ClientNotification) => {
+        console.log("|| listenerRes: ", listenerRes);
         const { resource, values } = listenerRes;
         const isResource = resource === `dataContextChangeNotice[${kDataContextName}]`;
-        if (!isResource) return;
-
+        if (!isResource && !values.result.cases) return;
+        const hasCasesDefined = values.result.cases !== undefined;
+        if (!hasCasesDefined) return
         const casesDeleted = values.operation === "selectCases" && values.result.cases.length === 0 && values.result.success;
 
         if ( casesDeleted ) {
@@ -127,6 +129,7 @@ export const App: React.FC = () => {
           setLocationSearch={setLocationSearch}
           dayOfYear={dayOfYear}
           setDayOfYear={handleDayUpdateInTheSimTab}
+          setLocations={setLocations}
         />
       </div>
     </div>

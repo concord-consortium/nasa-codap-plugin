@@ -1,6 +1,8 @@
 import React from "react";
 import { ILocation } from "../types";
+import { useCodapData } from "../hooks/useCodapData";
 import Seasons from "../grasp-seasons/components/seasons";
+import { locationsEqual } from "../utils/daylight-utils";
 
 import "../assets/scss/simulation-tab.scss";
 
@@ -13,6 +15,7 @@ interface SimulationTabProps {
   setLocationSearch: (search: string) => void;
   dayOfYear: number;
   setDayOfYear: (day: number) => void;
+  setLocations: (locations: ILocation[]) => void;
 }
 
 export const SimulationTab: React.FC<SimulationTabProps> = ({
@@ -24,7 +27,26 @@ export const SimulationTab: React.FC<SimulationTabProps> = ({
   setLocationSearch,
   dayOfYear,
   setDayOfYear,
+  setLocations
 }) => {
+
+  const { getDayLengthData, getUniqueLocationsInCodapData } = useCodapData();
+
+  const handleGetDataClick = async () => {
+    // console.log("| sim says to go ahead an get data with local lat, long: ", latitude, longitude);
+    // console.log("| also, if location is novel, we need to save it to the locations array");
+    const name = `(${latitude}, ${longitude})`;
+    const currentLocation: ILocation = { name, latitude: Number(latitude), longitude: Number(longitude) };
+    const locationExists = locations.some(item => locationsEqual(item, currentLocation));
+    if (locationExists || !latitude || !longitude) return;
+
+    const tableCreated = await getDayLengthData(currentLocation);
+    if (tableCreated?.success) {
+      const uniqueLocations = await getUniqueLocationsInCodapData();
+      if (uniqueLocations) setLocations(uniqueLocations);
+    }
+  }
+
   return (
     <div className="simulation-tab">
       <div className="seasons-container">
@@ -39,6 +61,9 @@ export const SimulationTab: React.FC<SimulationTabProps> = ({
           locations={locations}
         />
       </div>
+      <button onClick={handleGetDataClick}>
+        Get Data
+      </button>
     </div>
   );
 };
