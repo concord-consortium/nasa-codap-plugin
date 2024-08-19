@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useCodapData } from "../hooks/useCodapData";
 import { kChildCollectionAttributes } from "../constants";
-import { ILocation } from "../types";
+import { ICodapDataContextInfo, ILocation } from "../types";
 import { LocationPicker } from "./location-picker";
 import { locationsEqual } from "../utils/daylight-utils";
 
@@ -13,12 +13,12 @@ interface LocationTabProps {
   locations: ILocation[];
   locationSearch: string;
   selectedAttrs: string[];
-  dataContext: any; // TODO the type
+  dataContext: ICodapDataContextInfo | null;
   setLatitude: (latitude: string) => void;
   setLongitude: (longitude: string) => void;
   setLocationSearch: (search: string) => void;
   setSelectedAttributes: (attrs: string[]) => void;
-  setDataContext: (context: any) => void; // TODO the type
+  setDataContext: (context: any) => void;
   setLocations: (locations: ILocation[]) => void;
 }
 
@@ -34,6 +34,7 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   setSelectedAttributes,
   setLocations
 }) => {
+
   const {
     dataContext,
     handleClearData,
@@ -43,14 +44,14 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   } = useCodapData();
 
   useEffect(() => {
-    const updateAttributesVisibility = async () => {
+    const updateEachAttrVisibility = () => {
       for (const attr of kChildCollectionAttributes) {
         const isSelected = selectedAttrs.includes(attr.name);
-        await updateAttributeVisibility(attr.name, !isSelected);
+        updateAttributeVisibility(attr.name, !isSelected);
       }
     };
 
-    updateAttributesVisibility();
+    updateEachAttrVisibility();
   }, [selectedAttrs, updateAttributeVisibility]);
 
   const handleLatChange = (event: React.ChangeEvent<HTMLInputElement>) => {

@@ -23,6 +23,8 @@ export const kDefaultMaxRows = 4;
 export const kParentCollectionName = "Locations";
 export const kChildCollectionName = "Daylight Info";
 
+export const kAdjustSpringForwardOutlier = false;
+
 export const kParentCollectionAttributes = [
   {
     name: "latitude",
@@ -31,14 +33,11 @@ export const kParentCollectionAttributes = [
   {
     name: "longitude",
     type: "numeric"
-
   },
   {
     name: "location",
     type: "categorical"
-
   }
-  // NOTE: If data are to be historical, add year attribute
 ];
 
 export const kChildCollectionAttributes = [
@@ -46,52 +45,106 @@ export const kChildCollectionAttributes = [
     name: "date",
     title: "Date",
     type: "date",
-    hasToken: true
+    hasToken: true,
+    precision: "day",
+    description: "Date"
   },
   {
-    name: "dayLength",
-    title: "Day Length",
+    name: "dayOfYear",
+    title: "Day of year",
     type: "numeric",
-    hasToken: true
+    hasToken: false,
+    hidden: true,
+    description: "Day of year"
   },
   {
-    name: "sunrise",
+    name: "Day length",
+    title: "Day length",
+    type: "numeric",
+    hasToken: true,
+    unit: "hours",
+    description: "Day length in hours"
+  },
+  {
+    name: "rawSunrise",
+    title: "rawSunrise",
+    type: "date",
+    hasToken: false,
+    hidden: true,
+    precision: "seconds",
+    description: "sunrise as date object"
+  },
+  {
+    name: "rawSunset",
+    title: "rawSunset",
+    type: "date",
+    hasToken: false,
+    hidden: true,
+    precision: "seconds",
+    description: "sunset as date object"
+  },
+  {
+    name: "Sunrise",
     title: "Sunrise",
-    type: "date",
-    hasToken: true
+    type: "numeric",
+    hasToken: true,
+    unit: "decimal hours",
+    formula: "hours(rawSunrise)+minutes(rawSunrise)/60",
+    description: "time in decimal hours"
   },
   {
-    name: "sunset",
+    name: "Sunset",
     title: "Sunset",
-    type: "date",
-    hasToken: true
-  },
-  {
-    name: "dayNumber",
-    title: "Day Number",
     type: "numeric",
-    hasToken: false
+    hasToken: true,
+    unit: "decimal hours",
+    formula: "hours(rawSunset)+minutes(rawSunset)/60",
+    description: "time in decimal hours"
   },
   {
-    name: "sunlightAngle",
-    title: "Sunlight Angle",
+    name: "Sunlight angle",
+    title: "Sunlight angle",
     type: "numeric",
-    hasToken: true
+    hasToken: true,
+    unit: "°",
+    description: "angle in degrees of sunlight at solar noon"
   },
   {
-    name: "solarIntensity",
-    title: "Solar Intensity",
+    name: "Solar intensity",
+    title: "Solar intensity",
     type: "numeric",
-    hasToken: true
+    hasToken: true,
+    unit: "W/㎡",
+    description: "intensity of solar energy in watts per square meter at solar noon, disregarding all atmospheric effects"
   },
   {
-    name: "season",
+    name: "Season",
     title: "Season",
     type: "categorical",
     hasToken: true
+  },
+  {
+    name: "calcId",
+    title: "calcId",
+    type: "categorical",
+    hasToken: false,
+    hidden: true,
+    description: "unique identifier for each location on a day - concatenation of latitude, longitude, and dayOfYear",
+    formula: "latitude + ',' + longitude + ',' + dayOfYear"
   }
 ];
 
 export const kDefaultOnAttributes = [
-  "date", "sunrise", "sunset", "dayLength"
+  "date", "Day length"
 ];
+
+export const kDateWithTimeFormats = {
+  asZuluISO: "YYYY-MM-DDTHH:mm[Z]",              // 1999-01-23T21:45Z
+  asLocalISOWithTZOffset: "YYYY-MM-DDTHH:mmZ",   // 1999-01-23T14:45-07:00
+  asClockTimeString: "HH:mm",                    // 14:45
+  asClockTimeStringAMPM: "h:mm a",               // 2:45 PM
+}
+
+export const kDateFormats = {
+  asLocalISODate: "YYYY-MM-DD",
+}

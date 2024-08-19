@@ -6,18 +6,34 @@ import tzlookup from "tz-lookup";
 import { getSunrise, getSunset } from "sunrise-sunset-js";
 import { Seasons } from "astronomy-engine";
 import { DaylightInfo, DaylightCalcOptions, ILocation } from "../types";
-import { kBasicSummerSolstice, kEarthTilt } from "../constants";
+import { kBasicSummerSolstice, kDateFormats, kDateWithTimeFormats, kEarthTilt, kAdjustSpringForwardOutlier } from "../constants";
 
 extend(utc);
 extend(dayOfYear);
 extend(timezone);
 
+
 function getDayLength(sunrise: Dayjs, sunset: Dayjs): number {
-  const utcMidnight = sunrise.startOf("day");
-  const utcSunriseSinceMidnight = sunrise.diff(utcMidnight, "hour", true);
-  const utcSunsetSinceMidnight = sunset.diff(utcMidnight, "hour", true);
-  let dayLength = utcSunsetSinceMidnight - utcSunriseSinceMidnight;
-  return dayLength < 0 ? dayLength + 24 : dayLength;
+  const utcSunrise = sunrise.utc(true);
+  const utcSunset = sunset.utc(true);
+
+  const utcMidnight = utcSunrise.startOf("day");
+
+  const utcSunriseSinceMidnight = utcSunrise.diff(utcMidnight, "hour", true);
+  const utcSunsetSinceMidnight = utcSunset.diff(utcMidnight, "hour", true);
+
+  const initialDayLength = utcSunsetSinceMidnight - utcSunriseSinceMidnight;
+  const dayLength = initialDayLength < 0 ? initialDayLength + 24 : initialDayLength;
+
+  return dayLength;
+}
+
+function hasDST(latitude: number, longitude: number, year: number): boolean {
+  const timeZone = tzlookup(latitude, longitude);
+  const winterDate = dayjs.tz(`${year}-01-01`, timeZone);
+  const summerDate = dayjs.tz(`${year}-07-01`, timeZone);
+
+  return winterDate.utcOffset() !== summerDate.utcOffset();
 }
 
 function getSeasonName(dayJsDay: Dayjs, latitude: number): string {
@@ -63,14 +79,19 @@ export function getSolarNoonIntensity(dayNum: number, latitude: number): number 
   const declination = 23.45 * Math.sin((360/365) * (dayNum - 81) * Math.PI / 180);
   const declinationRad = declination * Math.PI / 180;
   const dayAngle = 2 * Math.PI * (dayNum - 1) / 365;
-  // correction factor for Earth's elliptical orbit
-  const eccentricityFactor = 1 + 0.033 * Math.cos(dayAngle);
-  // cosine of the solar zenith angle at solar noon
+  const eccentricityFactor = 1 + 0.033 * Math.cos(dayAngle); // correction factor for Earth's elliptical orbit
   const cosSolarZenithAngle = Math.sin(latitudeRad) * Math.sin(declinationRad) +
                               Math.cos(latitudeRad) * Math.cos(declinationRad);
 
   const solarNoonIntensity = solarConstant * eccentricityFactor * cosSolarZenithAngle;
-  return Math.max(0, solarNoonIntensity); // Ensure non-negative value
+
+  // Note: This calculation returns theoretical intensity at the top of the atmosphere.
+  // Negative values are clamped to zero, which
+  // represents times when the sun is below the horizon
+  // In reality, some diffuse light might still be present due to atmospheric scattering.
+  // None of the calculations in this plugin use "civil twilight" or associated definitions
+  // For day length either, so this is consistent with the rest of the calculations.
+  return Math.max(0, solarNoonIntensity);
 }
 
 export function getSunrayAngleInDegrees(dayNum: number, earthTilt: number, lat:number): number {
@@ -81,37 +102,69 @@ export function getSunrayAngleInDegrees(dayNum: number, earthTilt: number, lat:n
   return degrees;
 }
 
+export function getMinutesSinceMidnight(time: Dayjs): number {
+  return !time.isValid() ? 0 : time.hour() * 60 + time.minute();
+}
+
 export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
   const { latitude, longitude, year } = options;
   const results: DaylightInfo[] = [];
 
-  let currentDay = dayjs.utc(`${year}-01-01`);
-  const endOfYear = dayjs.utc(`${year + 1}-01-01`);
+  const timeZone = tzlookup(latitude, longitude);
+  let currentDay = dayjs.tz(`${year}-01-01`, timeZone).startOf("day");
+  const endOfYear = dayjs.tz(`${year + 1}-01-01`, timeZone).startOf("day");
 
   while (currentDay.isBefore(endOfYear)) {
-    const date = currentDay.toDate();
-    const timeZone = tzlookup(latitude, longitude);
+    const noonDate = currentDay.hour(12).toDate();
+    const utcSunrise = dayjs.utc(getSunrise(latitude, longitude, noonDate));
+    const utcSunset = dayjs.utc(getSunset(latitude, longitude, noonDate));
+    const seasonName = getSeasonName(currentDay, latitude);
+    const localSunriseObj = utcSunrise.tz(timeZone);
+    const localSunsetObj = utcSunset.tz(timeZone);
 
-    // TODO: handle above arctic circle and below antarctic circle
-    const utcSunrise = dayjs(getSunrise(latitude, longitude, date));
-    const utcSunset = dayjs(getSunset(latitude, longitude, date));
-    const tzSunrise = utcSunrise.tz(timeZone)
-    const tzSunset = utcSunset.tz(timeZone)
+    // Transition days for midnight sun or polar night periods
+    const startPolarSummer = localSunriseObj.isValid() && !localSunsetObj.isValid();
+    const startPolarWinter = !localSunriseObj.isValid() && localSunsetObj.isValid();
+    const midPolar = !localSunriseObj.isValid() && !localSunsetObj.isValid();
+    const midPolarWinter = midPolar && (seasonName === "Winter" || seasonName === "Fall");
+    const midPolarSummer = midPolar && (seasonName === "Summer" || seasonName === "Spring");
+
+    let finalDayLength = 0;
+
+    if (midPolarSummer) {
+      finalDayLength = 24;
+    }
+    else if (midPolarWinter) {
+      finalDayLength = 0;
+    }
+    else if (startPolarSummer) {
+      finalDayLength = 24 - getMinutesSinceMidnight(localSunriseObj) / 60;
+    }
+    else if (startPolarWinter) {
+      finalDayLength = getMinutesSinceMidnight(localSunsetObj) / 60;
+    }
+    else {
+      finalDayLength = getDayLength(localSunriseObj, localSunsetObj);
+      // Optional adjustment of outlier on spring forward day for some timezones
+      if (kAdjustSpringForwardOutlier){
+        const isSpringForward = localSunriseObj.utcOffset() < localSunsetObj.utcOffset();
+        if (hasDST(latitude, longitude, year) && isSpringForward) finalDayLength -= 1;
+      }
+    }
 
     const record: DaylightInfo = {
-      day: currentDay.format("YYYY-MM-DD"),
-      sunrise: tzSunrise.format("YYYY-MM-DDTHH:mmZ"),
-      sunset: tzSunset.format("YYYY-MM-DDTHH:mmZ"),
-      dayLength: getDayLength(tzSunrise, tzSunset),
-      dayAsInteger: currentDay.dayOfYear(),
-      season: getSeasonName(currentDay, latitude),
+      day: currentDay.format(kDateFormats.asLocalISODate),
+      dayOfYear: currentDay.dayOfYear(),
+      rawSunrise: localSunriseObj.format(kDateWithTimeFormats.asLocalISOWithTZOffset),
+      rawSunset: localSunsetObj.format(kDateWithTimeFormats.asLocalISOWithTZOffset),
+      dayLength: finalDayLength,
+      season: seasonName,
       sunlightAngle: getSunrayAngleInDegrees(currentDay.dayOfYear(), kEarthTilt, latitude),
       solarIntensity: getSolarNoonIntensity(currentDay.dayOfYear(), latitude)
     };
     results.push(record);
     currentDay = currentDay.add(1, "day");
   }
-
   return results;
 }
 

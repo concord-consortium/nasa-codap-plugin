@@ -1,3 +1,14 @@
+export interface ICodapDataContextInfo {
+  id: number;
+  name: string;
+  title: string;
+}
+
+export interface ICurrentDayLocation {
+  _latitude: string;
+  _longitude: string;
+  _dayOfYear: number;
+}
 
 export interface ILocation {
   name: string;
@@ -12,11 +23,11 @@ export interface DaylightCalcOptions {
 }
 
 export interface DaylightInfo {
-  day: string;
-  sunrise: string;
-  sunset: string;
+  day: string;          // read into CODAP as an ISO date
+  dayOfYear: number;
+  rawSunrise: string;   // read into CODAP as an ISO date
+  rawSunset: string;    // read into CODAP as an ISO date
   dayLength: number;
-  dayAsInteger: number;
   season: string;
   sunlightAngle: number;
   solarIntensity: number;
