@@ -35,7 +35,6 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   setLocations
 }) => {
 
-
   const {
     dataContext,
     handleClearData,
@@ -43,8 +42,6 @@ export const LocationTab: React.FC<LocationTabProps> = ({
     updateAttributeVisibility,
     getUniqueLocationsInCodapData
   } = useCodapData();
-
-  console.log("| what is dataContext anyway?", typeof dataContext, {dataContext});
 
   useEffect(() => {
     const updateEachAttrVisibility = () => {
@@ -58,7 +55,6 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   }, [selectedAttrs, updateAttributeVisibility]);
 
   const handleLatChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    event.stopPropagation();
     setLatitude(event.target.value);
     setLocationSearch("");
   };
