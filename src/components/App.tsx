@@ -8,6 +8,7 @@ import { useCodapData } from "../hooks/useCodapData";
 import { LocationTab } from "./location-tab";
 import { SimulationTab } from "./simulation-tab";
 import { Header } from "./header";
+import { locationsEqual } from "../utils/daylight-utils";
 
 import "../assets/scss/App.scss";
 
@@ -156,6 +157,23 @@ export const App: React.FC = () => {
     });
   };
 
+  const { getDayLengthData } = useCodapData();
+
+  const handleGetDataClick = async () => {
+    const name = locationSearch || `(${latitude}, ${longitude})`;
+    const currentLocation: ILocation = { name, latitude: Number(latitude), longitude: Number(longitude) };
+    const locationExists = locations.some(item => locationsEqual(item, currentLocation));
+    if (locationExists || !latitude || !longitude) return;
+
+    // if the location does not already exist, and we have params, get the data
+    const tableCreated = await getDayLengthData(currentLocation);
+    if (tableCreated?.success) {
+      const uniqeLocations = await getUniqueLocationsInCodapData();
+      if (uniqeLocations) setLocations(uniqeLocations);
+    }
+  };
+
+
   return (
     <div className="App">
       <Header
@@ -176,6 +194,7 @@ export const App: React.FC = () => {
           setDataContext={setDataContext}
           locations={locations}
           setLocations={setLocations}
+          handleGetDataClick={handleGetDataClick}
         />
       </div>
       <div className={clsx("tab-content", { active: activeTab === "simulation" })}>
@@ -189,6 +208,7 @@ export const App: React.FC = () => {
           dayOfYear={dayOfYear}
           setDayOfYear={handleDayUpdateInTheSimTab}
           setLocations={setLocations}
+          handleGetDataClick={handleGetDataClick}
         />
       </div>
     </div>

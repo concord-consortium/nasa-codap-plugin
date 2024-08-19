@@ -16,6 +16,7 @@ interface SimulationTabProps {
   dayOfYear: number;
   setDayOfYear: (day: number) => void;
   setLocations: (locations: ILocation[]) => void;
+  handleGetDataClick: (latitude: string, longitude: string) => void;
 }
 
 export const SimulationTab: React.FC<SimulationTabProps> = ({
@@ -27,24 +28,9 @@ export const SimulationTab: React.FC<SimulationTabProps> = ({
   setLocationSearch,
   dayOfYear,
   setDayOfYear,
-  setLocations
+  setLocations,
+  handleGetDataClick
 }) => {
-
-  const { getDayLengthData, getUniqueLocationsInCodapData } = useCodapData();
-
-  const handleGetDataClick = async () => {
-    const name = `(${latitude}, ${longitude})`;
-    const currentLocation: ILocation = { name, latitude: Number(latitude), longitude: Number(longitude) };
-    const locationExists = locations.some(item => locationsEqual(item, currentLocation));
-    if (locationExists || !latitude || !longitude) return;
-
-    const tableCreated = await getDayLengthData(currentLocation);
-    if (tableCreated?.success) {
-      const uniqueLocations = await getUniqueLocationsInCodapData();
-      if (uniqueLocations) setLocations(uniqueLocations);
-    }
-  }
-
   return (
     <div className="simulation-tab">
       <div className="seasons-container">
@@ -59,7 +45,7 @@ export const SimulationTab: React.FC<SimulationTabProps> = ({
           locations={locations}
         />
       </div>
-      <button className="get-data-button" onClick={handleGetDataClick}>
+      <button className="get-data-button" onClick={() => handleGetDataClick(latitude, longitude)}>
         Get Data
       </button>
     </div>
