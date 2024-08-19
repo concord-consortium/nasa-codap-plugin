@@ -53,8 +53,8 @@ export const kChildCollectionAttributes = [
     name: "dayOfYear",
     title: "Day of year",
     type: "numeric",
-    // TODO: when not in dev, hasToken should be false, hidden should be true
-    hasToken: true,
+    hasToken: false,
+    hidden: true,
     description: "Day of year"
   },
   {
@@ -127,15 +127,15 @@ export const kChildCollectionAttributes = [
     name: "calcId",
     title: "calcId",
     type: "categorical",
-    hasToken: true,
-    hidden: false,
+    hasToken: false,
+    hidden: true,
     description: "unique identifier for each location on a day - concatenation of latitude, longitude, and dayOfYear",
     formula: "latitude + ',' + longitude + ',' + dayOfYear"
   }
 ];
 
 export const kDefaultOnAttributes = [
-  "date", "Day length", "dayOfYear" // TODO: take off dayOfYear when done with development
+  "date", "Day length"
 ];
 
 export const kDateWithTimeFormats = {
