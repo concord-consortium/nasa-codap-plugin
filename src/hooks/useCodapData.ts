@@ -123,7 +123,6 @@ export const useCodapData = () => {
     const locationAttr = await getAttribute(kDataContextName, kParentCollectionName, "location");
     if (locationAttr.success){
       const allItems = await getAllItems(kDataContextName);
-      console.log("||| getting locations in CODAP data... sync opportunity ", allItems);
       if (allItems.success){
         const uniqeLocations: ILocation[] = extractUniqueLocations(allItems.values);
         return uniqeLocations;
