@@ -13,12 +13,12 @@ interface LocationTabProps {
   locations: ILocation[];
   locationSearch: string;
   selectedAttrs: string[];
-  dataContext: any; // TODO the type
+  dataContext: any; // TODO this is not being used, maybe we'll need it for querying?
   setLatitude: (latitude: string) => void;
   setLongitude: (longitude: string) => void;
   setLocationSearch: (search: string) => void;
   setSelectedAttributes: (attrs: string[]) => void;
-  setDataContext: (context: any) => void; // TODO the type
+  setDataContext: (context: any) => void; // TODO this is not being used
   setLocations: (locations: ILocation[]) => void;
 }
 
@@ -34,6 +34,7 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   setSelectedAttributes,
   setLocations
 }) => {
+
   const {
     dataContext,
     handleClearData,
@@ -54,6 +55,7 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   }, [selectedAttrs, updateAttributeVisibility]);
 
   const handleLatChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.stopPropagation();
     setLatitude(event.target.value);
     setLocationSearch("");
   };

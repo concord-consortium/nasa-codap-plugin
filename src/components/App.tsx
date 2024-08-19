@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { clsx } from "clsx";
 import { ILocation } from "../types";
 import { debounce } from "../grasp-seasons/utils/utils";
@@ -11,23 +11,29 @@ import { Header } from "./header";
 
 import "../assets/scss/App.scss";
 
-
 const debouncedUpdateRowSelectionInCodap = debounce((
   latitude: string,
   longitude: string,
   day: number
 ) => {
-  //console.log(`\n| Selecting case in ${kDataContextName} where latitude: ${latitude}, longitude: ${longitude}, day: ${day}`);
+  console.log(`\n| Selecting case in ${kDataContextName} where latitude: ${latitude}, longitude: ${longitude}, day: ${day}`);
   // TODO: It seems roundabout to look up the case id and then go back to ask for it
   // But I was unable to find an example of how to select a case by its attribute values
   // Next thing for this might be to see if the case ids might be mapped somewhere to the dayOfYear
   // It could be a more direct way to select the case rather than two api requests
-  // TODO: Right now this is only using the dayOfYear attribute to select the case, but it needs to be restricted to location
+  // TODO: I could not get a single chain of conditions working with this syntax.
+  // So The way I did this for now was to add a hidden field `identity` in CODAP with a formula that concatenates latidude, longitude, and dayOfYear
+  // This is only partially working, there is something not working with the saved location
+  // You can find a place, change location, and get the right record
+  // But if you switch back to the original location, it does not find the record
+  // and then search for that
+  // alternative: find a plugin that finds existing cases by attribute values and see how its done
+  // alternative: to use a dataContext object?
+  // alternative: three requests, one for each attribute equality condition, and then Promise.all them and then find common items
   codapInterface.sendRequest({
     action: "get",
-    resource: `dataContext[${kDataContextName}].collection[${kChildCollectionName}].caseSearch[dayOfYear==${Math.floor(day)}]`
+    resource: `dataContext[${kDataContextName}].collection[${kChildCollectionName}].caseSearch[calcId==${latitude},${longitude},${Math.floor(day)}]`
   }).then((result: any) => {
-    console.log("| case search result: ", result);
     if (result.success && result.values.length > 0) {
       const caseID = result.values[0].id;
       return codapInterface.sendRequest({
@@ -36,12 +42,11 @@ const debouncedUpdateRowSelectionInCodap = debounce((
         values: [caseID]
       });
     } else {
-      console.log("No matching case found");
       return null;
     }
   }).then((selectionResult: any) => {
-    if (selectionResult) {
-      console.log("Selection result:", selectionResult);
+    if (!selectionResult.success) {
+      console.warn("Selection result was not sucessful", selectionResult);
     }
   }).catch((error: any) => {
     console.error("Error in selection process:", error);
@@ -74,14 +79,12 @@ export const App: React.FC = () => {
     currentLongitude: string,
     currentDayOfYear: number
   ) => {
-    // TODO: this is a little hacky? we cooerce the numbers to strings to compare them
     const rowInLocation = `${currentLatitude},${currentLongitude}` === `${selectedLatitude},${selectedLongitude}`;
     const newDayChoice = `${currentDayOfYear}` !== `${selectedDay}`;
     if (rowInLocation && newDayChoice) {
       setDayOfYear(selectedDay);
-      // TODO: this works, but CODAP is also resetting the case table so we scroll away from selected row
+      // TODO: this works, but CODAP v2 it is also resetting the case table so we scroll away from selected row
       // Perhaps because it is re-rendering the table with the new case selected?
-      // TODO: We might consider resetting latitude, longitude here as well to get sliders back on track
     }
   };
 

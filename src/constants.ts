@@ -122,6 +122,15 @@ export const kChildCollectionAttributes = [
     title: "Season",
     type: "categorical",
     hasToken: true
+  },
+  {
+    name: "calcId",
+    title: "calcId",
+    type: "categorical",
+    hasToken: true,
+    hidden: false,
+    description: "unique identifier for each location on a day - concatenation of latitude, longitude, and dayOfYear",
+    formula: "latitude + ',' + longitude + ',' + dayOfYear"
   }
 ];
 
