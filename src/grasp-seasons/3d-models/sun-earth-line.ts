@@ -2,15 +2,12 @@ import * as THREE from "three";
 import { IModelParams } from "../types";
 import * as c from "./constants";
 
-const LINE_RADIUS = 20000 * c.SF;
-const SIMPLE_LINE_RADIUS = 650000 * c.SF;
 const POINTER_RADIUS = 200000 * c.SF;
 const POINTER_TUBE = 60000 * c.SF;
 
 export default class {
   _arrow!: THREE.Object3D;
   _earthRadius: number;
-  _lineMesh!: THREE.Mesh;
   _pointerMesh!: THREE.Object3D;
   _refVector: THREE.Vector3;
   rootObject!: THREE.Object3D;
@@ -25,24 +22,22 @@ export default class {
   }
 
   setEarthPos(newPos: THREE.Vector3) {
-    const len = newPos.length() - this._earthRadius;
+    const sunRealRadius = c.SIMPLE_SUN_RADIUS * 1.41; // match edge of the Sun PNG-based sprite
+    const len = newPos.length() - this._earthRadius - sunRealRadius;
     let angleDiff = newPos.angleTo(this._refVector);
     if (newPos.z < 0) angleDiff *= -1;
     this.rootObject.rotation.y = angleDiff;
-    this._lineMesh.scale.y = len;
-    this._lineMesh.position.x = -len * 0.5;
     if (this._pointerMesh) {
       this._pointerMesh.position.x = -len;
     }
-    this._arrow.position.x = -len;
+    this._arrow.position.x = -len - sunRealRadius;
+    this._arrow.scale.x = len;
   }
 
   _init3DObjects(simple: boolean) {
-    this._lineMesh = this._initLine(simple);
     this._arrow = this._initArrow(simple);
 
     const container = new THREE.Object3D();
-    container.add(this._lineMesh);
     container.add(this._arrow);
     const pivot = new THREE.Object3D();
     pivot.add(container);
@@ -72,18 +67,8 @@ export default class {
     return container;
   }
 
-  _initLine(simple: boolean) {
-    const radius = simple ? SIMPLE_LINE_RADIUS : LINE_RADIUS;
-    const segments = simple ? 4 : 8;
-    const material = new THREE.MeshPhongMaterial({ emissive: c.SUN_COLOR });
-    const geometry = new THREE.CylinderGeometry(radius, radius, 1, segments);
-    const lineMesh = new THREE.Mesh(geometry, material);
-    lineMesh.rotation.z = Math.PI * 0.5;
-    return lineMesh;
-  }
-
   _initArrow(simple: boolean) {
-    const HEIGHT = simple ? 115000000 * c.SF : 2500000 * c.SF;
+    const HEIGHT = 1; // arrow will be rescaled dynamically based on earth-sun distance that changes through the year
     const RADIUS = simple ? 1500000 * c.SF : 100000 * c.SF;
     const HEAD_RADIUS = RADIUS * (simple ? 7 : 2);
     const HEAD_HEIGHT = HEIGHT * 0.2;

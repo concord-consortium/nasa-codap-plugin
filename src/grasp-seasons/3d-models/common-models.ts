@@ -140,10 +140,14 @@ export default {
     const material = new THREE.LineBasicMaterial({ color: 0xffff00, transparent: true, opacity: 0.7 });
     const vertices = new Float32Array(2 * RAY_COUNT * 3);
     for (let i = 0; i < RAY_COUNT; ++i) {
-      vertices[i * 6] = 0;
-      vertices[i * 6 + 1] = 0;
-      vertices[i * 6 + 2] = 0;
       const earthLoc = data.earthEllipseLocationByDay(i * STEP);
+      // The beginning of the spokes needs to start away from the origin (0,0,0) to avoid rendering artifacts,
+      // as the sun is infinitely thin.
+      const startK = 0.17;
+      vertices[i * 6] = earthLoc.x * startK;
+      vertices[i * 6 + 1] = earthLoc.y * startK;
+      vertices[i * 6 + 2] = earthLoc.z * startK;
+
       vertices[i * 6 + 3] = earthLoc.x;
       vertices[i * 6 + 4] = earthLoc.y;
       vertices[i * 6 + 5] = earthLoc.z;
