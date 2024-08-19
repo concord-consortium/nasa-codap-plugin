@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { clsx } from "clsx";
 import { ILocation } from "../types";
 import { debounce } from "../grasp-seasons/utils/utils";
@@ -90,7 +90,6 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     const initialize = async () => {
-      console.log("| !! Initializing plugin");
       try {
         await initializePlugin({
           pluginName: kPluginName,
@@ -105,44 +104,48 @@ export const App: React.FC = () => {
     initialize();
   }, []);
 
-  useEffect(() => {
-    const handleDataContextChange = async (listenerRes: ClientNotification) => {
-      console.log("| dataContextChangeNotice: ", listenerRes);
-      // TODO: as per discussion with team, it might be more typical
-      // to use the notificaiton as catalyst to ask for state we interested in from CODAP
-      // rather than try to parse the notification for the data we need
+  const handleDataContextChange = useCallback(async (listenerRes: ClientNotification) => {
+    console.log("| dataContextChangeNotice: ", listenerRes);
+    // TODO: as per discussion with team, it might be more typical
+    // to use the notificaiton as catalyst to ask for state we interested in from CODAP
+    // rather than try to parse the notification for the data we need
 
-      const { resource, values } = listenerRes;
-      const isResource = resource === `dataContextChangeNotice[${kDataContextName}]`;
-      if (!isResource || !values.result.success) return;
+    const { resource, values } = listenerRes;
+    const isResource = resource === `dataContextChangeNotice[${kDataContextName}]`;
+    if (!isResource || !values.result.success) return;
 
-      const casesDeleted = values.operation === "selectCases" && values.result.cases.length === 0
-      const caseSelected = values.operation === "selectCases" && values.result.cases.length === 1;
+    const casesDeleted = values.operation === "selectCases" && values.result.cases.length === 0
+    const caseSelected = values.operation === "selectCases" && values.result.cases.length === 1;
 
-      // If cases were deleted, we should update the locations list
-      if (casesDeleted) {
-        const uniqeLocations = await getUniqueLocationsRef.current();
-        if (uniqeLocations) setLocations(uniqeLocations);
-      }
-      // If a case was selected, we should update the dayOfYear
-      else if (caseSelected) {
-        const parentCaseId = values.result.cases[0].parent;
-        const selectedDay = values.result.cases[0].values.dayOfYear;
-        const parentCase = await getCaseByID(kDataContextName, parentCaseId);
-        const selectedLatitude = parentCase.values.case.values.latitude;
-        const selectedLongitude = parentCase.values.case.values.longitude;
-        handleCaseSelectionInCodap(
-          selectedLatitude,
-          selectedLongitude,
-          selectedDay,
-          latitude,
-          longitude,
-          dayOfYear
-        );
-      }
-    };
-    addDataContextChangeListener(kDataContextName, handleDataContextChange);
+    // If cases were deleted, we should update the locations list
+    if (casesDeleted) {
+      const uniqeLocations = await getUniqueLocationsRef.current();
+      if (uniqeLocations) setLocations(uniqeLocations);
+    }
+    // If a case was selected, we should update the dayOfYear
+    else if (caseSelected) {
+      const parentCaseId = values.result.cases[0].parent;
+      const selectedDay = values.result.cases[0].values.dayOfYear;
+      const parentCase = await getCaseByID(kDataContextName, parentCaseId);
+      const selectedLatitude = parentCase.values.case.values.latitude;
+      const selectedLongitude = parentCase.values.case.values.longitude;
+      console.log(`| Selected case: ${latitude}, ${longitude}, ${dayOfYear}`);
+      // make an interface for this - then you could ref to that as ref that is { latitude, longitude, dayOfYear }
+      handleCaseSelectionInCodap(
+        selectedLatitude,
+        selectedLongitude,
+        selectedDay,
+        latitude,
+        longitude,
+        dayOfYear
+      );
+    }
   }, [latitude, longitude, dayOfYear]);
+
+  useEffect(() => {
+    addDataContextChangeListener(kDataContextName, handleDataContextChange);
+  },[handleDataContextChange]);
+  // and then above useEffect dependency array would be [] but make sure we know we are connected to CODAP
 
   const handleTabClick = (tab: "location" | "simulation") => {
     setActiveTab(tab);

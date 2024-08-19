@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { kDataContextName, kChildCollectionName, kParentCollectionName, kParentCollectionAttributes, kChildCollectionAttributes } from "../constants";
 import { DaylightCalcOptions, ILocation } from "../types";
 import { getDayLightInfo, locationsEqual } from "../utils/daylight-utils";
@@ -23,6 +23,7 @@ export const useCodapData = () => {
     if (result.success) {
       let dc = result.values;
       let lastCollection = dc.collections[dc.collections.length - 1];
+      console.trace();
       return await codapInterface.sendRequest({
         action: "delete",
         resource: `dataContext[${kDataContextName}].collection[${lastCollection.name}].allCases`
@@ -33,6 +34,7 @@ export const useCodapData = () => {
   };
 
   const getDayLengthData = async (location: ILocation) => {
+    debugger;
     let createDC;
     const calcOptions: DaylightCalcOptions = {
       latitude: location.latitude,
@@ -84,7 +86,7 @@ export const useCodapData = () => {
     }
   };
 
-  const updateAttributeVisibility = (attributeName: string, hidden: boolean) => {
+  const updateAttributeVisibility = useCallback((attributeName: string, hidden: boolean) => {
     if (!dataContext) return;
 
     try {
@@ -98,7 +100,7 @@ export const useCodapData = () => {
     } catch (error) {
       console.error("Error updating attribute visibility:", error);
     }
-  };
+  }, [dataContext]);
 
   const extractUniqueLocations = (allItems: any): ILocation[] => {
     const uniqueLocations: ILocation[] = [];
