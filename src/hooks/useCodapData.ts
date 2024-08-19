@@ -34,12 +34,11 @@ export const useCodapData = () => {
   };
 
   const getDayLengthData = async (location: ILocation) => {
-    debugger;
     let createDC;
     const calcOptions: DaylightCalcOptions = {
       latitude: location.latitude,
       longitude: location.longitude,
-      year: 2024 // NOTE: If data are to be historical, add dynamic year attribute
+      year: new Date().getFullYear()
     };
 
     const solarEvents = getDayLightInfo(calcOptions);
@@ -119,7 +118,6 @@ export const useCodapData = () => {
 
     return uniqueLocations;
   }
-
 
   const getUniqueLocationsInCodapData = async () => {
     const locationAttr = await getAttribute(kDataContextName, kParentCollectionName, "location");

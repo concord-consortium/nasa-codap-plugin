@@ -11,25 +11,17 @@ import { Header } from "./header";
 
 import "../assets/scss/App.scss";
 
+interface CurrentDayLocation {
+  _latitude: string;
+  _longitude: string;
+  _dayOfYear: number;
+}
+
 const debouncedUpdateRowSelectionInCodap = debounce((
   latitude: string,
   longitude: string,
   day: number
 ) => {
-  console.log(`\n| Selecting case in ${kDataContextName} where latitude: ${latitude}, longitude: ${longitude}, day: ${day}`);
-  // TODO: It seems roundabout to look up the case id and then go back to ask for it
-  // But I was unable to find an example of how to select a case by its attribute values
-  // Next thing for this might be to see if the case ids might be mapped somewhere to the dayOfYear
-  // It could be a more direct way to select the case rather than two api requests
-  // TODO: I could not get a single chain of conditions working with this syntax.
-  // So The way I did this for now was to add a hidden field `identity` in CODAP with a formula that concatenates latidude, longitude, and dayOfYear
-  // This is only partially working, there is something not working with the saved location
-  // You can find a place, change location, and get the right record
-  // But if you switch back to the original location, it does not find the record
-  // and then search for that
-  // alternative: find a plugin that finds existing cases by attribute values and see how its done
-  // alternative: to use a dataContext object?
-  // alternative: three requests, one for each attribute equality condition, and then Promise.all them and then find common items
   codapInterface.sendRequest({
     action: "get",
     resource: `dataContext[${kDataContextName}].collection[${kChildCollectionName}].caseSearch[calcId==${latitude},${longitude},${Math.floor(day)}]`
@@ -46,7 +38,7 @@ const debouncedUpdateRowSelectionInCodap = debounce((
     }
   }).then((selectionResult: any) => {
     if (!selectionResult.success) {
-      console.warn("Selection result was not sucessful", selectionResult);
+      console.warn("Selection result was not successful", selectionResult);
     }
   }).catch((error: any) => {
     console.error("Error in selection process:", error);
@@ -63,30 +55,37 @@ export const App: React.FC = () => {
   const [selectedAttrs, setSelectedAttributes] = useState<string[]>(kDefaultOnAttributes);
   const [dataContext, setDataContext] = useState<any>(null);
 
-  // Store a ref to getUniqueLocationsInCodapData so we can call inside useEffect without triggering unnecessary re-runs
+  const currentDayLocationRef = useRef<CurrentDayLocation>({
+    _latitude: "",
+    _longitude: "",
+    _dayOfYear: 171
+  });
+
   const { getUniqueLocationsInCodapData } = useCodapData();
   const getUniqueLocationsRef = useRef(getUniqueLocationsInCodapData);
 
   const handleDayUpdateInTheSimTab = (day: number) => {
-    debouncedUpdateRowSelectionInCodap(latitude, longitude, day);
+    currentDayLocationRef.current._dayOfYear = day;
+    debouncedUpdateRowSelectionInCodap(
+      currentDayLocationRef.current._latitude,
+      currentDayLocationRef.current._longitude,
+      day
+    );
   };
 
-  const handleCaseSelectionInCodap = (
+  const handleCaseSelectionInCodap = useCallback((
     selectedLatitude: string,
     selectedLongitude: string,
-    selectedDay: number,
-    currentLatitude: string,
-    currentLongitude: string,
-    currentDayOfYear: number
+    selectedDay: number
   ) => {
-    const rowInLocation = `${currentLatitude},${currentLongitude}` === `${selectedLatitude},${selectedLongitude}`;
-    const newDayChoice = `${currentDayOfYear}` !== `${selectedDay}`;
+    const { _latitude, _longitude, _dayOfYear } = currentDayLocationRef.current;
+    const rowInLocation = `${_latitude},${_longitude}` === `${selectedLatitude},${selectedLongitude}`;
+    const newDayChoice = `${_dayOfYear}` !== `${selectedDay}`;
     if (rowInLocation && newDayChoice) {
       setDayOfYear(selectedDay);
-      // TODO: this works, but CODAP v2 it is also resetting the case table so we scroll away from selected row
-      // Perhaps because it is re-rendering the table with the new case selected?
+      currentDayLocationRef.current._dayOfYear = selectedDay;
     }
-  };
+  }, []);
 
   useEffect(() => {
     const initialize = async () => {
@@ -106,10 +105,6 @@ export const App: React.FC = () => {
 
   const handleDataContextChange = useCallback(async (listenerRes: ClientNotification) => {
     console.log("| dataContextChangeNotice: ", listenerRes);
-    // TODO: as per discussion with team, it might be more typical
-    // to use the notificaiton as catalyst to ask for state we interested in from CODAP
-    // rather than try to parse the notification for the data we need
-
     const { resource, values } = listenerRes;
     const isResource = resource === `dataContextChangeNotice[${kDataContextName}]`;
     if (!isResource || !values.result.success) return;
@@ -117,39 +112,41 @@ export const App: React.FC = () => {
     const casesDeleted = values.operation === "selectCases" && values.result.cases.length === 0
     const caseSelected = values.operation === "selectCases" && values.result.cases.length === 1;
 
-    // If cases were deleted, we should update the locations list
+    //TODO: there is an unhandled path when we edit the location name
+    // we can use this to update the location name in the UI
+
     if (casesDeleted) {
-      const uniqeLocations = await getUniqueLocationsRef.current();
-      if (uniqeLocations) setLocations(uniqeLocations);
+      const uniqueLocations = await getUniqueLocationsRef.current();
+      if (uniqueLocations) setLocations(uniqueLocations);
     }
-    // If a case was selected, we should update the dayOfYear
     else if (caseSelected) {
       const parentCaseId = values.result.cases[0].parent;
       const selectedDay = values.result.cases[0].values.dayOfYear;
       const parentCase = await getCaseByID(kDataContextName, parentCaseId);
       const selectedLatitude = parentCase.values.case.values.latitude;
       const selectedLongitude = parentCase.values.case.values.longitude;
-      console.log(`| Selected case: ${latitude}, ${longitude}, ${dayOfYear}`);
-      // make an interface for this - then you could ref to that as ref that is { latitude, longitude, dayOfYear }
       handleCaseSelectionInCodap(
         selectedLatitude,
         selectedLongitude,
-        selectedDay,
-        latitude,
-        longitude,
-        dayOfYear
+        selectedDay
       );
     }
-  }, [latitude, longitude, dayOfYear]);
+  }, [handleCaseSelectionInCodap]);
 
   useEffect(() => {
     addDataContextChangeListener(kDataContextName, handleDataContextChange);
-  },[handleDataContextChange]);
-  // and then above useEffect dependency array would be [] but make sure we know we are connected to CODAP
+  }, [handleDataContextChange]);
+
+  useEffect(() => {
+    currentDayLocationRef.current = {
+      _latitude: latitude,
+      _longitude: longitude,
+      _dayOfYear: dayOfYear
+    };
+  }, [latitude, longitude, dayOfYear]);
 
   const handleTabClick = (tab: "location" | "simulation") => {
     setActiveTab(tab);
-    // Update dimensions of the plugin window when switching tabs.
     codapInterface.sendRequest({
       action: "update",
       resource: "interactiveFrame",
@@ -157,7 +154,6 @@ export const App: React.FC = () => {
         dimensions: tab === "location" ? kInitialDimensions : kSimulationTabDimensions
       }
     }).then(() => {
-      // After updating dimensions, call selectSelf to bring the plugin to the front
       selectSelf();
     }).catch((error) => {
       console.error("Error updating dimensions or selecting self:", error);
