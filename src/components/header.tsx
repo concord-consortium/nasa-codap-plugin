@@ -9,34 +9,25 @@ interface IHeaderProps {
 
 export const Header: React.FC<IHeaderProps> = ({ activeTab, onTabClick }) => {
   return (
-    <>
-      <div className="plugin-row header">
-        <p>
-          How long is a day?<br />
-          Enter a location or coordinates to retrieve data
-        </p>
+    <div className="tab-container">
+      <div
+        className={`tab location ${activeTab === "location" ? "active" : ""}`}
+        onClick={() => onTabClick("location")}
+      >
+        Location
       </div>
-      <hr />
-      <div className="tab-container">
-        <div
-          className={`tab ${activeTab === "location" ? "active" : ""}`}
-          onClick={() => onTabClick("location")}
-        >
-          Location
-        </div>
-        <div
-          className={`tab ${activeTab === "simulation" ? "active" : ""}`}
-          onClick={() => onTabClick("simulation")}
-        >
-          Simulation
-        </div>
-        <div
-          className={`tab ${activeTab === "about" ? "active" : ""}`}
-          onClick={() => onTabClick("about")}
-        >
-          About
-        </div>
+      <div
+        className={`tab simulation ${activeTab === "simulation" ? "active" : ""}`}
+        onClick={() => onTabClick("simulation")}
+      >
+        Simulation
       </div>
-    </>
+      <div
+        className={`tab about ${activeTab === "about" ? "active" : ""}`}
+        onClick={() => onTabClick("about")}
+      >
+        About
+      </div>
+    </div>
   );
 };
