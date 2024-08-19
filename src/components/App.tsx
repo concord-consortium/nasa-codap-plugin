@@ -6,6 +6,7 @@ import { initializePlugin, codapInterface, addDataContextChangeListener, ClientN
 import { useCodapData } from "../hooks/useCodapData";
 import { LocationTab } from "./location-tab";
 import { SimulationTab } from "./simulation-tab";
+import { AboutTab } from "./about-tab";
 import { Header } from "./header";
 
 import "../assets/scss/App.scss";
@@ -16,7 +17,7 @@ const updateRowSelectionInCodap = (latitude: string, longitude: string, day: num
 }
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"location" | "simulation">("location");
+  const [activeTab, setActiveTab] = useState<"location" | "simulation" | "about">("location");
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
   const [dayOfYear, setDayOfYear] = useState(171);
@@ -85,7 +86,7 @@ export const App: React.FC = () => {
     initialize();
   }, []);
 
-  const handleTabClick = (tab: "location" | "simulation") => {
+  const handleTabClick = (tab: "location" | "simulation" | "about") => {
     setActiveTab(tab);
     // Update dimensions of the plugin window when switching tabs.
     codapInterface.sendRequest({
@@ -131,6 +132,9 @@ export const App: React.FC = () => {
           setDayOfYear={handleDayUpdateInTheSimTab}
           setLocations={setLocations}
         />
+      </div>
+      <div className={clsx("tab-content", { active: activeTab === "about" })}>
+        <AboutTab />
       </div>
     </div>
   );

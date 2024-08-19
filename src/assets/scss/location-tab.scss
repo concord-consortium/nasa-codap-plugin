@@ -60,16 +60,15 @@
         background-color: white;
         list-style: none;
         margin:3px;
+        color: #222;
 
         &.on {
           background-color: $codap-teal-lightest;
-          color: $codap-teal;
           border: 1px solid $codap-teal;
         }
 
         &.off {
           background-color: white;
-          color: #aaa;
           border: 1px solid $codap-teal;
         }
       }
