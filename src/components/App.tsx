@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { clsx } from "clsx";
-import { ILocation } from "../types";
+import { ICurrentDayLocation, ILocation } from "../types";
 import { debounce } from "../grasp-seasons/utils/utils";
 import { kInitialDimensions, kVersion, kPluginName, kDefaultOnAttributes, kSimulationTabDimensions, kDataContextName, kChildCollectionName } from "../constants";
 import { initializePlugin, codapInterface, selectSelf, addDataContextChangeListener, ClientNotification, getCaseByID } from "@concord-consortium/codap-plugin-api";
@@ -10,12 +10,6 @@ import { SimulationTab } from "./simulation-tab";
 import { Header } from "./header";
 
 import "../assets/scss/App.scss";
-
-interface CurrentDayLocation {
-  _latitude: string;
-  _longitude: string;
-  _dayOfYear: number;
-}
 
 const debouncedUpdateRowSelectionInCodap = debounce((
   latitude: string,
@@ -55,7 +49,7 @@ export const App: React.FC = () => {
   const [selectedAttrs, setSelectedAttributes] = useState<string[]>(kDefaultOnAttributes);
   const [dataContext, setDataContext] = useState<any>(null);
 
-  const currentDayLocationRef = useRef<CurrentDayLocation>({
+  const currentDayLocationRef = useRef<ICurrentDayLocation>({
     _latitude: "",
     _longitude: "",
     _dayOfYear: 171
@@ -154,6 +148,7 @@ export const App: React.FC = () => {
         dimensions: tab === "location" ? kInitialDimensions : kSimulationTabDimensions
       }
     }).then(() => {
+      // This brings the plugin window to the front within CODAP
       selectSelf();
     }).catch((error) => {
       console.error("Error updating dimensions or selecting self:", error);

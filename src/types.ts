@@ -1,3 +1,14 @@
+export interface ICodapDataContextInfo {
+  id: number;
+  name: string;
+  title: string;
+}
+
+export interface ICurrentDayLocation {
+  _latitude: string;
+  _longitude: string;
+  _dayOfYear: number;
+}
 
 export interface ILocation {
   name: string;

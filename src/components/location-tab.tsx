@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useCodapData } from "../hooks/useCodapData";
 import { kChildCollectionAttributes } from "../constants";
-import { ILocation } from "../types";
+import { ICodapDataContextInfo, ILocation } from "../types";
 import { LocationPicker } from "./location-picker";
 import { locationsEqual } from "../utils/daylight-utils";
 
@@ -13,12 +13,12 @@ interface LocationTabProps {
   locations: ILocation[];
   locationSearch: string;
   selectedAttrs: string[];
-  dataContext: any; // TODO this is not being used, maybe we'll need it for querying?
+  dataContext: ICodapDataContextInfo | null;
   setLatitude: (latitude: string) => void;
   setLongitude: (longitude: string) => void;
   setLocationSearch: (search: string) => void;
   setSelectedAttributes: (attrs: string[]) => void;
-  setDataContext: (context: any) => void; // TODO this is not being used
+  setDataContext: (context: any) => void;
   setLocations: (locations: ILocation[]) => void;
 }
 
@@ -35,6 +35,7 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   setLocations
 }) => {
 
+
   const {
     dataContext,
     handleClearData,
@@ -42,6 +43,8 @@ export const LocationTab: React.FC<LocationTabProps> = ({
     updateAttributeVisibility,
     getUniqueLocationsInCodapData
   } = useCodapData();
+
+  console.log("| what is dataContext anyway?", typeof dataContext, {dataContext});
 
   useEffect(() => {
     const updateEachAttrVisibility = () => {
