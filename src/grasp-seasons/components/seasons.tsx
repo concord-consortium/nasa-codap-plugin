@@ -182,6 +182,7 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
     setSimState(prevState => {
       // Make sure day is within [0, 364] range
       const day = (prevState.day + increment + 365) % 365;
+      setDayOfYear(day);
       return { ...prevState, day };
     });
   };
@@ -189,6 +190,7 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
   const handleMonthIncrement = (monthIncrement: number) => () => {
     setSimState(prevState => {
       const day = changeMonthOfDayOfYear(prevState.day, monthIncrement);
+      setDayOfYear(day);
       return { ...prevState, day };
     });
   };

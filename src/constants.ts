@@ -50,6 +50,14 @@ export const kChildCollectionAttributes = [
     description: "Date"
   },
   {
+    name: "dayOfYear",
+    title: "Day of year",
+    type: "numeric",
+    hasToken: false,
+    hidden: true,
+    description: "Day of year"
+  },
+  {
     name: "Day length",
     title: "Day length",
     type: "numeric",
@@ -114,6 +122,15 @@ export const kChildCollectionAttributes = [
     title: "Season",
     type: "categorical",
     hasToken: true
+  },
+  {
+    name: "calcId",
+    title: "calcId",
+    type: "categorical",
+    hasToken: false,
+    hidden: true,
+    description: "unique identifier for each location on a day - concatenation of latitude, longitude, and dayOfYear",
+    formula: "latitude + ',' + longitude + ',' + dayOfYear"
   }
 ];
 

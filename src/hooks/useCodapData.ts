@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { kDataContextName, kChildCollectionName, kParentCollectionName, kParentCollectionAttributes, kChildCollectionAttributes } from "../constants";
 import { DaylightCalcOptions, ILocation } from "../types";
 import { getDayLightInfo, locationsEqual } from "../utils/daylight-utils";
@@ -23,6 +23,7 @@ export const useCodapData = () => {
     if (result.success) {
       let dc = result.values;
       let lastCollection = dc.collections[dc.collections.length - 1];
+      console.trace();
       return await codapInterface.sendRequest({
         action: "delete",
         resource: `dataContext[${kDataContextName}].collection[${lastCollection.name}].allCases`
@@ -37,7 +38,7 @@ export const useCodapData = () => {
     const calcOptions: DaylightCalcOptions = {
       latitude: location.latitude,
       longitude: location.longitude,
-      year: 2024 // NOTE: If data are to be historical, add dynamic year attribute
+      year: new Date().getFullYear()
     };
 
     const solarEvents = getDayLightInfo(calcOptions);
@@ -67,6 +68,7 @@ export const useCodapData = () => {
           longitude: location.longitude,
           location: location.name,
           date: solarEvent.day,
+          dayOfYear: solarEvent.dayOfYear,
           rawSunrise: solarEvent.rawSunrise,
           rawSunset: solarEvent.rawSunset,
           "Day length": solarEvent.dayLength,
@@ -83,7 +85,7 @@ export const useCodapData = () => {
     }
   };
 
-  const updateAttributeVisibility = (attributeName: string, hidden: boolean) => {
+  const updateAttributeVisibility = useCallback((attributeName: string, hidden: boolean) => {
     if (!dataContext) return;
 
     try {
@@ -97,7 +99,7 @@ export const useCodapData = () => {
     } catch (error) {
       console.error("Error updating attribute visibility:", error);
     }
-  };
+  }, [dataContext]);
 
   const extractUniqueLocations = (allItems: any): ILocation[] => {
     const uniqueLocations: ILocation[] = [];
@@ -116,7 +118,6 @@ export const useCodapData = () => {
 
     return uniqueLocations;
   }
-
 
   const getUniqueLocationsInCodapData = async () => {
     const locationAttr = await getAttribute(kDataContextName, kParentCollectionName, "location");

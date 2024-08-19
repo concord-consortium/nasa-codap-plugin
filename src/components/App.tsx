@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { clsx } from "clsx";
-import { ILocation } from "../types";
-import { kInitialDimensions, kVersion, kPluginName, kDefaultOnAttributes, kSimulationTabDimensions, kDataContextName } from "../constants";
-import { initializePlugin, codapInterface, addDataContextChangeListener, ClientNotification } from "@concord-consortium/codap-plugin-api";
+import { ICurrentDayLocation, ILocation } from "../types";
+import { debounce } from "../grasp-seasons/utils/utils";
+import { kInitialDimensions, kVersion, kPluginName, kDefaultOnAttributes, kSimulationTabDimensions, kDataContextName, kChildCollectionName } from "../constants";
+import { initializePlugin, codapInterface, selectSelf, addDataContextChangeListener, ClientNotification, getCaseByID } from "@concord-consortium/codap-plugin-api";
 import { useCodapData } from "../hooks/useCodapData";
 import { LocationTab } from "./location-tab";
 import { SimulationTab } from "./simulation-tab";
@@ -10,49 +11,75 @@ import { Header } from "./header";
 
 import "../assets/scss/App.scss";
 
-const updateRowSelectionInCodap = (latitude: string, longitude: string, day: number) => {
-  // TODO: Issue CODAP API request to highlight appropriate case in the case table, using combination of
-  // Math.floor(day), latitude, and longitude.
-}
+const debouncedUpdateRowSelectionInCodap = debounce((
+  latitude: string,
+  longitude: string,
+  day: number
+) => {
+  codapInterface.sendRequest({
+    action: "get",
+    resource: `dataContext[${kDataContextName}].collection[${kChildCollectionName}].caseSearch[calcId==${latitude},${longitude},${Math.floor(day)}]`
+  }).then((result: any) => {
+    if (result.success && result.values.length > 0) {
+      const caseID = result.values[0].id;
+      return codapInterface.sendRequest({
+        action: "create",
+        resource: `dataContext[${kDataContextName}].selectionList`,
+        values: [caseID]
+      });
+    } else {
+      return null;
+    }
+  }).then((selectionResult: any) => {
+    if (!selectionResult.success) {
+      console.warn("Selection result was not successful", selectionResult);
+    }
+  }).catch((error: any) => {
+    console.error("Error in selection process:", error);
+  });
+}, 250);
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"location" | "simulation">("location");
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
-  const [dayOfYear, /*setDayOfYear */] = useState(171);
+  const [dayOfYear, setDayOfYear] = useState(171);
   const [locations, setLocations] = useState<ILocation[]>([]);
   const [locationSearch, setLocationSearch] = useState<string>("");
   const [selectedAttrs, setSelectedAttributes] = useState<string[]>(kDefaultOnAttributes);
   const [dataContext, setDataContext] = useState<any>(null);
 
-  const handleDayUpdateInTheSimTab = (day: number) => {
-    // console.log("The day of the year has been updated in the simulation tab to: ", day); // TODO: implement this
-    // We might to debounce this call, as if the animation is on, or user is dragging the slider, there will be
-    // lot of events and API calls to CODAP.
-    updateRowSelectionInCodap(latitude, longitude, Math.floor(day));
-    // Note that we do not need to update dayOfYear state variable. It's useful only for the opposite direction
-    // of the sync process, when user select a row in CODAP and we want to update the day in the simulation tab.
-  };
-
-  // TODO: Handle case selection - sync sim tab with CODAP selection
-  // const handleCaseSelectionInCodap = (_latitude: string, _longitude: string, day: number) => {
-  //   // Option 1. Update as much of the plugin state as we can when user selects a case in CODAP. I think this might
-  //   // be too much, as it'll clear all the inputs in all the tabs and the user will have to re-enter everything
-  //   // if they were in the middle of something.
-  //   // setDayOfYear(day);
-  //   // setLatitude(_latitude);
-  //   // setLongitude(_longitude);
-  //   // ...OR...
-  //   // Option 2. Update only the day of the year, as that's reasonably unobtrusive and useful. We can first check
-  //   // if user actually selected the case from the same location, and only then update the day of the year.
-  //   if (latitude === _latitude && longitude === _longitude) {
-  //     setDayOfYear(day);
-  //   }
-  // }
+  const currentDayLocationRef = useRef<ICurrentDayLocation>({
+    _latitude: "",
+    _longitude: "",
+    _dayOfYear: 171
+  });
 
   const { getUniqueLocationsInCodapData } = useCodapData();
-  // Store a ref to getUniqueLocationsInCodapData so we can call inside useEffect without triggering unnecessary re-runs
   const getUniqueLocationsRef = useRef(getUniqueLocationsInCodapData);
+
+  const handleDayUpdateInTheSimTab = (day: number) => {
+    currentDayLocationRef.current._dayOfYear = day;
+    debouncedUpdateRowSelectionInCodap(
+      currentDayLocationRef.current._latitude,
+      currentDayLocationRef.current._longitude,
+      day
+    );
+  };
+
+  const handleCaseSelectionInCodap = useCallback((
+    selectedLatitude: string,
+    selectedLongitude: string,
+    selectedDay: number
+  ) => {
+    const { _latitude, _longitude, _dayOfYear } = currentDayLocationRef.current;
+    const rowInLocation = `${_latitude},${_longitude}` === `${selectedLatitude},${selectedLongitude}`;
+    const newDayChoice = `${_dayOfYear}` !== `${selectedDay}`;
+    if (rowInLocation && newDayChoice) {
+      setDayOfYear(selectedDay);
+      currentDayLocationRef.current._dayOfYear = selectedDay;
+    }
+  }, []);
 
   useEffect(() => {
     const initialize = async () => {
@@ -65,38 +92,66 @@ export const App: React.FC = () => {
       } catch (e) {
         console.error("Failed to initialize plugin, error:", e);
       }
-
-      const casesDeletedFromCodapListener = async (listenerRes: ClientNotification) => {
-        const { resource, values } = listenerRes;
-        const isResource = resource === `dataContextChangeNotice[${kDataContextName}]`;
-        if (!isResource) return;
-
-        const casesDeleted =
-          values.operation === "selectCases"
-          && values.result.cases
-          && values.result.cases.length === 0
-          && values.result.success;
-
-        if ( casesDeleted ) {
-          const uniqeLocations = await getUniqueLocationsRef.current();
-          if (uniqeLocations) setLocations(uniqeLocations);
-        }
-      };
-      addDataContextChangeListener(kDataContextName, casesDeletedFromCodapListener);
     };
 
     initialize();
   }, []);
 
+  const handleDataContextChange = useCallback(async (listenerRes: ClientNotification) => {
+    console.log("| dataContextChangeNotice: ", listenerRes);
+    const { resource, values } = listenerRes;
+    const isResource = resource === `dataContextChangeNotice[${kDataContextName}]`;
+    if (!isResource || !values.result.success) return;
+
+    const casesDeleted = values.operation === "selectCases" && values.result.cases.length === 0
+    const caseSelected = values.operation === "selectCases" && values.result.cases.length === 1;
+
+    //TODO: there is an unhandled path when we edit the location name
+    // we can use this to update the location name in the UI
+
+    if (casesDeleted) {
+      const uniqueLocations = await getUniqueLocationsRef.current();
+      if (uniqueLocations) setLocations(uniqueLocations);
+    }
+    else if (caseSelected) {
+      const parentCaseId = values.result.cases[0].parent;
+      const selectedDay = values.result.cases[0].values.dayOfYear;
+      const parentCase = await getCaseByID(kDataContextName, parentCaseId);
+      const selectedLatitude = parentCase.values.case.values.latitude;
+      const selectedLongitude = parentCase.values.case.values.longitude;
+      handleCaseSelectionInCodap(
+        selectedLatitude,
+        selectedLongitude,
+        selectedDay
+      );
+    }
+  }, [handleCaseSelectionInCodap]);
+
+  useEffect(() => {
+    addDataContextChangeListener(kDataContextName, handleDataContextChange);
+  }, [handleDataContextChange]);
+
+  useEffect(() => {
+    currentDayLocationRef.current = {
+      _latitude: latitude,
+      _longitude: longitude,
+      _dayOfYear: dayOfYear
+    };
+  }, [latitude, longitude, dayOfYear]);
+
   const handleTabClick = (tab: "location" | "simulation") => {
     setActiveTab(tab);
-    // Update dimensions of the plugin window when switching tabs.
     codapInterface.sendRequest({
       action: "update",
       resource: "interactiveFrame",
       values: {
         dimensions: tab === "location" ? kInitialDimensions : kSimulationTabDimensions
       }
+    }).then(() => {
+      // This brings the plugin window to the front within CODAP
+      selectSelf();
+    }).catch((error) => {
+      console.error("Error updating dimensions or selecting self:", error);
     });
   };
 
