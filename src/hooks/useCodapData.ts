@@ -23,7 +23,6 @@ export const useCodapData = () => {
     if (result.success) {
       let dc = result.values;
       let lastCollection = dc.collections[dc.collections.length - 1];
-      console.trace();
       return await codapInterface.sendRequest({
         action: "delete",
         resource: `dataContext[${kDataContextName}].collection[${lastCollection.name}].allCases`

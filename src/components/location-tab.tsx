@@ -3,7 +3,6 @@ import { useCodapData } from "../hooks/useCodapData";
 import { kChildCollectionAttributes } from "../constants";
 import { ICodapDataContextInfo, ILocation } from "../types";
 import { LocationPicker } from "./location-picker";
-import { locationsEqual } from "../utils/daylight-utils";
 
 import "../assets/scss/location-tab.scss";
 

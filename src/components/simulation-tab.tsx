@@ -1,8 +1,6 @@
 import React from "react";
 import { ILocation } from "../types";
-import { useCodapData } from "../hooks/useCodapData";
 import Seasons from "../grasp-seasons/components/seasons";
-import { locationsEqual } from "../utils/daylight-utils";
 
 import "../assets/scss/simulation-tab.scss";
 
