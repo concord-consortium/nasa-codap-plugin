@@ -88,12 +88,21 @@ export const LocationTab: React.FC<LocationTabProps> = ({
 
   return (
     <div className="location-tab">
+      <div className="plugin-row intro">
+        <p>
+          How long is a day?<br />
+          Enter a location or coordinates to retrieve data
+        </p>
+      </div>
       <LocationPicker
         onLocationSelect={handleLocationSelect}
         searchValue={locationSearch}
         onSearchChange={handleLocationSearchChange}
       />
-      <div className="or">OR</div>
+      <div className="or-container">
+        <hr />
+        <span className="or">OR</span>
+      </div>
       <hr />
       <div className="plugin-row latitude">
         <label>Latitude</label>

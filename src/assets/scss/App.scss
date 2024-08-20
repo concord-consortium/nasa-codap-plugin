@@ -1,7 +1,6 @@
 @import "./vars";
 
 .App {
-  padding: 10px;
   box-sizing: border-box;
   font-family: "Montserrat", sans-serif;
   font-size: 12px;
@@ -25,19 +24,22 @@
   }
 
   .tab-content {
-    //display: none; would be easier, but it somehow Seasons 3D view doesn't initialize itself properly
+    // note each .tab-content is a wrapper for tab.location, tab.simulation, tab.about
+    // eahc of which maintain their own static layout widths
+    // this is 100% wide to cover the space affored by CODAP window whose width can change
+    // display: none; would be easier, but it somehow Seasons 3D view doesn't initialize itself properly
     // when display: none; is used.
     visibility: hidden;
     width: 0;
     height: 0;
     position: absolute;
-    padding: 3px;
-    border-top: 1px solid #777777;
+    padding: 9px $edge-padding $edge-padding $edge-padding;
 
     &.active {
+      background-color: white;
       visibility: visible;
-      width: auto;
-      height: auto;
+      width: 100%;
+      height: 100%;
     }
   }
 }
