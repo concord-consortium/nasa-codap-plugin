@@ -4,6 +4,8 @@ import t from "../../translation/translate";
 
 import "./infinite-slider-jquery-ui-plugin";
 
+const MONTH_LEN = 30.4;
+
 export default class InfiniteDaySlider extends Slider {
   // $slider: any;
   getSliderOpts: any;
@@ -30,15 +32,30 @@ export default class InfiniteDaySlider extends Slider {
       $(".ui-slider-tick").remove();
       this.generateMonthTicks(nextProps.lang);
     }
+    const options = this.getSliderOpts(nextProps);
+    const originalSlide = options.slide;
 
-    this.$slider[this.sliderFuncName](this.getSliderOpts(nextProps));
+    options.slide = (event: any, ui: any) => {
+      originalSlide(event, ui);
+      const value = ui.value;
+      const month = Math.floor(value / MONTH_LEN);
+      this.$slider.find(".ui-slider-tick-label").each(function(this: any, idx: number) {
+        const $label = $(this);
+        if (idx === month) {
+          $label.addClass("active");
+        } else {
+          $label.removeClass("active");
+        }
+      });
+    };
+    this.$slider[this.sliderFuncName](options);
   }
 
   generateMonthTicks(lang: any) {
     const ticks = [];
     const months = t("~MONTHS_SHORT", lang);
     for (let m = 0; m < 12; m++) {
-      ticks.push({ value: m * 30.4, name: months[m] });
+      ticks.push({ value: m * MONTH_LEN, name: months[m] });
     }
     this.$slider.infiniteSlider("option", "ticks", ticks);
     // Shift tick labels so they are in the middle of the month section on the slider.
