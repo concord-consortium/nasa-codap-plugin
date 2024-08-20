@@ -30,6 +30,10 @@
 
   .ui-slider-tick-label {
     margin-top: 15px;
+
+    &.active {
+      font-weight: bold;
+    }
   }
 
   &.ui-slider-vertical {
