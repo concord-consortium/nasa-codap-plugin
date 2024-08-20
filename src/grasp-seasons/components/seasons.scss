@@ -107,6 +107,16 @@ body {
   .solar-intensity {
     margin-top: 10px;
     margin-bottom: 30px;
+
+    .solar-intensity-value-and-unit {
+      display: inline-block;
+
+      .solar-intensity-value {
+        display: inline-block;
+        width: 46px;
+        white-space: nowrap;
+      }
+    }
   }
 
   select {
