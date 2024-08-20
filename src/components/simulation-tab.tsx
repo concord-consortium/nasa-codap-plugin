@@ -13,6 +13,8 @@ interface SimulationTabProps {
   setLocationSearch: (search: string) => void;
   dayOfYear: number;
   setDayOfYear: (day: number) => void;
+  setLocations: (locations: ILocation[]) => void;
+  handleGetDataClick: (latitude: string, longitude: string) => void;
 }
 
 export const SimulationTab: React.FC<SimulationTabProps> = ({
@@ -24,6 +26,8 @@ export const SimulationTab: React.FC<SimulationTabProps> = ({
   setLocationSearch,
   dayOfYear,
   setDayOfYear,
+  setLocations,
+  handleGetDataClick
 }) => {
   return (
     <div className="simulation-tab">
@@ -39,6 +43,9 @@ export const SimulationTab: React.FC<SimulationTabProps> = ({
           locations={locations}
         />
       </div>
+      <button className="get-data-button" onClick={() => handleGetDataClick(latitude, longitude)}>
+        Get Data
+      </button>
     </div>
   );
 };

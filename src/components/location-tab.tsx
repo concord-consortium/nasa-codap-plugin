@@ -3,7 +3,6 @@ import { useCodapData } from "../hooks/useCodapData";
 import { kChildCollectionAttributes } from "../constants";
 import { ICodapDataContextInfo, ILocation } from "../types";
 import { LocationPicker } from "./location-picker";
-import { locationsEqual } from "../utils/daylight-utils";
 
 import "../assets/scss/location-tab.scss";
 
@@ -20,6 +19,7 @@ interface LocationTabProps {
   setSelectedAttributes: (attrs: string[]) => void;
   setDataContext: (context: any) => void;
   setLocations: (locations: ILocation[]) => void;
+  handleGetDataClick: (latitude: string, longitude: string) => void;
 }
 
 export const LocationTab: React.FC<LocationTabProps> = ({
@@ -32,15 +32,14 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   setLongitude,
   setLocationSearch,
   setSelectedAttributes,
-  setLocations
+  setLocations,
+  handleGetDataClick
 }) => {
 
   const {
     dataContext,
     handleClearData,
-    getDayLengthData,
     updateAttributeVisibility,
-    getUniqueLocationsInCodapData
   } = useCodapData();
 
   useEffect(() => {
@@ -85,20 +84,6 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   const handleClearDataClick = async () => {
     await handleClearData();
     setLocations([]);
-  };
-
-  const handleGetDataClick = async () => {
-    const name = locationSearch || `(${latitude}, ${longitude})`;
-    const currentLocation: ILocation = { name, latitude: Number(latitude), longitude: Number(longitude) };
-    const locationExists = locations.some(item => locationsEqual(item, currentLocation));
-    if (locationExists || !latitude || !longitude) return;
-
-    // if the location does not already exist, and we have params, get the data
-    const tableCreated = await getDayLengthData(currentLocation);
-    if (tableCreated?.success) {
-      const uniqeLocations = await getUniqueLocationsInCodapData();
-      if (uniqeLocations) setLocations(uniqeLocations);
-    }
   };
 
   return (
@@ -149,7 +134,7 @@ export const LocationTab: React.FC<LocationTabProps> = ({
         <button onClick={handleClearDataClick} disabled={!dataContext}>
           Clear Data
         </button>
-        <button onClick={handleGetDataClick}>
+        <button  onClick={() => handleGetDataClick(latitude, longitude)}>
           Get Data
         </button>
       </div>

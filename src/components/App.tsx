@@ -8,6 +8,7 @@ import { useCodapData } from "../hooks/useCodapData";
 import { LocationTab } from "./location-tab";
 import { SimulationTab } from "./simulation-tab";
 import { Header } from "./header";
+import { locationsEqual } from "../utils/daylight-utils";
 
 import "../assets/scss/App.scss";
 
@@ -98,32 +99,33 @@ export const App: React.FC = () => {
   }, []);
 
   const handleDataContextChange = useCallback(async (listenerRes: ClientNotification) => {
-    console.log("| dataContextChangeNotice: ", listenerRes);
     const { resource, values } = listenerRes;
     const isResource = resource === `dataContextChangeNotice[${kDataContextName}]`;
-    if (!isResource || !values.result.success) return;
+    if (!isResource || !values.result.success || !values.result.cases) return;
 
+    const caseType = values.result.cases[0].parent ? "child" : "parent";
     const casesDeleted = values.operation === "selectCases" && values.result.cases.length === 0
     const caseSelected = values.operation === "selectCases" && values.result.cases.length === 1;
+    const parentCaseUpdated = values.operation === "updateCases" && caseType === "parent" && values.result.cases.length === 1;
 
-    //TODO: there is an unhandled path when we edit the location name
-    // we can use this to update the location name in the UI
-
-    if (casesDeleted) {
+    if (casesDeleted || parentCaseUpdated) {
       const uniqueLocations = await getUniqueLocationsRef.current();
       if (uniqueLocations) setLocations(uniqueLocations);
     }
+
     else if (caseSelected) {
-      const parentCaseId = values.result.cases[0].parent;
-      const selectedDay = values.result.cases[0].values.dayOfYear;
-      const parentCase = await getCaseByID(kDataContextName, parentCaseId);
-      const selectedLatitude = parentCase.values.case.values.latitude;
-      const selectedLongitude = parentCase.values.case.values.longitude;
-      handleCaseSelectionInCodap(
-        selectedLatitude,
-        selectedLongitude,
-        selectedDay
-      );
+      if (caseType === "child") {
+        const parentCaseId = values.result.cases[0].parent;
+        const selectedDay = values.result.cases[0].values.dayOfYear;
+        const parentCase = await getCaseByID(kDataContextName, parentCaseId);
+        const selectedLatitude = parentCase.values.case.values.latitude;
+        const selectedLongitude = parentCase.values.case.values.longitude;
+        handleCaseSelectionInCodap(
+          selectedLatitude,
+          selectedLongitude,
+          selectedDay
+        );
+      }
     }
   }, [handleCaseSelectionInCodap]);
 
@@ -155,6 +157,23 @@ export const App: React.FC = () => {
     });
   };
 
+  const { getDayLengthData } = useCodapData();
+
+  const handleGetDataClick = async () => {
+    const name = locationSearch || `(${latitude}, ${longitude})`;
+    const currentLocation: ILocation = { name, latitude: Number(latitude), longitude: Number(longitude) };
+    const locationExists = locations.some(item => locationsEqual(item, currentLocation));
+    if (locationExists || !latitude || !longitude) return;
+
+    // if the location does not already exist, and we have params, get the data
+    const tableCreated = await getDayLengthData(currentLocation);
+    if (tableCreated?.success) {
+      const uniqeLocations = await getUniqueLocationsInCodapData();
+      if (uniqeLocations) setLocations(uniqeLocations);
+    }
+  };
+
+
   return (
     <div className="App">
       <Header
@@ -175,6 +194,7 @@ export const App: React.FC = () => {
           setDataContext={setDataContext}
           locations={locations}
           setLocations={setLocations}
+          handleGetDataClick={handleGetDataClick}
         />
       </div>
       <div className={clsx("tab-content", { active: activeTab === "simulation" })}>
@@ -187,6 +207,8 @@ export const App: React.FC = () => {
           setLocationSearch={setLocationSearch}
           dayOfYear={dayOfYear}
           setDayOfYear={handleDayUpdateInTheSimTab}
+          setLocations={setLocations}
+          handleGetDataClick={handleGetDataClick}
         />
       </div>
     </div>
