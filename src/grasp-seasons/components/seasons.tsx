@@ -332,7 +332,10 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
         <div className="sunlight-at-noon">{ t("~SUNLIGHT_AT_NOON", simLang) }</div>
         <div className="solar-intensity">
           <label>{ t("~SOLAR_INTENSITY", simLang) }: </label>
-          { solarIntensityValue } { t("~SOLAR_INTENSITY_UNIT", simLang) }
+          <div className="solar-intensity-value-and-unit">
+            <div className="solar-intensity-value">{ solarIntensityValue }</div>
+            { t("~SOLAR_INTENSITY_UNIT", simLang) }
+          </div>
         </div>
         <MyLocations
           lat={simState.lat}
