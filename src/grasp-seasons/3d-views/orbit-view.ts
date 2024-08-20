@@ -45,13 +45,24 @@ export default class OrbitView extends BaseView {
   desiredCameraLookAt?: THREE.Vector3;
   cameraSwitchTimestamp?: number;
 
+  _suppressCameraChangeEvent = false;
+
   constructor(parentEl: HTMLElement, props = DEF_PROPERTIES) {
     super(parentEl, props, "orbit-view");
     this.registerInteractionHandler(this.earthDraggingInteraction);
 
     this.controls.addEventListener("change", () => {
+      if (this._suppressCameraChangeEvent) {
+        return;
+      }
       this.dispatch.emit("props.change", { cameraTiltAngle: this.getCameraTiltAngle() });
     });
+  }
+
+  suppressCameraChangeEvent(callback: () => void) {
+    this._suppressCameraChangeEvent = true;
+    callback();
+    this._suppressCameraChangeEvent = false;
   }
 
   setViewAxis(vec3: THREE.Vector3) {
@@ -223,14 +234,20 @@ export default class OrbitView extends BaseView {
     const oldEarthPosition = this.earth.posObject.position.clone();
     super._updateDay();
     if (this.props.earthCloseUpView) {
-      const positionDiff = this.earth.posObject.position.clone().sub(oldEarthPosition);
-      if (this.desiredCameraPos && this.desiredCameraLookAt) {
-        this.desiredCameraPos.add(positionDiff);
-        this.desiredCameraLookAt.add(positionDiff);
-      } else {
-        this.camera.position.add(positionDiff);
-        this.controls.target.add(positionDiff);
-      }
+        const positionDiff = this.earth.posObject.position.clone().sub(oldEarthPosition);
+        if (this.desiredCameraPos && this.desiredCameraLookAt) {
+          this.desiredCameraPos.add(positionDiff);
+          this.desiredCameraLookAt.add(positionDiff);
+        } else {
+          // It is necessary to suppress the camera change event to avoid conflicts with the camera position update
+          // triggered by the tilt angle slider. This is acceptable, as the daily update will never change the camera
+          // tilt angle.
+          this.suppressCameraChangeEvent(() => {
+            this.camera.position.add(positionDiff);
+            this.controls.target.add(positionDiff);
+            this.controls.update(); // Immediately flush the change event that will be suppressed.
+          });
+        }
     }
   }
 
