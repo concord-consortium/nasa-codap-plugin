@@ -21,20 +21,26 @@
     align-items: center;
     margin-bottom: 7px;
     margin-top: 7px;
+    &.location-picker-label {
+      margin-top: 12px;
+    }
+    &.latitude {
+      margin-bottom:12px;
+    }
   }
 
   .tab-content {
-    // note each .tab-content is a wrapper for tab.location, tab.simulation, tab.about
-    // eahc of which maintain their own static layout widths
-    // this is 100% wide to cover the space affored by CODAP window whose width can change
     // display: none; would be easier, but it somehow Seasons 3D view doesn't initialize itself properly
     // when display: none; is used.
     visibility: hidden;
     width: 0;
     height: 0;
     position: absolute;
-    padding: 9px $edge-padding $edge-padding $edge-padding;
+    padding-left: 9px $edge-padding $edge-padding $edge-padding;
 
+    // note each .tab-content is a wrapper for tab.location, tab.simulation, tab.about
+    // eahc of which maintain their own static layout widths
+    // this is 100% wide to cover the space affored by CODAP window whose width can change
     &.active {
       background-color: white;
       visibility: visible;

@@ -36,6 +36,8 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   handleGetDataClick
 }) => {
 
+  const enableGetData = latitude !== "" && longitude !== "";
+
   const {
     dataContext,
     handleClearData,
@@ -88,27 +90,25 @@ export const LocationTab: React.FC<LocationTabProps> = ({
 
   return (
     <div className="location-tab">
-      <div className="plugin-row intro">
-        <p>
-          How long is a day?<br />
-          Enter a location or coordinates to retrieve data
-        </p>
+      <div className="intro">
+        <span>How long is a day?</span><br />
+        <span>Enter a location or coordinates to retrieve data</span>
       </div>
+      <hr />
       <LocationPicker
         onLocationSelect={handleLocationSelect}
         searchValue={locationSearch}
         onSearchChange={handleLocationSearchChange}
       />
       <div className="or-container">
-        <hr />
+        <hr className="light" />
         <span className="or">OR</span>
       </div>
-      <hr />
       <div className="plugin-row latitude">
         <label>Latitude</label>
         <input
           type="text"
-          placeholder="latitude"
+          placeholder="Coordinate"
           value={latitude}
           onChange={handleLatChange}
         />
@@ -117,12 +117,12 @@ export const LocationTab: React.FC<LocationTabProps> = ({
         <label>Longitude</label>
         <input
           type="text"
-          placeholder="longitude"
+          placeholder="Coordinate"
           value={longitude}
           onChange={handleLongChange}
         />
       </div>
-      <hr />
+      <hr className="light above-attrs"/>
       <div className="plugin-row attributes-selection">
         <label>Attributes</label>
         <ul className="attribute-tokens">
@@ -138,12 +138,13 @@ export const LocationTab: React.FC<LocationTabProps> = ({
             )))
           }
         </ul>
+        <hr className="light"/>
       </div>
       <div className="plugin-row data-buttons">
         <button onClick={handleClearDataClick} disabled={!dataContext}>
           Clear Data
         </button>
-        <button  onClick={() => handleGetDataClick(latitude, longitude)}>
+        <button disabled={!enableGetData} onClick={() => handleGetDataClick(latitude, longitude)}>
           Get Data
         </button>
       </div>

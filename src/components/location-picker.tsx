@@ -95,7 +95,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
       <div className="plugin-row location-picker">
         <input
           type="text"
-          placeholder="Enter location"
+          placeholder="City, State or Country"
           value={searchValue}
           onChange={handleLocationChange}
           onKeyDown={handleKeyDown}

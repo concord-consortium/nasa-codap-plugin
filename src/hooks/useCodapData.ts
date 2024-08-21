@@ -45,7 +45,6 @@ export const useCodapData = () => {
 
     if (!existingDataContext.success) {
       createDC = await createDataContext(kDataContextName);
-      setDataContext(createDC.values);
     }
 
     if (existingDataContext?.success || createDC?.success) {
@@ -78,8 +77,11 @@ export const useCodapData = () => {
 
         return record;
       });
-
       await createItems(kDataContextName, completeSolarRecords);
+      console.log("|| set dataContext here?", existingDataContext, createDC);
+      if (existingDataContext.success) setDataContext(existingDataContext.values);
+      if (createDC?.success) setDataContext(createDC.values);
+      console.log("|| the dataContext in the hook:", dataContext);
       return await createTable(kDataContextName);
     }
   };

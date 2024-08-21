@@ -60,6 +60,12 @@ export const App: React.FC = () => {
   const { getUniqueLocationsInCodapData } = useCodapData();
   const getUniqueLocationsRef = useRef(getUniqueLocationsInCodapData);
 
+  // TODO handle click on the body to show the thing (30)
+
+  // TODO: get this working
+  const enableSimTab = dataContext !== null;
+  console.log("|| App render: dataContext", dataContext);
+
   const handleDayUpdateInTheSimTab = (day: number) => {
     currentDayLocationRef.current._dayOfYear = day;
     debouncedUpdateRowSelectionInCodap(
@@ -128,6 +134,7 @@ export const App: React.FC = () => {
         );
       }
     }
+    console.log("|| App: dataContextChange", values);
   }, [handleCaseSelectionInCodap]);
 
   useEffect(() => {
@@ -143,6 +150,8 @@ export const App: React.FC = () => {
   }, [latitude, longitude, dayOfYear]);
 
   const handleTabClick = (tab: TabName) => {
+    // comment out next line during development
+    if (tab === "simulation" && !enableSimTab) return;
     setActiveTab(tab);
     codapInterface.sendRequest({
       action: "update",
@@ -180,6 +189,7 @@ export const App: React.FC = () => {
       <Header
         activeTab={activeTab}
         onTabClick={handleTabClick}
+        showEnabled={enableSimTab}
       />
       <div className={clsx("tab-content", { active: activeTab === "location" })}>
         <LocationTab

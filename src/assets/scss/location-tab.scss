@@ -1,39 +1,62 @@
 @import "./vars";
 
 .location-tab {
-  width: 350px;
-  padding:10px;
+  box-sizing: border-box;
+  width: $location-tab-width;
+  height: $location-tab-height;
+  padding: $tab-padding;
+
+  .intro {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
 
   hr {
     width: 100%;
-    margin: 10px 0;
-    border: none;
-    border-top: 1.5px solid rgba($codap-teal, 0.3);
+    border-top: 1px solid #aaa;
+    &.light {
+      border-top: 1px solid $codap-teal-light;
+    }
+    &.above-attrs {
+      margin-top:22px;
+      margin-bottom:20px;
+    }
   }
 
   .latitude,
   .longitude {
-    justify-content: space-between;
+    display: flex;
+    align-items: center;
+    label {
+      margin-left: auto;
+      text-align: right;
+      margin-right: 10px;
+    }
     input {
-      width: 250px;
-      padding: 5px;
-      border-radius: 4px;
+      width: 236px;
+      padding: 7px 8px;
+      border-radius: $input-border-radius;
       box-sizing: border-box;
-      border: 1.5px solid rgba($codap-teal, 0.3);
+      border: $input-border;
     }
   }
 
-  .or {
-    display: none; // TODO: bring this or element back
-    background-color: white;
-    width: 40px;
-    padding:0px 10px;
-    color: $codap-teal;
-    font-weight: bold;
+  .or-container {
+    box-sizing: border-box;
+    position: relative;
+    text-align: left;
+    padding: $tab-padding 0px;
   }
 
-  .latitude {
-    margin-top: 12px;
+  .or {
+    display: inline-block;
+    position: absolute;
+    top: 11px;
+    background-color: white;
+    width: 30px;
+    padding:0px $tab-padding + 4px;
+    color: $codap-teal;
+    font-weight: bold;
   }
 
   .attributes-selection {
@@ -49,11 +72,11 @@
       display: flex;
       flex-wrap: wrap;
       width: 100%;
-      margin-top: 10px;
+      margin-top: $tab-padding;
       gap: 3px;
 
       li.token {
-        padding: 6px 12px;
+        padding: 8px $tab-padding;
         border-radius: 20px;
         cursor: pointer;
         transition: background-color 0.3s, color 0.3s;
@@ -63,15 +86,16 @@
 
         &.on {
           background-color: $codap-teal-lightest;
-          color: $codap-teal;
           border: 1px solid $codap-teal;
         }
 
         &.off {
           background-color: white;
-          color: #aaa;
           border: 1px solid $codap-teal;
         }
+      }
+      li.token:hover {
+        background-color: $codap-teal-lightest;
       }
     }
   }
@@ -81,10 +105,11 @@
 
     button {
       background-color: white;
-      padding: 6px 12px;
+      font-family: "Montserrat", sans-serif;
+      font-weight: medium;
+      padding: 9px 12px;
       border-radius: 4px;
       margin-left: 10px;
-      cursor: pointer;
       border: 1px solid $codap-teal;
       color: $codap-teal;
       transition: background-color 0.3s, color 0.3s;
@@ -98,6 +123,7 @@
       &:hover:not(:disabled) {
         background-color: $codap-teal-light;
         color: white;
+        cursor: pointer;
       }
     }
   }
