@@ -9,7 +9,6 @@ import "../assets/scss/location-tab.scss";
 interface LocationTabProps {
   latitude: string;
   longitude: string;
-  locations: ILocation[];
   locationSearch: string;
   selectedAttrs: string[];
   dataContext: ICodapDataContextInfo | null;
@@ -17,7 +16,6 @@ interface LocationTabProps {
   setLongitude: (longitude: string) => void;
   setLocationSearch: (search: string) => void;
   setSelectedAttributes: (attrs: string[]) => void;
-  setDataContext: (context: any) => void;
   setLocations: (locations: ILocation[]) => void;
   handleGetDataClick: (latitude: string, longitude: string) => void;
 }
@@ -27,7 +25,6 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   longitude,
   locationSearch,
   selectedAttrs,
-  locations,
   setLatitude,
   setLongitude,
   setLocationSearch,
@@ -35,6 +32,8 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   setLocations,
   handleGetDataClick
 }) => {
+
+  const enableGetData = latitude !== "" && longitude !== "";
 
   const {
     dataContext,
@@ -88,18 +87,25 @@ export const LocationTab: React.FC<LocationTabProps> = ({
 
   return (
     <div className="location-tab">
+      <div className="intro">
+        <span>How long is a day?</span><br />
+        <span>Enter a location or coordinates to retrieve data</span>
+      </div>
+      <hr />
       <LocationPicker
         onLocationSelect={handleLocationSelect}
         searchValue={locationSearch}
         onSearchChange={handleLocationSearchChange}
       />
-      <div className="or">OR</div>
-      <hr />
+      <div className="or-container">
+        <hr className="light" />
+        <span className="or">OR</span>
+      </div>
       <div className="plugin-row latitude">
         <label>Latitude</label>
         <input
           type="text"
-          placeholder="latitude"
+          placeholder="Coordinate"
           value={latitude}
           onChange={handleLatChange}
         />
@@ -108,12 +114,12 @@ export const LocationTab: React.FC<LocationTabProps> = ({
         <label>Longitude</label>
         <input
           type="text"
-          placeholder="longitude"
+          placeholder="Coordinate"
           value={longitude}
           onChange={handleLongChange}
         />
       </div>
-      <hr />
+      <hr className="light above-attrs"/>
       <div className="plugin-row attributes-selection">
         <label>Attributes</label>
         <ul className="attribute-tokens">
@@ -129,12 +135,13 @@ export const LocationTab: React.FC<LocationTabProps> = ({
             )))
           }
         </ul>
+        <hr className="light"/>
       </div>
       <div className="plugin-row data-buttons">
         <button onClick={handleClearDataClick} disabled={!dataContext}>
           Clear Data
         </button>
-        <button  onClick={() => handleGetDataClick(latitude, longitude)}>
+        <button disabled={!enableGetData} onClick={() => handleGetDataClick(latitude, longitude)}>
           Get Data
         </button>
       </div>

@@ -33,7 +33,6 @@ export const useCodapData = () => {
   };
 
   const getDayLengthData = async (location: ILocation) => {
-    let createDC;
     const calcOptions: DaylightCalcOptions = {
       latitude: location.latitude,
       longitude: location.longitude,
@@ -43,12 +42,12 @@ export const useCodapData = () => {
     const solarEvents = getDayLightInfo(calcOptions);
     const existingDataContext = await getDataContext(kDataContextName);
 
+    let newDataContext;
     if (!existingDataContext.success) {
-      createDC = await createDataContext(kDataContextName);
-      setDataContext(createDC.values);
+      newDataContext = await createDataContext(kDataContextName);
     }
 
-    if (existingDataContext?.success || createDC?.success) {
+    if (existingDataContext?.success || newDataContext?.success) {
       await createParentCollection(
         kDataContextName,
         kParentCollectionName,
@@ -61,25 +60,22 @@ export const useCodapData = () => {
         kChildCollectionAttributes
       );
 
-      const completeSolarRecords = solarEvents.map(solarEvent => {
-        const record: Record<string, any> = {
-          latitude: location.latitude,
-          longitude: location.longitude,
-          location: location.name,
-          date: solarEvent.day,
-          dayOfYear: solarEvent.dayOfYear,
-          rawSunrise: solarEvent.rawSunrise,
-          rawSunset: solarEvent.rawSunset,
-          "Day length": solarEvent.dayLength,
-          "Season": solarEvent.season,
-          "Sunlight angle": solarEvent.sunlightAngle,
-          "Solar intensity": solarEvent.solarIntensity
-        };
-
-        return record;
-      });
+      const completeSolarRecords = solarEvents.map(solarEvent => ({
+        latitude: location.latitude,
+        longitude: location.longitude,
+        location: location.name,
+        date: solarEvent.day,
+        dayOfYear: solarEvent.dayOfYear,
+        rawSunrise: solarEvent.rawSunrise,
+        rawSunset: solarEvent.rawSunset,
+        "Day length": solarEvent.dayLength,
+        "Season": solarEvent.season,
+        "Sunlight angle": solarEvent.sunlightAngle,
+        "Solar intensity": solarEvent.solarIntensity
+      }));
 
       await createItems(kDataContextName, completeSolarRecords);
+      setDataContext(existingDataContext.success ? existingDataContext.values : newDataContext?.values);
       return await createTable(kDataContextName);
     }
   };
@@ -131,6 +127,7 @@ export const useCodapData = () => {
 
   return {
     dataContext,
+    setDataContext,
     updateAttributeVisibility,
     handleClearData,
     getDayLengthData,

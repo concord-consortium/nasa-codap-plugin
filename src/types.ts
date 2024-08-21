@@ -38,3 +38,4 @@ export interface GeoNameSearchOptions {
   maxRows?: number;
 }
 
+export type TabName = "location" | "simulation" | "about";

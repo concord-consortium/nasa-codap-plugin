@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { clsx } from "clsx";
-import { ICurrentDayLocation, ILocation } from "../types";
+import { ICurrentDayLocation, ILocation, TabName } from "../types";
 import { debounce } from "../grasp-seasons/utils/utils";
 import { kInitialDimensions, kVersion, kPluginName, kDefaultOnAttributes, kSimulationTabDimensions, kDataContextName, kChildCollectionName } from "../constants";
 import { initializePlugin, codapInterface, selectSelf, addDataContextChangeListener, ClientNotification, getCaseByID } from "@concord-consortium/codap-plugin-api";
 import { useCodapData } from "../hooks/useCodapData";
 import { LocationTab } from "./location-tab";
 import { SimulationTab } from "./simulation-tab";
+import { AboutTab } from "./about-tab";
 import { Header } from "./header";
 import { locationsEqual } from "../utils/daylight-utils";
 
@@ -41,14 +42,20 @@ const debouncedUpdateRowSelectionInCodap = debounce((
 }, 250);
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"location" | "simulation">("location");
+  const [activeTab, setActiveTab] = useState<TabName>("location");
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
   const [dayOfYear, setDayOfYear] = useState(171);
   const [locations, setLocations] = useState<ILocation[]>([]);
   const [locationSearch, setLocationSearch] = useState<string>("");
   const [selectedAttrs, setSelectedAttributes] = useState<string[]>(kDefaultOnAttributes);
-  const [dataContext, setDataContext] = useState<any>(null);
+  const [simEnabled, setSimEnabled] = useState(false);
+
+  const { getDayLengthData, dataContext, getUniqueLocationsInCodapData } = useCodapData();
+
+  useEffect(() => {
+    setSimEnabled(!!dataContext);
+  }, [dataContext]);
 
   const currentDayLocationRef = useRef<ICurrentDayLocation>({
     _latitude: "",
@@ -56,8 +63,9 @@ export const App: React.FC = () => {
     _dayOfYear: 171
   });
 
-  const { getUniqueLocationsInCodapData } = useCodapData();
   const getUniqueLocationsRef = useRef(getUniqueLocationsInCodapData);
+
+  // TODO handle click on the body to move plugin to front
 
   const handleDayUpdateInTheSimTab = (day: number) => {
     currentDayLocationRef.current._dayOfYear = day;
@@ -127,6 +135,7 @@ export const App: React.FC = () => {
         );
       }
     }
+    console.log("|| App: dataContextChange", values);
   }, [handleCaseSelectionInCodap]);
 
   useEffect(() => {
@@ -141,7 +150,9 @@ export const App: React.FC = () => {
     };
   }, [latitude, longitude, dayOfYear]);
 
-  const handleTabClick = (tab: "location" | "simulation") => {
+  const handleTabClick = (tab: TabName) => {
+    // comment out next line during development
+    if (tab === "simulation" && !simEnabled) return;
     setActiveTab(tab);
     codapInterface.sendRequest({
       action: "update",
@@ -156,8 +167,6 @@ export const App: React.FC = () => {
       console.error("Error updating dimensions or selecting self:", error);
     });
   };
-
-  const { getDayLengthData } = useCodapData();
 
   const handleGetDataClick = async () => {
     const name = locationSearch || `(${latitude}, ${longitude})`;
@@ -179,6 +188,7 @@ export const App: React.FC = () => {
       <Header
         activeTab={activeTab}
         onTabClick={handleTabClick}
+        showEnabled={simEnabled}
       />
       <div className={clsx("tab-content", { active: activeTab === "location" })}>
         <LocationTab
@@ -191,8 +201,6 @@ export const App: React.FC = () => {
           setLongitude={setLongitude}
           setLocationSearch={setLocationSearch}
           setSelectedAttributes={setSelectedAttributes}
-          setDataContext={setDataContext}
-          locations={locations}
           setLocations={setLocations}
           handleGetDataClick={handleGetDataClick}
         />
@@ -210,6 +218,9 @@ export const App: React.FC = () => {
           setLocations={setLocations}
           handleGetDataClick={handleGetDataClick}
         />
+      </div>
+      <div className={clsx("tab-content", { active: activeTab === "about" })}>
+        <AboutTab />
       </div>
     </div>
   );
