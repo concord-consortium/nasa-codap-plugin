@@ -158,7 +158,7 @@ export const App: React.FC = () => {
       action: "update",
       resource: "interactiveFrame",
       values: {
-        dimensions: tab === "location" ? kInitialDimensions : kSimulationTabDimensions
+        dimensions: ( tab === "location" || tab === "about" ) ? kInitialDimensions : kSimulationTabDimensions
       }
     }).then(() => {
       // This brings the plugin window to the front within CODAP
@@ -184,7 +184,7 @@ export const App: React.FC = () => {
 
 
   return (
-    <div className="App">
+    <div className="App" onClick={selectSelf}>
       <Header
         activeTab={activeTab}
         onTabClick={handleTabClick}
