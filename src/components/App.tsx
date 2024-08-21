@@ -49,7 +49,13 @@ export const App: React.FC = () => {
   const [locations, setLocations] = useState<ILocation[]>([]);
   const [locationSearch, setLocationSearch] = useState<string>("");
   const [selectedAttrs, setSelectedAttributes] = useState<string[]>(kDefaultOnAttributes);
-  const [dataContext, setDataContext] = useState<any>(null);
+  const [simEnabled, setSimEnabled] = useState(false);
+
+  const { getDayLengthData, dataContext, getUniqueLocationsInCodapData } = useCodapData();
+
+  useEffect(() => {
+    setSimEnabled(!!dataContext);
+  }, [dataContext]);
 
   const currentDayLocationRef = useRef<ICurrentDayLocation>({
     _latitude: "",
@@ -57,14 +63,9 @@ export const App: React.FC = () => {
     _dayOfYear: 171
   });
 
-  const { getUniqueLocationsInCodapData } = useCodapData();
   const getUniqueLocationsRef = useRef(getUniqueLocationsInCodapData);
 
-  // TODO handle click on the body to show the thing (30)
-
-  // TODO: get this working
-  const enableSimTab = dataContext !== null;
-  console.log("|| App render: dataContext", dataContext);
+  // TODO handle click on the body to move plugin to front
 
   const handleDayUpdateInTheSimTab = (day: number) => {
     currentDayLocationRef.current._dayOfYear = day;
@@ -151,7 +152,7 @@ export const App: React.FC = () => {
 
   const handleTabClick = (tab: TabName) => {
     // comment out next line during development
-    if (tab === "simulation" && !enableSimTab) return;
+    if (tab === "simulation" && !simEnabled) return;
     setActiveTab(tab);
     codapInterface.sendRequest({
       action: "update",
@@ -166,8 +167,6 @@ export const App: React.FC = () => {
       console.error("Error updating dimensions or selecting self:", error);
     });
   };
-
-  const { getDayLengthData } = useCodapData();
 
   const handleGetDataClick = async () => {
     const name = locationSearch || `(${latitude}, ${longitude})`;
@@ -189,7 +188,7 @@ export const App: React.FC = () => {
       <Header
         activeTab={activeTab}
         onTabClick={handleTabClick}
-        showEnabled={enableSimTab}
+        showEnabled={simEnabled}
       />
       <div className={clsx("tab-content", { active: activeTab === "location" })}>
         <LocationTab
@@ -202,8 +201,6 @@ export const App: React.FC = () => {
           setLongitude={setLongitude}
           setLocationSearch={setLocationSearch}
           setSelectedAttributes={setSelectedAttributes}
-          setDataContext={setDataContext}
-          locations={locations}
           setLocations={setLocations}
           handleGetDataClick={handleGetDataClick}
         />

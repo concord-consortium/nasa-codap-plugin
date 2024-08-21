@@ -9,7 +9,6 @@ import "../assets/scss/location-tab.scss";
 interface LocationTabProps {
   latitude: string;
   longitude: string;
-  locations: ILocation[];
   locationSearch: string;
   selectedAttrs: string[];
   dataContext: ICodapDataContextInfo | null;
@@ -17,7 +16,6 @@ interface LocationTabProps {
   setLongitude: (longitude: string) => void;
   setLocationSearch: (search: string) => void;
   setSelectedAttributes: (attrs: string[]) => void;
-  setDataContext: (context: any) => void;
   setLocations: (locations: ILocation[]) => void;
   handleGetDataClick: (latitude: string, longitude: string) => void;
 }
@@ -27,7 +25,6 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   longitude,
   locationSearch,
   selectedAttrs,
-  locations,
   setLatitude,
   setLongitude,
   setLocationSearch,
