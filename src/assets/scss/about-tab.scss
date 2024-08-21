@@ -1,1 +1,35 @@
 @import "./vars.scss";
+
+.about-tab {
+  color:#333;
+  padding: 20px;
+  box-sizing: border-box;
+  width: $location-tab-width;
+  height: $location-tab-height;
+  padding: $tab-padding;
+  height: 800px; // extend beyond enclaosing for scroll
+
+  h2 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+  }
+
+  h3 {
+    font-size: 1em;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    font-weight: medium;
+  }
+
+  hr {
+    border-top: 1px solid $codap-teal-light;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .subsection {
+    p {
+      padding-left:10px;
+    }
+  }
+}

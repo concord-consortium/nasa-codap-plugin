@@ -158,7 +158,7 @@ export const App: React.FC = () => {
       action: "update",
       resource: "interactiveFrame",
       values: {
-        dimensions: tab === "location" ? kInitialDimensions : kSimulationTabDimensions
+        dimensions: ( tab === "location" || tab === "about" ) ? kInitialDimensions : kSimulationTabDimensions
       }
     }).then(() => {
       // This brings the plugin window to the front within CODAP
