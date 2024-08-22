@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, ChangeEvent, useCallback } from "react";
 import Slider from "./slider/slider";
-import { changeMonthOfDayOfYear, getSolarNoonIntensity, isValidLatitude, isValidLongitude } from "../../utils/daylight-utils";
+import { changeMonthOfDayOfYear, formatLatLongNumber, getSolarNoonIntensity, isValidLatitude, isValidLongitude } from "../../utils/daylight-utils";
 import InfiniteDaySlider from "./slider/infinite-day-slider";
 import MyLocations from "./my-locations";
 import getURLParam from "../utils/utils";
@@ -45,12 +45,6 @@ const DEFAULT_SIM_STATE: ISimState = {
 
 function capitalize(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-function formatLatLongNumber(value: number) {
-  // This function ensures that the number is formatted up to 5 decimal points and removes any trailing zeros and
-  // the decimal point if not necessary.
-  return value.toFixed(2).replace(/\.?0+$/, "");
 }
 
 interface IProps {

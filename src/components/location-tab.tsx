@@ -5,14 +5,7 @@ import { ICodapDataContextInfo, ILocation } from "../types";
 import { LocationPicker } from "./location-picker";
 
 import "../assets/scss/location-tab.scss";
-
-function formatLatLng(latOrLng: number | string): string {
-  // Convert the number to a string with up to 2 decimal places
-  const formatted = Number(latOrLng).toFixed(2);
-  // Remove trailing zeros after the decimal point
-  const trimmed = formatted.replace(/(\.\d*?[1-9])0+$/, "$1").replace(/\.0+$/, "");
-  return trimmed;
-}
+import { formatLatLongNumber } from "../utils/daylight-utils";
 
 interface LocationTabProps {
   latitude: string;
@@ -71,8 +64,8 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   };
 
   const handleLocationSelect = (selectedLocation: ILocation) => {
-    setLatitude(formatLatLng(selectedLocation.latitude));
-    setLongitude(formatLatLng(selectedLocation.longitude));
+    setLatitude(formatLatLongNumber(selectedLocation.latitude));
+    setLongitude(formatLatLongNumber(selectedLocation.longitude));
     setLocationSearch(selectedLocation.name);
   };
 

@@ -188,6 +188,12 @@ export function isValidLatitude(latitude: string): boolean {
   return !isNaN(parsed) && parsed >= -90 && parsed <= 90;
 }
 
+export function formatLatLongNumber(value: number | string) {
+  // This function ensures that the number is formatted up to 5 decimal points and removes any trailing zeros and
+  // the decimal point if not necessary.
+  return Number(value).toFixed(2).replace(/\.?0+$/, "");
+}
+
 export function changeMonthOfDayOfYear(dayOfYearIndex: number, monthsToAdd: number): number {
   if (dayOfYearIndex < 0 || dayOfYearIndex >= 365) {
       throw new Error("dayOfYearIndex must be between 0 and 364");
