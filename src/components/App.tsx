@@ -135,7 +135,6 @@ export const App: React.FC = () => {
         );
       }
     }
-    console.log("|| App: dataContextChange", values);
   }, [handleCaseSelectionInCodap]);
 
   useEffect(() => {
