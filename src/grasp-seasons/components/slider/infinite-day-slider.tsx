@@ -33,12 +33,11 @@ export default class InfiniteDaySlider extends Slider {
       this.generateMonthTicks(nextProps.lang);
     }
     const options = this.getSliderOpts(nextProps);
-    const originalSlide = options.slide;
-
-    options.slide = (event: any, ui: any) => {
-      originalSlide(event, ui);
-      const value = ui.value;
-      const month = Math.floor(value / MONTH_LEN);
+    const value = options.value;
+    if (value !== undefined) {
+      const date = new Date(2024, 0);
+      date.setDate(value + 1);
+      const month = date.getMonth();
       this.$slider.find(".ui-slider-tick-label").each(function(this: any, idx: number) {
         const $label = $(this);
         if (idx === month) {
@@ -47,7 +46,7 @@ export default class InfiniteDaySlider extends Slider {
           $label.removeClass("active");
         }
       });
-    };
+    }
     this.$slider[this.sliderFuncName](options);
   }
 
