@@ -28,6 +28,16 @@
     margin-bottom: 25px;
   }
 
+  .ui-slider-tick {
+    position: absolute;
+
+    .ui-slider-tick-mark {
+      background-color: $borderColor;
+      width: 1px;
+      height: 100%;
+    }
+  }
+
   .ui-slider-tick-label {
     margin-top: 15px;
 

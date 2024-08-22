@@ -17,14 +17,12 @@ const TICK_WIDTH = 1;
       value.forEach(function(this: any, t: any) {
         const percentValue = t.value / valueTotal * 100;
         const tick = $("<div></div>").addClass("ui-slider-tick").css({
-          position: "absolute",
           left: percentValue + "%"
         });
         const mark = $("<div></div>").addClass("ui-slider-tick-mark").css({
           height: this.element.height(),
           width: TICK_WIDTH + "px",
           "margin-left": (-0.5 * TICK_WIDTH) + "px",
-          background: "#aaaaaa"
         });
         const label = $("<div></div>").addClass("ui-slider-tick-label").text(t.name);
         mark.appendTo(tick);

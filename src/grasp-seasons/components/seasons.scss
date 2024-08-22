@@ -174,17 +174,24 @@ body {
         align-items: center;
         margin-bottom: 17px;
 
-        input {
+        .lat-input, .long-input {
           border-radius: 3px;
           border: solid 1px rgba(23, 121, 145, 0.75);
           background-color: #fff;
-          width: 45px;
           height: 24px;
           padding: 3px 6px;
         }
+
+        .lat-input {
+          width: 45px;
+        }
+        .long-input {
+          width: 49px;
+          margin-right: 4px;
+          margin-left: -5px;
+        }
       }
     }
-
   }
 
   .btn {

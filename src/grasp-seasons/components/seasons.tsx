@@ -343,7 +343,7 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
             <div className="top-row">
               <SquareButton onClick={handleLatIncrement(-5)}><ForwardBackIcon /></SquareButton>
               <label>{ t("~LATITUDE", simLang) }</label>
-              <input type="text" value={latitude} onChange={handleLatInputChange} />
+              <input className="lat-input" type="text" value={latitude} onChange={handleLatInputChange} />
               <SquareButton onClick={handleLatIncrement(5)}><ForwardBackIcon style={{transform: "rotate(180deg"}} /></SquareButton>
             </div>
           <Slider
@@ -360,7 +360,7 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
             <div className="top-row">
               <SquareButton onClick={handleLongIncrement(-5)}><ForwardBackIcon /></SquareButton>
               <label>{ t("~LONGITUDE", simLang) }</label>
-              <input type="text" value={longitude} onChange={handleLongInputChange} />
+              <input className="long-input" type="text" value={longitude} onChange={handleLongInputChange} />
               <SquareButton onClick={handleLongIncrement(5)}><ForwardBackIcon style={{transform: "rotate(180deg"}} /></SquareButton>
             </div>
             <Slider

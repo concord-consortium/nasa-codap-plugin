@@ -80,8 +80,22 @@ export default class Slider extends Component<IProps> {
   }
 
   render() {
+    const { orientation } = this.props
     return (
-      <div ref={this.containerRef} className="grasp-slider"></div>
+      <div ref={this.containerRef} className="grasp-slider">
+        {
+          (orientation === "horizontal" || !orientation) &&
+          <div className="ui-slider-tick" style={{ left: "50%", height: "100%" }}>
+            <div className="ui-slider-tick-mark"></div>
+          </div>
+        }
+        {
+          orientation === "vertical" &&
+          <div className="ui-slider-tick" style={{ bottom: "50%", width: "100%", height: 1 }}>
+            <div className="ui-slider-tick-mark" style={{ width: "100%" }}></div>
+          </div>
+        }
+      </div>
     );
   }
 }
