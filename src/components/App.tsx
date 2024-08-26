@@ -50,13 +50,11 @@ export const App: React.FC = () => {
   const [locationSearch, setLocationSearch] = useState<string>("");
   const [selectedAttrs, setSelectedAttributes] = useState<string[]>(kDefaultOnAttributes);
   const [simEnabled, setSimEnabled] = useState(false);
-  const [clearDataEnabled, setClearDataEnabled] = useState(false);
 
   const { getDayLengthData, dataContext, getUniqueLocationsInCodapData } = useCodapData();
 
   useEffect(() => {
     setSimEnabled(!!dataContext);
-    setClearDataEnabled(!!dataContext);
   }, [dataContext]);
 
   const currentDayLocationRef = useRef<ICurrentDayLocation>({
@@ -204,7 +202,7 @@ export const App: React.FC = () => {
           setSelectedAttributes={setSelectedAttributes}
           setLocations={setLocations}
           handleGetDataClick={handleGetDataClick}
-          clearDataEnabled={clearDataEnabled}
+          locations={locations}
         />
       </div>
       <div className={clsx("tab-content", { active: activeTab === "simulation" })}>

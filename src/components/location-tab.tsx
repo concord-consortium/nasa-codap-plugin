@@ -3,9 +3,9 @@ import { useCodapData } from "../hooks/useCodapData";
 import { kChildCollectionAttributes } from "../constants";
 import { ICodapDataContextInfo, ILocation } from "../types";
 import { LocationPicker } from "./location-picker";
+import { formatLatLongNumber } from "../utils/daylight-utils";
 
 import "../assets/scss/location-tab.scss";
-import { formatLatLongNumber } from "../utils/daylight-utils";
 
 interface LocationTabProps {
   latitude: string;
@@ -19,7 +19,7 @@ interface LocationTabProps {
   setSelectedAttributes: (attrs: string[]) => void;
   setLocations: (locations: ILocation[]) => void;
   handleGetDataClick: (latitude: string, longitude: string) => void;
-  clearDataEnabled: boolean;
+  locations: ILocation[];
 }
 
 export const LocationTab: React.FC<LocationTabProps> = ({
@@ -33,13 +33,12 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   setSelectedAttributes,
   setLocations,
   handleGetDataClick,
-  clearDataEnabled
+  locations
 }) => {
 
   const enableGetData = latitude !== "" && longitude !== "";
 
   const {
-    dataContext,
     handleClearData,
     updateAttributeVisibility,
   } = useCodapData();
@@ -141,7 +140,7 @@ export const LocationTab: React.FC<LocationTabProps> = ({
         <hr className="light"/>
       </div>
       <div className="plugin-row data-buttons">
-        <button onClick={handleClearDataClick} disabled={!clearDataEnabled}>
+        <button onClick={handleClearDataClick} disabled={locations.length < 1}>
           Clear Data
         </button>
         <button disabled={!enableGetData} onClick={() => handleGetDataClick(latitude, longitude)}>
