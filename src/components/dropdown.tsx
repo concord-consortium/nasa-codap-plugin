@@ -126,7 +126,8 @@ export const Dropdown = <T extends IOption>({
                     onMouseEnter={() => setFocusedOptionIndex(index)}
                     onMouseLeave={() => setFocusedOptionIndex(-1)}
                     className={clsx({
-                      focused: focusedOptionIndex === index ? "focused" : ""
+                      focused: focusedOptionIndex === index ? "focused" : "",
+                      iconPresent: icon
                     })
                     }
                   >

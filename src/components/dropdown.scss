@@ -34,6 +34,7 @@
     }
 
     .dropdown-main-button, input {
+      font-size: 12px;
       font-family: "Montserrat", sans-serif;
       padding: 5px;
       height: $input-height;
@@ -53,7 +54,6 @@
     }
 
     .dropdown-main-button {
-      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
       &:hover {
@@ -88,6 +88,7 @@
       padding: $padding;
 
       button {
+        font-size: 12px;
         font-family: "Montserrat", sans-serif;
         border: none;
         background-color: white;
@@ -107,6 +108,9 @@
         }
         &:active {
           background-color: $codap-teal-active;
+        }
+        &.iconPresent {
+          padding-left: 25px;
         }
       }
     }
