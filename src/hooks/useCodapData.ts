@@ -81,8 +81,6 @@ export const useCodapData = () => {
   };
 
   const updateAttributeVisibility = useCallback((attributeName: string, hidden: boolean) => {
-    if (!dataContext) return;
-
     try {
       updateAttribute(
         kDataContextName,
@@ -94,7 +92,7 @@ export const useCodapData = () => {
     } catch (error) {
       console.error("Error updating attribute visibility:", error);
     }
-  }, [dataContext]);
+  }, []);
 
   const extractUniqueLocations = (allItems: any): ILocation[] => {
     const uniqueLocations: ILocation[] = [];

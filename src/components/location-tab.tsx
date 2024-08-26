@@ -19,6 +19,7 @@ interface LocationTabProps {
   setSelectedAttributes: (attrs: string[]) => void;
   setLocations: (locations: ILocation[]) => void;
   handleGetDataClick: (latitude: string, longitude: string) => void;
+  clearDataEnabled: boolean;
 }
 
 export const LocationTab: React.FC<LocationTabProps> = ({
@@ -31,7 +32,8 @@ export const LocationTab: React.FC<LocationTabProps> = ({
   setLocationSearch,
   setSelectedAttributes,
   setLocations,
-  handleGetDataClick
+  handleGetDataClick,
+  clearDataEnabled
 }) => {
 
   const enableGetData = latitude !== "" && longitude !== "";
@@ -139,7 +141,7 @@ export const LocationTab: React.FC<LocationTabProps> = ({
         <hr className="light"/>
       </div>
       <div className="plugin-row data-buttons">
-        <button onClick={handleClearDataClick} disabled={!dataContext}>
+        <button onClick={handleClearDataClick} disabled={!clearDataEnabled}>
           Clear Data
         </button>
         <button disabled={!enableGetData} onClick={() => handleGetDataClick(latitude, longitude)}>

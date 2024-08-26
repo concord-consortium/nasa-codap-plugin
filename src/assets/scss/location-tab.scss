@@ -87,15 +87,18 @@
         &.on {
           background-color: $codap-teal-lightest;
           border: 1px solid $codap-teal;
+          &:hover {
+            background-color: rgba(114, 191, 202, 0.5);
+          }
         }
 
         &.off {
           background-color: white;
           border: 1px solid $codap-teal;
+          &:hover {
+            background-color: rgba(161, 161, 161, 0.25);
+          }
         }
-      }
-      li.token:hover {
-        background-color: $codap-teal-lightest;
       }
     }
   }
