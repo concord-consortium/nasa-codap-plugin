@@ -41,7 +41,7 @@ $about-tab-width: 60px;
     }
 
     &:hover:not(.active) {
-      background-color: #e0e0e0;
+      background-color: $codap-teal-lightest;
     }
 
     &.location {
