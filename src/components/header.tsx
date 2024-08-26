@@ -1,7 +1,7 @@
 import React from "react";
 import { TabName } from "../types";
 
-import "../assets/scss/header.scss";
+import "./header.scss";
 
 interface IHeaderProps {
   activeTab: TabName;

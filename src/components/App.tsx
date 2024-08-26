@@ -11,7 +11,7 @@ import { AboutTab } from "./about-tab";
 import { Header } from "./header";
 import { locationsEqual } from "../utils/daylight-utils";
 
-import "../assets/scss/App.scss";
+import "./App.scss";
 
 const debouncedUpdateRowSelectionInCodap = debounce((
   latitude: string,

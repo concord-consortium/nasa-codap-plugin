@@ -1,0 +1,114 @@
+@import "./vars.scss";
+
+.day-length-dropdown-container {
+  box-sizing: border-box;
+  font-size: 12px;
+
+  .day-length-dropdown-label {
+    position: relative;
+    margin-top: 6px;
+    margin-bottom: 6px;
+  }
+
+  &.inline {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    .day-length-dropdown-label {
+      margin-right: 6px;
+    }
+  }
+
+  .day-length-dropdown {
+    display: flex;
+    position: relative;
+    justify-content: space-between;
+
+    .left-icon {
+      position: absolute;
+      left: 6px;
+      top: 6px;
+      z-index: 1;
+    }
+
+    .dropdown-main-button, input {
+      font-family: "Montserrat", sans-serif;
+      padding: 5px;
+      height: $input-height;
+      width: 100%;
+      border-radius: $input-border-radius;
+      box-sizing: border-box;
+      border: $input-border;
+      outline: none;
+      text-align: left;
+    }
+
+    .dropdown-main-button-container {
+      width: 100%;
+      background-color: white;
+      border-radius: $input-border-radius;
+      box-sizing: border-box;
+    }
+
+    .dropdown-main-button {
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      &:hover {
+        background-color: $codap-teal-lightest;
+      }
+      &:active {
+        background-color: $codap-teal-active;
+      }
+    }
+
+    input {
+      padding-left: 28px;
+
+      &:hover {
+        background-color: $codap-teal-lightest-2;
+      }
+      &:focus {
+        background-color: $codap-teal-lightest;
+      }
+    }
+
+    .day-length-dropdown-options {
+      $padding: 4px;
+      z-index: 1;
+      position: absolute;
+      background-color: white;
+      box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+      width: calc(100% - 2 * $padding);
+      top: 32px;
+      left: 0;
+      margin: 0;
+      padding: $padding;
+
+      button {
+        font-family: "Montserrat", sans-serif;
+        border: none;
+        background-color: white;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        height: 24px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        cursor: pointer;
+        transition: background-color 0.3s;
+
+        &.focused {
+          background-color: $codap-teal-lightest;
+        }
+        &:active {
+          background-color: $codap-teal-active;
+        }
+      }
+    }
+  }
+}

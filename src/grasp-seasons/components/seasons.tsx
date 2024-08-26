@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, ChangeEvent, useCallback } from "re
 import Slider from "./slider/slider";
 import { changeMonthOfDayOfYear, formatLatLongNumber, getSolarNoonIntensity, isValidLatitude, isValidLongitude } from "../../utils/daylight-utils";
 import InfiniteDaySlider from "./slider/infinite-day-slider";
+import { Dropdown } from "../../components/dropdown";
 import MyLocations from "./my-locations";
 import getURLParam from "../utils/utils";
 import OrbitViewComp from "./orbit-view-comp";
@@ -240,8 +241,8 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
     setLocationSearch(name);
   };
 
-  const handleViewChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const earthCloseUpView = event.target.value === "true";
+  const handleViewChange = (option: { name: string; value: string }) => {
+    const earthCloseUpView = option.value === "true";
     setSimState(prevState => ({ ...prevState, earthCloseUpView }));
   }
 
@@ -255,12 +256,17 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
             ref={orbitViewRef} simulation={simState} onSimStateChange={handleSimStateChange} log={log} showCamera={false}
           />
           <div className="view-type-dropdown">
-            <label>{ t("~VIEW", simLang) }
-              <select value={simState.earthCloseUpView.toString()} onChange={handleViewChange}>
-                <option value="false">{ t("~EARTH_ORBIT", simLang) }</option>
-                <option value="true">{ t("~EARTH_CLOSE_UP", simLang) }</option>
-              </select>
-            </label>
+            <Dropdown<{ name: string, value: string }>
+              inline={true}
+              width="130px"
+              label={ t("~VIEW", simLang) }
+              options={[
+                { name: t("~EARTH_ORBIT", simLang), value: "false" },
+                { name: t("~EARTH_CLOSE_UP", simLang), value: "true" }
+              ]}
+              value={simState.earthCloseUpView ? t("~EARTH_CLOSE_UP", simLang) : t("~EARTH_ORBIT", simLang)}
+              onSelect={handleViewChange}
+            />
           </div>
           <div className="playback-controls">
             <button

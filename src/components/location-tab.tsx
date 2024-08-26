@@ -5,7 +5,7 @@ import { ICodapDataContextInfo, ILocation } from "../types";
 import { LocationPicker } from "./location-picker";
 import { formatLatLongNumber } from "../utils/daylight-utils";
 
-import "../assets/scss/location-tab.scss";
+import "./location-tab.scss";
 
 interface LocationTabProps {
   latitude: string;
@@ -94,11 +94,13 @@ export const LocationTab: React.FC<LocationTabProps> = ({
         <span>Enter a location or coordinates to retrieve data</span>
       </div>
       <hr />
-      <LocationPicker
-        onLocationSelect={handleLocationSelect}
-        searchValue={locationSearch}
-        onSearchChange={handleLocationSearchChange}
-      />
+      <div className="location-picker">
+        <LocationPicker
+          onLocationSelect={handleLocationSelect}
+          searchValue={locationSearch}
+          onSearchChange={handleLocationSearchChange}
+        />
+      </div>
       <div className="or-container">
         <hr className="light" />
         <span className="or">OR</span>

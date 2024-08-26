@@ -2,7 +2,7 @@ import React from "react";
 import { ILocation } from "../types";
 import Seasons from "../grasp-seasons/components/seasons";
 
-import "../assets/scss/simulation-tab.scss";
+import "./simulation-tab.scss";
 
 interface SimulationTabProps {
   locations: ILocation[];

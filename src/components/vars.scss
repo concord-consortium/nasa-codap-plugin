@@ -1,9 +1,11 @@
 $codap-teal: #177991;
-$codap-teal-light: #72bfca;
-$codap-teal-lightest: rgba(114, 191, 202, 0.25);
+$codap-teal-light: #72bfca40;
+$codap-teal-active: rgba(#72bfca80, 0.50);
+$codap-teal-lightest: rgba(#72bfca40, 0.25);
+$codap-teal-lightest-2: rgba(#72bfca1e, 0.12);
 $edge-padding: 4px;
 
-$location-tab-width: 340px;
+$location-tab-width: 330px;
 $location-tab-height: 630px;
 
 $sim-tab-width: 690px;

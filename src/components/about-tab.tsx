@@ -1,6 +1,6 @@
 import React from "react";
 
-import "../assets/scss/about-tab.scss";
+import "./about-tab.scss";
 
 export const AboutTab: React.FC = () => {
   return (
