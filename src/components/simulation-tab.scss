@@ -4,19 +4,15 @@
   padding: $tab-padding;
   width: $sim-tab-width;
   height: $sim-tab-height;
-  .get-data-button {
-    position: relative;
-    top: -15px;
-    height: 32px;
+
+  .button-container {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-right: 25px;
-    color: $codap-teal;
-    border-radius: 3px;
-    border: 1px solid $codap-teal;
-    background-color: white;
-    cursor: pointer;
-    margin-left: auto;
+    justify-content: flex-end;
+
+    .get-data-button {
+      margin-top: -27px;
+      margin-right: 13px;
+      z-index: 1;
+    }
   }
 }

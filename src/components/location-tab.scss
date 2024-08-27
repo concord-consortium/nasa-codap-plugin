@@ -17,7 +17,7 @@
     margin-top: 10px;
     margin-bottom: 12px;
     &.light {
-      border-top: 1px solid $codap-teal-light;
+      border-top: 1px solid $teal-light;
     }
     &.above-attrs {
       margin-top: 22px;
@@ -66,7 +66,7 @@
     background-color: white;
     width: 30px;
     padding: 0px $tab-padding + 4px;
-    color: $codap-teal;
+    color: $teal-dark;
     font-weight: bold;
   }
 
@@ -96,8 +96,8 @@
         margin:3px;
 
         &.on {
-          background-color: $codap-teal-lightest;
-          border: 1px solid $codap-teal;
+          background-color: $teal-light-25;
+          border: 1px solid $teal-dark;
           &:hover {
             background-color: rgba(114, 191, 202, 0.5);
           }
@@ -105,7 +105,7 @@
 
         &.off {
           background-color: white;
-          border: 1px solid $codap-teal;
+          border: 1px solid $teal-dark;
           &:hover {
             background-color: rgba(161, 161, 161, 0.25);
           }
@@ -118,27 +118,20 @@
     justify-content: flex-end;
 
     button {
-      background-color: white;
-      font-family: "Montserrat", sans-serif;
-      font-weight: medium;
-      padding: 9px 12px;
-      border-radius: 4px;
       margin-left: 10px;
-      border: 1px solid $codap-teal;
-      color: $codap-teal;
-      transition: background-color 0.3s, color 0.3s;
-      &:disabled {
-        color: #ccc;
-        border-color: #ccc;
-        &:hover {
-          color: #ccc;
-        }
-      }
-      &:hover:not(:disabled) {
-        background-color: $codap-teal-light;
-        color: white;
-        cursor: pointer;
-      }
+    }
+  }
+
+  .clear-data-button {
+    @include rect-button;
+    & {
+      background-color: white;
+    }
+    &:hover {
+      background-color: #a1a1a140;
+    }
+    &:active {
+      background-color: #a1a1a180;
     }
   }
 }

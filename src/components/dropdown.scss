@@ -36,8 +36,9 @@
     }
 
     .dropdown-main-button, input {
+      color: $text-color;
+      font-family: $font-family;
       font-size: 12px;
-      font-family: "Montserrat", sans-serif;
       padding: 5px;
       height: $input-height;
       width: 100%;
@@ -66,7 +67,10 @@
         }
       }
 
-      .dropdown-main-button {
+      button.dropdown-main-button {
+        color: $text-color;
+        font-family: $font-family;
+        font-size: 12px;
         background-color: white;
         font-weight: 600;
         cursor: pointer;
@@ -80,10 +84,10 @@
         }
 
         &:hover {
-          background-color: $codap-teal-lightest;
+          background-color: $teal-light-25;
         }
         &:active {
-          background-color: $codap-teal-active;
+          background-color: $teal-light-50;
         }
       }
     }
@@ -92,10 +96,10 @@
       padding-left: 28px;
 
       &:hover {
-        background-color: $codap-teal-lightest-2;
+        background-color: $teal-light-12;
       }
       &:focus {
-        background-color: $codap-teal-lightest;
+        background-color: $teal-light-25;
       }
     }
 
@@ -112,9 +116,10 @@
       padding: $padding;
 
       button {
+        color: $text-color;
+        font-family: $font-family;
         font-size: 12px;
         font-weight: 500;
-        font-family: "Montserrat", sans-serif;
         border: none;
         background-color: white;
         display: flex;
@@ -129,10 +134,10 @@
         transition: background-color 0.3s;
 
         &.focused {
-          background-color: $codap-teal-lightest;
+          background-color: $teal-light-25;
         }
         &:active {
-          background-color: $codap-teal-active;
+          background-color: $teal-light-50;
         }
         &.iconPresent {
           padding-left: 25px;

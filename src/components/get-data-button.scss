@@ -1,0 +1,14 @@
+@import "./vars.scss";
+
+.get-data-button {
+  @include rect-button;
+  & {
+    background-color: $teal-light-12;
+  }
+  &:hover {
+    background-color: $teal-light-25;
+  }
+  &:active {
+    background-color: $teal-light-50;
+  }
+}

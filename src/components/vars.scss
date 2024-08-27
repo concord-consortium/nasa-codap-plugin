@@ -1,14 +1,19 @@
-$codap-teal: #177991;
-$codap-teal-light: #72bfca40;
-$codap-teal-active: rgba(#72bfca80, 0.50);
-$codap-teal-lightest: rgba(#72bfca40, 0.25);
-$codap-teal-lightest-2: rgba(#72bfca1e, 0.12);
+$font-family: "Montserrat", sans-serif;
+
+$teal-dark: #177991;
+$teal-light: #72bfca;
+$teal-light-50: rgba(#72bfca, 0.50);
+$teal-light-50: rgba(#72bfca, 0.50);
+$teal-light-25: rgba(#72bfca, 0.25);
+$teal-light-12: rgba(#72bfca, 0.12);
+$text-color: #222;
+
 $edge-padding: 4px;
 
 $location-tab-width: 330px;
 $location-tab-height: 630px;
 
-$sim-tab-width: 690px;
+$sim-tab-width: 662px;
 $sim-tab-height: $location-tab-height;
 
 $about-tab-width: $location-tab-width;
@@ -20,3 +25,23 @@ $input-margin: 0 0 12px 8px;
 $input-border-radius: 3px;
 $input-border: solid 1px rgba(23, 121, 145, 0.75);
 
+@mixin rect-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: $text-color;
+  font-family: $font-family;
+  font-size: 12px;
+  font-weight: 600;
+  height: 32px;
+  border-radius: 3px;
+  border: solid 1px $teal-dark;
+  padding: 0 10px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+
+  &:disabled {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+}

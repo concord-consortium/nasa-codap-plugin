@@ -3,6 +3,7 @@ import { ILocation } from "../types";
 import Seasons from "../grasp-seasons/components/seasons";
 
 import "./simulation-tab.scss";
+import "./get-data-button.scss";
 
 interface SimulationTabProps {
   locations: ILocation[];
@@ -14,7 +15,7 @@ interface SimulationTabProps {
   dayOfYear: number;
   setDayOfYear: (day: number) => void;
   setLocations: (locations: ILocation[]) => void;
-  handleGetDataClick: (latitude: string, longitude: string) => void;
+  handleGetDataClick: () => void;
 }
 
 export const SimulationTab: React.FC<SimulationTabProps> = ({
@@ -26,9 +27,11 @@ export const SimulationTab: React.FC<SimulationTabProps> = ({
   setLocationSearch,
   dayOfYear,
   setDayOfYear,
-  setLocations,
   handleGetDataClick
 }) => {
+
+  const getDataDisabled = latitude === "" || longitude === "";
+
   return (
     <div className="simulation-tab">
       <div className="seasons-container">
@@ -43,9 +46,11 @@ export const SimulationTab: React.FC<SimulationTabProps> = ({
           locations={locations}
         />
       </div>
-      <button className="get-data-button" onClick={() => handleGetDataClick(latitude, longitude)}>
-        Get Data
-      </button>
+      <div className="button-container">
+        <button className="get-data-button" onClick={handleGetDataClick} disabled={getDataDisabled}>
+          Get Data
+        </button>
+      </div>
     </div>
   );
 };
