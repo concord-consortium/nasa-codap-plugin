@@ -14,13 +14,19 @@
   hr {
     width: 100%;
     border-top: 1px solid #aaa;
+    margin-top: 10px;
+    margin-bottom: 12px;
     &.light {
       border-top: 1px solid $codap-teal-light;
     }
     &.above-attrs {
-      margin-top:22px;
-      margin-bottom:20px;
+      margin-top: 22px;
+      margin-bottom: 17px;
     }
+  }
+
+  .location-picker {
+    margin: 10px 0;
   }
 
   .latitude,
@@ -46,15 +52,20 @@
     position: relative;
     text-align: left;
     padding: $tab-padding 0px;
+    font-size: 14px;
+
+    hr {
+      margin: 5px 0;
+    }
   }
 
   .or {
     display: inline-block;
     position: absolute;
-    top: 11px;
+    top: 8px;
     background-color: white;
     width: 30px;
-    padding:0px $tab-padding + 4px;
+    padding: 0px $tab-padding + 4px;
     color: $codap-teal;
     font-weight: bold;
   }
