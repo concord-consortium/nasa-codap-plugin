@@ -54,7 +54,7 @@ export default class MyLocations extends Component<IProps> {
     return (
       <div className="my-locations">
         <Dropdown
-          width="250px"
+          width="252px"
           value={this.selectedLocation}
           options={this.getOptions()}
           onSelect={this.selectChange}

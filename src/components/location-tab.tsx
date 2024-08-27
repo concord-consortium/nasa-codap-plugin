@@ -6,6 +6,7 @@ import { LocationPicker } from "./location-picker";
 import { formatLatLongNumber } from "../utils/daylight-utils";
 
 import "./location-tab.scss";
+import "./get-data-button.scss";
 
 interface LocationTabProps {
   latitude: string;
@@ -18,7 +19,7 @@ interface LocationTabProps {
   setLocationSearch: (search: string) => void;
   setSelectedAttributes: (attrs: string[]) => void;
   setLocations: (locations: ILocation[]) => void;
-  handleGetDataClick: (latitude: string, longitude: string) => void;
+  handleGetDataClick: () => void;
   locations: ILocation[];
 }
 
@@ -142,10 +143,18 @@ export const LocationTab: React.FC<LocationTabProps> = ({
         <hr className="light"/>
       </div>
       <div className="plugin-row data-buttons">
-        <button onClick={handleClearDataClick} disabled={locations.length < 1}>
+        <button
+          className="clear-data-button"
+          onClick={handleClearDataClick}
+          disabled={locations.length < 1}
+        >
           Clear Data
         </button>
-        <button disabled={!enableGetData} onClick={() => handleGetDataClick(latitude, longitude)}>
+        <button
+          className="get-data-button"
+          disabled={!enableGetData}
+          onClick={handleGetDataClick}
+        >
           Get Data
         </button>
       </div>
