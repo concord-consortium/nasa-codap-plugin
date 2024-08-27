@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { clsx } from "clsx";
+import DropdownArrow from "../assets/images/dropdown-arrow-icon.svg";
 
 import "./dropdown.scss";
 
@@ -109,6 +110,7 @@ export const Dropdown = <T extends IOption>({
           ) : (
             <div className="dropdown-main-button-container">
               <button className="dropdown-main-button" onClick={handleMainButtonClick}>{value}</button>
+              <DropdownArrow className={clsx("arrow-icon", { up: showOptions })} />
             </div>
           )
         }

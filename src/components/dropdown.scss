@@ -51,16 +51,28 @@
       background-color: white;
       border-radius: $input-border-radius;
       box-sizing: border-box;
-    }
 
-    .dropdown-main-button {
-      font-weight: 600;
-      cursor: pointer;
-      &:hover {
-        background-color: $codap-teal-lightest;
+      .arrow-icon {
+        position: absolute;
+        right: 5px;
+        top: 6px;
+        z-index: 1;
+        pointer-events: none;
+
+        &.up {
+          transform: rotate(180deg);
+        }
       }
-      &:active {
-        background-color: $codap-teal-active;
+
+      .dropdown-main-button {
+        font-weight: 600;
+        cursor: pointer;
+        &:hover {
+          background-color: $codap-teal-lightest;
+        }
+        &:active {
+          background-color: $codap-teal-active;
+        }
       }
     }
 
