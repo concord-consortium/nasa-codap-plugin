@@ -1,28 +1,28 @@
 <svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <defs>
-        <filter x="-32.5%" y="-32.5%" width="165%" height="165%" filterUnits="objectBoundingBox" id="kt9l4qt15a">
+        <filter x="-32.5%" y="-32.5%" width="165%" height="165%" filterUnits="objectBoundingBox" id="m8q5lgj2ha">
             <feGaussianBlur stdDeviation="1" in="SourceGraphic"/>
         </filter>
-        <filter x="-45%" y="-45%" width="190%" height="190%" filterUnits="objectBoundingBox" id="uuuo1sneab">
+        <filter x="-45%" y="-45%" width="190%" height="190%" filterUnits="objectBoundingBox" id="mwy4ysb44b">
             <feOffset in="SourceAlpha" result="shadowOffsetOuter1"/>
             <feGaussianBlur stdDeviation="5" in="shadowOffsetOuter1" result="shadowBlurOuter1"/>
             <feColorMatrix values="0 0 0 0 0.996078431 0 0 0 0 0.31372549 0 0 0 0 0.0941176471 0 0 0 1 0" in="shadowBlurOuter1"/>
         </filter>
-        <filter x="-25%" y="-25%" width="150%" height="150%" filterUnits="objectBoundingBox" id="17m8yoyy8e">
+        <filter x="-25%" y="-25%" width="150%" height="150%" filterUnits="objectBoundingBox" id="0eda9rtqwe">
             <feGaussianBlur in="SourceGraphic"/>
         </filter>
-        <filter x="-37.5%" y="-37.5%" width="175%" height="175%" filterUnits="objectBoundingBox" id="53wepbn6ef">
+        <filter x="-37.5%" y="-37.5%" width="175%" height="175%" filterUnits="objectBoundingBox" id="jqim6890kf">
             <feOffset in="SourceAlpha" result="shadowOffsetOuter1"/>
             <feGaussianBlur stdDeviation="5" in="shadowOffsetOuter1" result="shadowBlurOuter1"/>
             <feColorMatrix values="0 0 0 0 0.996078431 0 0 0 0 0.31372549 0 0 0 0 0.0941176471 0 0 0 1 0" in="shadowBlurOuter1"/>
         </filter>
-        <radialGradient cx="50%" cy="50%" fx="50%" fy="50%" r="50%" id="cdoimp6tod">
+        <radialGradient cx="50%" cy="50%" fx="50%" fy="50%" r="50%" id="27s8tdy2td">
             <stop stop-color="#FFDD6C" offset="0%"/>
             <stop stop-color="#FFDD6C" offset="25.595%"/>
             <stop stop-color="#FFA203" offset="89.689%"/>
             <stop stop-color="#FE5018" offset="100%"/>
         </radialGradient>
-        <radialGradient cx="50%" cy="50%" fx="50%" fy="50%" r="50%" id="l3iwwncs2h">
+        <radialGradient cx="50%" cy="50%" fx="50%" fy="50%" r="50%" id="5z1ahht6hh">
             <stop stop-color="#FFE89D" offset="0%"/>
             <stop stop-color="#FFE283" offset="13.458%"/>
             <stop stop-color="#FFDD6C" offset="32.393%"/>
@@ -30,18 +30,18 @@
             <stop stop-color="#FFA203" offset="89.689%"/>
             <stop stop-color="#FE5018" offset="100%"/>
         </radialGradient>
-        <circle id="c9ldibv0dc" cx="40" cy="40" r="20"/>
-        <circle id="v3h0jxy4hg" cx="40" cy="40" r="20"/>
+        <circle id="cwj1p1w70c" cx="40" cy="40" r="20"/>
+        <circle id="etkqst4ibg" cx="40" cy="40" r="20"/>
     </defs>
     <g fill="none" fill-rule="evenodd">
         <path d="M0 0h80v80H0z"/>
-        <g filter="url(#kt9l4qt15a)">
-            <use fill="#000" filter="url(#uuuo1sneab)" xlink:href="#c9ldibv0dc"/>
-            <use fill="url(#cdoimp6tod)" xlink:href="#c9ldibv0dc"/>
+        <g filter="url(#m8q5lgj2ha)">
+            <use fill="#000" filter="url(#mwy4ysb44b)" xlink:href="#cwj1p1w70c"/>
+            <use fill="url(#27s8tdy2td)" xlink:href="#cwj1p1w70c"/>
         </g>
-        <g filter="url(#17m8yoyy8e)">
-            <use fill="#000" filter="url(#53wepbn6ef)" xlink:href="#v3h0jxy4hg"/>
-            <use fill="url(#l3iwwncs2h)" xlink:href="#v3h0jxy4hg"/>
+        <g filter="url(#0eda9rtqwe)">
+            <use fill="#000" filter="url(#jqim6890kf)" xlink:href="#etkqst4ibg"/>
+            <use fill="url(#5z1ahht6hh)" xlink:href="#etkqst4ibg"/>
         </g>
     </g>
 </svg>

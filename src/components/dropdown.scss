@@ -3,6 +3,7 @@
 .day-length-dropdown-container {
   box-sizing: border-box;
   font-size: 12px;
+  font-weight: 500;
 
   .day-length-dropdown-label {
     position: relative;
@@ -31,6 +32,7 @@
       left: 6px;
       top: 6px;
       z-index: 1;
+      pointer-events: none;
     }
 
     .dropdown-main-button, input {
@@ -51,16 +53,38 @@
       background-color: white;
       border-radius: $input-border-radius;
       box-sizing: border-box;
-    }
 
-    .dropdown-main-button {
-      font-weight: 600;
-      cursor: pointer;
-      &:hover {
-        background-color: $codap-teal-lightest;
+      .arrow-icon {
+        position: absolute;
+        right: 5px;
+        top: 6px;
+        z-index: 1;
+        pointer-events: none;
+
+        &.up {
+          transform: rotate(180deg);
+        }
       }
-      &:active {
-        background-color: $codap-teal-active;
+
+      .dropdown-main-button {
+        background-color: white;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        &.iconPresent {
+          padding-left: 28px;
+          font-weight: 500;
+        }
+
+        &:hover {
+          background-color: $codap-teal-lightest;
+        }
+        &:active {
+          background-color: $codap-teal-active;
+        }
       }
     }
 
@@ -89,6 +113,7 @@
 
       button {
         font-size: 12px;
+        font-weight: 500;
         font-family: "Montserrat", sans-serif;
         border: none;
         background-color: white;
