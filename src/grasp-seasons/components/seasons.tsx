@@ -15,6 +15,8 @@ import { ILocation } from "../../types";
 
 import ForwardBackIcon from "../../assets/images/forward-back-icon.svg";
 import ForwardBackJumpIcon from "../../assets/images/forward-back-jump-icon.svg";
+import PlayIcon from "../../assets/images/play-icon.svg";
+import PauseIcon from "../../assets/images/pause-icon.svg";
 
 import "./seasons.scss";
 
@@ -269,13 +271,16 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
             />
           </div>
           <div className="playback-controls">
-            <button
-              className="btn btn-default animation-btn"
-              name={playStopLabel}
-              onClick={toggleMainAnimation}
-            >
-              { playStopLabel }
-            </button>
+            <div className="orbit-button-bg">
+              <button
+                className="orbit-button"
+                name={playStopLabel}
+                onClick={toggleMainAnimation}
+              >
+                { mainAnimationStarted ? <PauseIcon /> : <PlayIcon /> }
+                { playStopLabel }
+              </button>
+            </div>
             <label>
               <input
                 type="checkbox"

@@ -38,7 +38,7 @@ export default {
   "~GROUND": "Ground",
   "~SPACE": "Space",
   "~NOTHING": "Nothing",
-  "~STOP": "Stop",
+  "~STOP": "Pause",
   "~DIR_NORTH": "N",
   "~DIR_SOUTH": "S",
   "~DIR_EAST": "E",
