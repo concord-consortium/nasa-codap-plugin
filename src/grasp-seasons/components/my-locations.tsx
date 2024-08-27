@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import t, { Language } from "../translation/translate";
 import { ILocation } from "../../types";
 import { locationsEqual } from "../../utils/daylight-utils";
+import { Dropdown, IOption } from "../../components/dropdown";
+import LocationIcon from "../../assets/images/icon-location.svg";
 
 import "./my-locations.scss";
 
@@ -19,22 +21,20 @@ export default class MyLocations extends Component<IProps> {
     this.selectChange = this.selectChange.bind(this);
   }
 
-  selectChange(event: any) {
+  selectChange(option: IOption) {
     const { onLocationChange, locations } = this.props;
-    const location = locations[event.target.value];
-    if (location.latitude && location.longitude) {
+    const location = locations[Number(option.value)];
+    if (location && location.latitude && location.longitude) {
       onLocationChange(location.latitude, location.longitude, location.name);
     }
   }
 
   getOptions() {
     const { locations } = this.props;
-    const options = this.selectedLocation === "" ? [
-      <option key="unsaved" value="" disabled={true}>Custom Location (unsaved)</option>
-    ] : [];
+    const options = [];
     for (let i = 0; i < locations.length; i++) {
       const loc = locations[i];
-      options.push(<option key={i} value={i}>{ loc.name || `(${loc.latitude}, ${loc.longitude})` }</option>);
+      options.push({ name: loc.name || `(${loc.latitude}, ${loc.longitude})`, value: i.toString() });
     }
     return options;
   }
@@ -44,7 +44,7 @@ export default class MyLocations extends Component<IProps> {
     const currentLocation: ILocation = { latitude: lat, longitude: long, name: "" };
     for (let i = 0; i < locations.length; i++) {
       if (locationsEqual(currentLocation, locations[i])) {
-        return i;
+        return locations[i].name;
       }
     }
     return ""; // custom location
@@ -53,10 +53,14 @@ export default class MyLocations extends Component<IProps> {
   render() {
     return (
       <div className="my-locations">
-        <label>{ t("~MY_LOCATIONS", this.props.lang) }</label>
-        <select className="form-control" value={this.selectedLocation} onChange={this.selectChange}>
-          { this.getOptions() }
-        </select>
+        <Dropdown
+          width="250px"
+          value={this.selectedLocation}
+          options={this.getOptions()}
+          onSelect={this.selectChange}
+          label={t("~MY_LOCATIONS", this.props.lang)}
+          icon={<LocationIcon />}
+        />
       </div>
     );
   }

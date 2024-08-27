@@ -4,7 +4,7 @@ import DropdownArrow from "../assets/images/dropdown-arrow-icon.svg";
 
 import "./dropdown.scss";
 
-interface IOption {
+export interface IOption {
   name: string;
   value?: string;
 }
@@ -12,7 +12,7 @@ interface IOption {
 interface IDropdownProps<T extends IOption> {
   value: string;
   options: T[];
-  onSelect: (place: T) => void;
+  onSelect: (option: T) => void;
   onSearchChange?: (value: string) => void;
   label: string;
   inputPlaceholder?: string;
@@ -65,7 +65,7 @@ export const Dropdown = <T extends IOption>({
     setShowOptions(false);
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement | HTMLButtonElement>) => {
     if (!showOptions) return;
 
     switch (event.key) {
@@ -92,6 +92,8 @@ export const Dropdown = <T extends IOption>({
     }
   };
 
+  const iconPresent = !!icon;
+
   return (
     <div className={clsx("day-length-dropdown-container", { inline })}>
       <div className="day-length-dropdown-label">
@@ -109,7 +111,13 @@ export const Dropdown = <T extends IOption>({
             />
           ) : (
             <div className="dropdown-main-button-container">
-              <button className="dropdown-main-button" onClick={handleMainButtonClick}>{value}</button>
+              <button
+                className={clsx("dropdown-main-button", { iconPresent })}
+                onClick={handleMainButtonClick}
+                onKeyDown={handleKeyDown}
+              >
+                {value}
+              </button>
               <DropdownArrow className={clsx("arrow-icon", { up: showOptions })} />
             </div>
           )
@@ -129,7 +137,7 @@ export const Dropdown = <T extends IOption>({
                     onMouseLeave={() => setFocusedOptionIndex(-1)}
                     className={clsx({
                       focused: focusedOptionIndex === index ? "focused" : "",
-                      iconPresent: icon
+                      iconPresent
                     })
                     }
                   >
