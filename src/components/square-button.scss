@@ -1,12 +1,21 @@
+@import "./vars.scss";
+
 .square-button {
   width: 32px;
   height: 32px;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #177991;
+  color: $teal-dark;
   border-radius: 3px;
-  border: 1px solid #177991;
+  border: 1px solid $teal-dark;
   background-color: white;
   cursor: pointer;
+
+  &:hover {
+    background-color: $teal-light-25;
+  }
+  &:active {
+    background-color: $teal-light-50;
+  }
 }
