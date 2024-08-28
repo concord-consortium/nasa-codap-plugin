@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef, ChangeEvent, useCallback } from "react";
 import Slider from "./slider/slider";
-import { changeMonthOfDayOfYear, formatLatLongNumber, getSolarNoonIntensity, isValidLatitude, isValidLongitude } from "../../utils/daylight-utils";
+import {
+  changeMonthOfDayOfYear, formatLatLongNumber, getSolarNoonIntensity, isValidLatitude, isValidLongitude,
+  limitLatitude, limitLongitude
+} from "../../utils/daylight-utils";
 import InfiniteDaySlider from "./slider/infinite-day-slider";
 import { Dropdown } from "../../components/dropdown";
 import MyLocations from "./my-locations";
@@ -209,8 +212,8 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
   }
 
   const handleLatIncrement = (increment: number) => () => {
-    setSimState(prevState => ({ ...prevState, lat: prevState.lat + increment }));
-    setLatitude(formatLatLongNumber(simState.lat + increment));
+    setSimState(prevState => ({ ...prevState, lat: limitLatitude(prevState.lat + increment) }));
+    setLatitude(formatLatLongNumber(limitLatitude(simState.lat + increment)));
     setLocationSearch("");
   }
 
@@ -226,8 +229,8 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
   }
 
   const handleLongIncrement = (increment: number) => () => {
-    setSimState(prevState => ({ ...prevState, long: prevState.long + increment }));
-    setLongitude(formatLatLongNumber(simState.long + increment));
+    setSimState(prevState => ({ ...prevState, long: limitLongitude(prevState.long + increment) }));
+    setLongitude(formatLatLongNumber(limitLongitude(simState.long + increment)));
     setLocationSearch("");
   }
 
@@ -352,10 +355,10 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
         <div className="long-lat-sliders">
           <div className="slider-container">
             <div className="top-row">
-              <SquareButton onClick={handleLatIncrement(-5)}><ForwardBackIcon /></SquareButton>
+              <SquareButton onClick={handleLatIncrement(-5)} disabled={simState.lat <= -90}><ForwardBackIcon /></SquareButton>
               <label>{ t("~LATITUDE", simLang) }</label>
               <input className="lat-input" type="text" value={latitude} onChange={handleLatInputChange} />
-              <SquareButton onClick={handleLatIncrement(5)}><ForwardBackIcon style={{transform: "rotate(180deg"}} /></SquareButton>
+              <SquareButton onClick={handleLatIncrement(5)} disabled={simState.lat >= 90}><ForwardBackIcon style={{transform: "rotate(180deg"}}/></SquareButton>
             </div>
           <Slider
             value={simState.lat}
@@ -369,10 +372,10 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
           </div>
           <div className="slider-container">
             <div className="top-row">
-              <SquareButton onClick={handleLongIncrement(-5)}><ForwardBackIcon /></SquareButton>
+              <SquareButton onClick={handleLongIncrement(-5)} disabled={simState.long <= -180}><ForwardBackIcon /></SquareButton>
               <label>{ t("~LONGITUDE", simLang) }</label>
               <input className="long-input" type="text" value={longitude} onChange={handleLongInputChange} />
-              <SquareButton onClick={handleLongIncrement(5)}><ForwardBackIcon style={{transform: "rotate(180deg"}} /></SquareButton>
+              <SquareButton onClick={handleLongIncrement(5)} disabled={simState.long >= 180}><ForwardBackIcon style={{transform: "rotate(180deg"}}/></SquareButton>
             </div>
             <Slider
               value={simState.long}

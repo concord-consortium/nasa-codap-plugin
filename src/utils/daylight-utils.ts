@@ -194,6 +194,14 @@ export function formatLatLongNumber(value: number | string) {
   return Number(value).toFixed(2).replace(/\.?0+$/, "");
 }
 
+export function limitLatitude(value: number): number {
+  return Math.min(90, Math.max(-90, value));
+}
+
+export function limitLongitude(value: number): number {
+  return Math.min(180, Math.max(-180, value));
+}
+
 export function changeMonthOfDayOfYear(dayOfYearIndex: number, monthsToAdd: number): number {
   if (dayOfYearIndex < 0 || dayOfYearIndex >= 365) {
       throw new Error("dayOfYearIndex must be between 0 and 364");
