@@ -39,11 +39,11 @@
       margin-right: 10px;
     }
     input {
-      width: 236px;
-      padding: 7px 8px;
-      border-radius: $input-border-radius;
-      box-sizing: border-box;
-      border: $input-border;
+      @include text-input;
+      & {
+        width: 220px;
+        padding-left: 8px;
+      }
     }
   }
 

@@ -5,12 +5,13 @@ import "./square-button.scss";
 interface ISquareButtonProps {
   onClick?: () => void;
   children?: React.ReactNode;
+  disabled?: boolean;
 }
 
 export const SquareButton = (props: ISquareButtonProps) => {
-  const { children, onClick } = props;
+  const { children, onClick, disabled } = props;
   return (
-    <button onClick={onClick} className="square-button">
+    <button onClick={onClick} className="square-button" disabled={disabled}>
       { children }
     </button>
   );
