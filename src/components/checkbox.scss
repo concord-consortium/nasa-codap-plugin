@@ -1,0 +1,41 @@
+.custom-checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  label {
+    pointer-events: none;
+  }
+
+  &:hover {
+    svg {
+      .outline {
+        display: block;
+      }
+    }
+  }
+
+  &.disabled {
+    pointer-events: none;
+    opacity: 0.4;
+  }
+
+  svg {
+    margin-right: 6px;
+
+    .outline {
+      display: none;
+    }
+
+    .checkmark {
+      display: none;
+    }
+
+    &.checked {
+      .checkmark {
+        display: block;
+      }
+    }
+  }
+}

@@ -22,6 +22,7 @@ import PlayIcon from "../../assets/images/play-icon.svg";
 import PauseIcon from "../../assets/images/pause-icon.svg";
 
 import "./seasons.scss";
+import { Checkbox } from "../../components/checkbox";
 
 const ANIM_SPEED = 0.02;
 const DAILY_ROTATION_ANIM_SPEED = 0.0003;
@@ -195,11 +196,6 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
     });
   };
 
-  const handleSimCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setSimState(prevState => ({ ...prevState, [event.target.name as any as keyof ISimState]: event.target.checked }));
-    logCheckboxChange(event);
-  };
-
   const handleLatSliderChange = (event: any, ui: any) => {
     setSimState(prevState => ({ ...prevState, lat: ui.value }));
     setLatitude(formatLatLongNumber(ui.value));
@@ -284,15 +280,12 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
                 { playStopLabel }
               </button>
             </div>
-            <label>
-              <input
-                type="checkbox"
-                name="dailyRotation"
-                checked={simState.dailyRotation}
-                onChange={handleSimCheckboxChange}
-              />
-              { t("~DAILY_ROTATION", simLang) }
-            </label>
+            <Checkbox
+              checked={simState.dailyRotation}
+              onChange={checked => setSimState(prevState => ({ ...prevState, dailyRotation: checked }))}
+              label={ t("~DAILY_ROTATION", simLang) }
+              disabled={!mainAnimationStarted}
+            />
           </div>
           <div className="tilt-slider">
             <label>{ t("~TILT_VIEW", simLang) }</label>
