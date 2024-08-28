@@ -92,7 +92,7 @@ export const LocationTab: React.FC<LocationTabProps> = ({
     <div className="location-tab">
       <div className="intro">
         <span>How long is a day?</span><br />
-        <span>Enter a location or coordinates to retrieve data</span>
+        <span>Enter a location or coordinates to retrieve data.</span>
       </div>
       <hr />
       <div className="location-picker">

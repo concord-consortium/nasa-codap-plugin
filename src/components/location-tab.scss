@@ -12,7 +12,7 @@
   }
 
   hr {
-    width: 100%;
+    width: 99%;
     border-top: 1px solid #aaa;
     margin-top: 10px;
     margin-bottom: 12px;
@@ -20,8 +20,8 @@
       border-top: 1px solid $teal-light;
     }
     &.above-attrs {
-      margin-top: 22px;
-      margin-bottom: 17px;
+      margin-top: 20px;
+      margin-bottom: 15px;
     }
   }
 
@@ -51,11 +51,13 @@
     box-sizing: border-box;
     position: relative;
     text-align: left;
-    padding: $tab-padding 0px;
+    padding: 11px 0px;
     font-size: 14px;
 
     hr {
-      margin: 5px 0;
+      margin-top: 5px;
+      margin-bottom: 6px;
+      width: 95%;
     }
   }
 
@@ -64,10 +66,10 @@
     position: absolute;
     top: 8px;
     background-color: white;
-    width: 30px;
-    padding: 0px $tab-padding + 4px;
+    width: 35px;
+    padding-left: 13px;
     color: $teal-dark;
-    font-weight: bold;
+    font-weight: 600;
   }
 
   .attributes-selection {
@@ -83,17 +85,17 @@
       display: flex;
       flex-wrap: wrap;
       width: 100%;
-      margin-top: $tab-padding;
-      gap: 3px;
+      margin-top: 6px;
+      margin-bottom: 20px;
+      gap: 8px;
 
       li.token {
-        padding: 8px $tab-padding;
+        padding: 8px 10px;
         border-radius: 20px;
         cursor: pointer;
         transition: background-color 0.3s, color 0.3s;
         background-color: white;
         list-style: none;
-        margin:3px;
 
         &.on {
           background-color: $teal-light-25;
@@ -114,7 +116,8 @@
     }
   }
 
-  .data-buttons {
+  .data-buttons.plugin-row {
+    margin-top: -5px;
     justify-content: flex-end;
 
     button {

@@ -6,6 +6,7 @@ import {
 } from "../../utils/daylight-utils";
 import InfiniteDaySlider from "./slider/infinite-day-slider";
 import { Dropdown } from "../../components/dropdown";
+import { Checkbox } from "../../components/checkbox";
 import MyLocations from "./my-locations";
 import getURLParam from "../utils/utils";
 import OrbitViewComp from "./orbit-view-comp";
@@ -22,7 +23,6 @@ import PlayIcon from "../../assets/images/play-icon.svg";
 import PauseIcon from "../../assets/images/pause-icon.svg";
 
 import "./seasons.scss";
-import { Checkbox } from "../../components/checkbox";
 
 const ANIM_SPEED = 0.02;
 const DAILY_ROTATION_ANIM_SPEED = 0.0003;

@@ -5,17 +5,18 @@ $general-tab-width: 80px;
 $location-tab-width: 74px;
 $simulation-tab-width: 88px;
 $about-tab-width: 60px;
+$left-tab-margin: 3px;
 
 .tab-container {
   background-color: white;
-  padding-top:$edge-padding + 4px;
+  padding-top: $edge-padding;
   padding-left: $edge-padding;
   padding-right: $edge-padding;
   width: 100%;
   margin-bottom: 0;
   position: relative;
   z-index: 1;
-  border-bottom:1px solid #222;
+  border-bottom: 1px solid #777;
   height: $tab-height;
   display: flex;
 
@@ -23,42 +24,45 @@ $about-tab-width: 60px;
     position: absolute;
     text-align: center;
     padding: 4px $tab-padding;
-    cursor: pointer;
     color: #222;
     border: 1px solid #222;
     margin-right: -1px;
     border-radius: 4px 4px 0 0;
-    display:inline-block;
-    bottom:-1px;
-    background-color: #f0f0f0;
+    display: inline-block;
+    bottom: -1px;
+    background-color: #fafafa;
 
     &.active {
       background-color: white;
       border-bottom: 1px solid white;
-      font-weight: bold;
+      font-weight: 600;
       z-index: 3;
       height: 18px;
     }
 
+    &.disabled {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
     &:hover:not(.active) {
+      cursor: pointer;
       background-color: $teal-light-25;
     }
 
     &.location {
-      left: $edge-padding;
+      left: $left-tab-margin;
     }
 
     &.simulation {
-      left: $edge-padding + $location-tab-width;
-      &.disabled {
-        color: silver;
-      }
+      left: $left-tab-margin + $location-tab-width;
     }
 
     &.about {
-      left: $edge-padding + $location-tab-width + $simulation-tab-width;
+      left: $left-tab-margin + $location-tab-width + $simulation-tab-width;
+
       &.active {
-        left: $edge-padding + $location-tab-width + $simulation-tab-width - 1px;
+        left: $left-tab-margin + $location-tab-width + $simulation-tab-width - 1px;
       }
     }
   }
