@@ -32,20 +32,16 @@
   .tab-content {
     // display: none; would be easier, but it somehow Seasons 3D view doesn't initialize itself properly
     // when display: none; is used.
-    visibility: hidden;
     width: 0;
     height: 0;
+    overflow: hidden;
     position: absolute;
     padding-left: 9px $edge-padding $edge-padding $edge-padding;
 
-    // note each .tab-content is a wrapper for tab.location, tab.simulation, tab.about
-    // eahc of which maintain their own static layout widths
-    // this is 100% wide to cover the space affored by CODAP window whose width can change
     &.active {
+      width: auto;
+      height: auto;
       background-color: white;
-      visibility: visible;
-      width: 100%;
-      height: 100%;
     }
   }
 }
