@@ -1,13 +1,13 @@
-export const kPluginName = "Day Length Plugin";
+export const kPluginName = "Day Length";
 export const kVersion = "0.0.1";
 export const kDataContextName = "DayLengthPluginData";
 export const kInitialDimensions = {
   width: 340,
-  height: 546
+  height: 541
 };
 export const kSimulationTabDimensions = {
-  width: 690,
-  height: 630
+  width: 665,
+  height: 541
 };
 
 // These are only used in the simplified sunray angle calc

@@ -50,10 +50,6 @@ const DEFAULT_SIM_STATE: ISimState = {
   cameraTiltAngle: 89
 };
 
-function capitalize(string: string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
 interface IProps {
   lang?: Language;
   initialState?: Partial<ISimState>;
@@ -132,13 +128,6 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
   // Derived state
   const simLang = simState.lang;
   const playStopLabel = mainAnimationStarted ? t("~STOP", simLang) : t("~ORBIT_BUTTON", simLang);
-
-  // Log helpers
-  const logCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
-    log(capitalize(event.target.name) + "CheckboxChanged", {
-      value: event.target.checked
-    });
-  };
 
   // Keep updating lang in simState when lang prop changes
   useEffect(() => {
@@ -260,7 +249,7 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
             <Dropdown<{ name: string, value: string }>
               inline={true}
               width="130px"
-              label={ t("~VIEW", simLang) }
+              label={t("~VIEW", simLang)}
               options={[
                 { name: t("~EARTH_ORBIT", simLang), value: "false" },
                 { name: t("~EARTH_CLOSE_UP", simLang), value: "true" }
@@ -283,7 +272,7 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
             <Checkbox
               checked={simState.dailyRotation}
               onChange={checked => setSimState(prevState => ({ ...prevState, dailyRotation: checked }))}
-              label={ t("~DAILY_ROTATION", simLang) }
+              label={t("~DAILY_ROTATION", simLang)}
               disabled={!mainAnimationStarted}
             />
           </div>
@@ -312,8 +301,8 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
             <label>{ t("~DAY", simLang) }:</label>
             { getFormattedDay() }
           </div>
-          <SquareButton onClick={handleDayIncrement(1)}><ForwardBackIcon style={{transform: "rotate(180deg"}} /></SquareButton>
-          <SquareButton onClick={handleMonthIncrement(1)}><ForwardBackJumpIcon style={{transform: "rotate(180deg"}} /></SquareButton>
+          <SquareButton onClick={handleDayIncrement(1)}><ForwardBackIcon style={{ transform: "rotate(180deg" }} /></SquareButton>
+          <SquareButton onClick={handleMonthIncrement(1)}><ForwardBackJumpIcon style={{ transform: "rotate(180deg" }} /></SquareButton>
         </div>
         <div className="day-slider">
           <InfiniteDaySlider
@@ -351,7 +340,7 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
               <SquareButton onClick={handleLatIncrement(-5)} disabled={simState.lat <= -90}><ForwardBackIcon /></SquareButton>
               <label>{ t("~LATITUDE", simLang) }</label>
               <input className="lat-input" type="text" value={latitude} onChange={handleLatInputChange} />
-              <SquareButton onClick={handleLatIncrement(5)} disabled={simState.lat >= 90}><ForwardBackIcon style={{transform: "rotate(180deg"}}/></SquareButton>
+              <SquareButton onClick={handleLatIncrement(5)} disabled={simState.lat >= 90}><ForwardBackIcon style={{ transform: "rotate(180deg" }}/></SquareButton>
             </div>
           <Slider
             value={simState.lat}
@@ -368,7 +357,7 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (a
               <SquareButton onClick={handleLongIncrement(-5)} disabled={simState.long <= -180}><ForwardBackIcon /></SquareButton>
               <label>{ t("~LONGITUDE", simLang) }</label>
               <input className="long-input" type="text" value={longitude} onChange={handleLongInputChange} />
-              <SquareButton onClick={handleLongIncrement(5)} disabled={simState.long >= 180}><ForwardBackIcon style={{transform: "rotate(180deg"}}/></SquareButton>
+              <SquareButton onClick={handleLongIncrement(5)} disabled={simState.long >= 180}><ForwardBackIcon style={{ transform: "rotate(180deg" }}/></SquareButton>
             </div>
             <Slider
               value={simState.long}

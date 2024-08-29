@@ -97,7 +97,7 @@ export const Dropdown = <T extends IOption>({
   return (
     <div className={clsx("day-length-dropdown-container", { inline })}>
       <div className="day-length-dropdown-label">
-        <label>{label}</label>
+        <label>{ label }</label>
       </div>
       <div className="day-length-dropdown" style={{ width }}>
         {
@@ -116,14 +116,14 @@ export const Dropdown = <T extends IOption>({
                 onClick={handleMainButtonClick}
                 onKeyDown={handleKeyDown}
               >
-                {value}
+                { value }
               </button>
               <DropdownArrow className={clsx("arrow-icon", { up: showOptions })} />
             </div>
           )
         }
         <div className="left-icon">
-          {icon}
+          { icon }
         </div>
         {
           showOptions && options.length > 0 && (
@@ -141,7 +141,7 @@ export const Dropdown = <T extends IOption>({
                     })
                     }
                   >
-                    {option.name}
+                    { option.name }
                   </button>
                 ))
               }

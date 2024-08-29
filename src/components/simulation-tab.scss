@@ -1,9 +1,8 @@
 @import "./vars.scss";
 
 .simulation-tab {
-  padding: $tab-padding;
+  padding: 2px;
   width: $sim-tab-width;
-  height: $sim-tab-height;
 
   .button-container {
     display: flex;

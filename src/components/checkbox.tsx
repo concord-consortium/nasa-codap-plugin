@@ -21,7 +21,7 @@ export const Checkbox = ({ checked, onChange, label, disabled }: ICheckboxProps)
   return (
     <div className={clsx("custom-checkbox", { disabled })} onClick={handleClick}>
       <CheckboxSVG className={clsx("checkbox-icon", { checked })} />
-      <label>{label}</label>
+      <label>{ label }</label>
     </div>
   );
 }
