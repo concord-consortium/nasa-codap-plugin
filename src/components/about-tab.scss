@@ -1,34 +1,37 @@
 @import "./vars.scss";
 
 .about-tab {
-  color:#333;
-  padding: 20px;
   box-sizing: border-box;
   width: $location-tab-width;
   height: $location-tab-height;
   padding: $tab-padding;
+  font-weight: 500;
+  overflow-y: scroll;
+  max-height: 480px;
 
-  h2 {
-    font-size: 1.2em;
-    margin-bottom: 10px;
+  h2, h3 {
+    font-size: 12px;
+    font-weight: 600;
+
+    margin-top: 10px;
+    &:first-child {
+      margin-top: 5px;
+    }
   }
 
   h3 {
-    font-size: 1em;
-    margin-bottom: 10px;
     text-transform: uppercase;
-    font-weight: medium;
   }
 
   hr {
     border-top: 1px solid $teal-light;
     margin-top: 20px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
   }
 
   .subsection {
     p {
-      padding-left:10px;
+      padding-left: 10px;
     }
   }
 }
