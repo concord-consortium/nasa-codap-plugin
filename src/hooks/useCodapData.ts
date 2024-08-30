@@ -32,7 +32,7 @@ export const useCodapData = () => {
     }
   };
 
-  const getDayLengthData = async (location: ILocation) => {
+  const getDayLengthData = async (location: ILocation, selectedAttributes: string[]) => {
     const calcOptions: DaylightCalcOptions = {
       latitude: location.latitude,
       longitude: location.longitude,
@@ -53,11 +53,15 @@ export const useCodapData = () => {
         kParentCollectionName,
         kParentCollectionAttributes
       );
+      const childCollectionAttributesWithVisibility = kChildCollectionAttributes.map(attr => ({
+        ...attr,
+        hidden: !selectedAttributes.includes(attr.name)
+      }));
       await createChildCollection(
         kDataContextName,
         kChildCollectionName,
         kParentCollectionName,
-        kChildCollectionAttributes
+        childCollectionAttributesWithVisibility
       );
 
       const completeSolarRecords = solarEvents.map(solarEvent => ({

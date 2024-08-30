@@ -174,10 +174,10 @@ export const App: React.FC = () => {
     if (locationExists || !latitude || !longitude) return;
 
     // if the location does not already exist, and we have params, get the data
-    const tableCreated = await getDayLengthData(currentLocation);
+    const tableCreated = await getDayLengthData(currentLocation, selectedAttrs);
     if (tableCreated?.success) {
-      const uniqeLocations = await getUniqueLocationsInCodapData();
-      if (uniqeLocations) setLocations(uniqeLocations);
+      const uniqueLocations = await getUniqueLocationsInCodapData();
+      if (uniqueLocations) setLocations(uniqueLocations);
     }
   };
 
