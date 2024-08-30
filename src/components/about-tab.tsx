@@ -30,7 +30,7 @@ export const AboutTab: React.FC = () => {
         vary by location.
       </p>
       <p>
-        Because the Earth is spherical, sunlight reaches the surface at different angles from 0° when it is at the
+        Because the Earth is spherical, sunlight reaches the surface at different angles—from 0° when it is at the
         horizon (lowest solar intensity) to 90° when directly overhead (highest solar intensity). In addition, the 23°
         tilt of the Earth’s axis further affects the angle of sunlight reaching the different latitudes of the Earth.
       </p>
@@ -42,8 +42,8 @@ export const AboutTab: React.FC = () => {
       <hr/>
 
       <p>
-        The Day Length plugin for CODAP was developed by the <Link href="https://concord.org/">Concord Consortium</Link>
-        as part of the <Link href="https://mss.wested.org/project/boosting-data-science-teaching-and-learning-in-stem/">Boosting Data Science</Link> project,
+        The Day Length plugin for CODAP was developed by the <Link href="https://concord.org/">Concord Consortium</Link> as
+        part of the <Link href="https://mss.wested.org/project/boosting-data-science-teaching-and-learning-in-stem/">Boosting Data Science</Link> project,
         a collaboration between <Link href="https://www.wested.org/">WestEd</Link> and the Concord Consortium.
       </p>
       <p>
