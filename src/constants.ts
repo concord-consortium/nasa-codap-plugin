@@ -1,4 +1,4 @@
-export const kPluginName = "Day Length";
+export const kPluginName = "NASA: Earth, Air, and Water";
 export const kVersion = "0.0.1";
 export const kDataContextName = "DayLengthPluginData";
 export const kInitialDimensions = {
