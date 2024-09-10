@@ -34,6 +34,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
     <Dropdown<ILocation>
       label="Location"
       inputPlaceholder="City, State or Country"
+      dropdownOffset="10px"
       value={searchValue}
       options={locationCandidates}
       onSelect={onLocationSelect}

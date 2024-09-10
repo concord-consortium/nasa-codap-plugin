@@ -11,9 +11,9 @@ const Link = ({ href, children }: { href: string, children: React.ReactNode }) =
 export const AboutTab: React.FC = () => {
   return (
     <div className="about-tab">
-      <h2>Day Length Data</h2>
+      <h2>NASA: Earth, Air, and Water Data</h2>
       <p>
-        The Day Length plugin calculates data on daylight for each day of the year at any location on Earth. The
+        The NASA: Earth, Air, and Water plugin calculates data on daylight for each day of the year at any location on Earth. The
         calculated dataset does not include the effects of clouds, land formation, and other variables that affect
         sunlight in order to provide the underlying causes of Earth’s seasons and climate.
       </p>
@@ -42,7 +42,7 @@ export const AboutTab: React.FC = () => {
       <hr/>
 
       <p>
-        The Day Length plugin for CODAP was developed by the <Link href="https://concord.org/">Concord Consortium</Link> as
+        The NASA: Earth, Air, and Water plugin for CODAP was developed by the <Link href="https://concord.org/">Concord Consortium</Link> as
         part of the <Link href="https://mss.wested.org/project/boosting-data-science-teaching-and-learning-in-stem/">Boosting Data Science</Link> project,
         a collaboration between <Link href="https://www.wested.org/">WestEd</Link> and the Concord Consortium.
       </p>

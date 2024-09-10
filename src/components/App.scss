@@ -1,6 +1,6 @@
 @import "./vars";
 
-.App {
+.app {
   box-sizing: border-box;
   font-family: "Montserrat", sans-serif;
   font-size: 12px;
@@ -21,12 +21,6 @@
     align-items: center;
     margin-bottom: 7px;
     margin-top: 7px;
-    &.location-picker-label {
-      margin-top: 12px;
-    }
-    &.latitude {
-      margin-bottom:12px;
-    }
   }
 
   .tab-content {

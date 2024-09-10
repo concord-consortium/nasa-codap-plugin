@@ -1,6 +1,6 @@
-# Codap Day Length Plugin
+# Codap NASA: Earth, Air, and Water Plugin
 
-Stand-alone/expanded version of the Day Length plugin for CODAP.
+Stand-alone/expanded version of the NASA: Earth, Air, and Water plugin for CODAP.
 
 ### Initial steps
 

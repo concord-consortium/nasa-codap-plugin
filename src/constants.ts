@@ -1,12 +1,8 @@
-export const kPluginName = "Day Length";
+export const kPluginName = "NASA: Earth, Air, and Water";
 export const kVersion = "0.0.1";
 export const kDataContextName = "DayLengthPluginData";
 export const kInitialDimensions = {
-  width: 340,
-  height: 541
-};
-export const kSimulationTabDimensions = {
-  width: 665,
+  width: 360,
   height: 541
 };
 
@@ -69,7 +65,7 @@ export const kChildCollectionAttributes = [
     name: "rawSunrise",
     title: "rawSunrise",
     type: "date",
-    hasToken: false,
+    hasToken: true,
     hidden: true,
     precision: "seconds",
     description: "sunrise as date object"
@@ -87,7 +83,7 @@ export const kChildCollectionAttributes = [
     name: "Sunrise",
     title: "Sunrise",
     type: "numeric",
-    hasToken: true,
+    hasToken: false,
     unit: "decimal hours",
     formula: "hours(rawSunrise)+minutes(rawSunrise)/60",
     description: "time in decimal hours"
@@ -96,7 +92,7 @@ export const kChildCollectionAttributes = [
     name: "Sunset",
     title: "Sunset",
     type: "numeric",
-    hasToken: true,
+    hasToken: false,
     unit: "decimal hours",
     formula: "hours(rawSunset)+minutes(rawSunset)/60",
     description: "time in decimal hours"
@@ -105,7 +101,7 @@ export const kChildCollectionAttributes = [
     name: "Sunlight angle",
     title: "Sunlight angle",
     type: "numeric",
-    hasToken: true,
+    hasToken: false,
     unit: "°",
     description: "angle in degrees of sunlight at solar noon"
   },
@@ -113,7 +109,7 @@ export const kChildCollectionAttributes = [
     name: "Solar intensity",
     title: "Solar intensity",
     type: "numeric",
-    hasToken: true,
+    hasToken: false,
     unit: "W/㎡",
     description: "intensity of solar energy in watts per square meter at solar noon, disregarding all atmospheric effects"
   },
@@ -121,7 +117,7 @@ export const kChildCollectionAttributes = [
     name: "Season",
     title: "Season",
     type: "categorical",
-    hasToken: true
+    hasToken: false
   },
   {
     name: "calcId",

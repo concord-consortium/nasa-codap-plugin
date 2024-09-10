@@ -6,23 +6,22 @@ import "./header.scss";
 interface IHeaderProps {
   activeTab: TabName;
   onTabClick: (tab: TabName) => void;
-  showEnabled: boolean;
 }
 
-export const Header: React.FC<IHeaderProps> = ({ activeTab, onTabClick, showEnabled }) => {
+export const Header: React.FC<IHeaderProps> = ({ activeTab, onTabClick }) => {
   return (
     <div className="tab-container">
       <div
         className={`tab location ${activeTab === "location" ? "active" : ""}`}
         onClick={() => onTabClick("location")}
       >
-        Location
+        Data Settings
       </div>
       <div
-        className={`tab simulation ${activeTab === "simulation" ? "active" : ""} ${showEnabled ? "" : "disabled"}`}
-        onClick={() => onTabClick("simulation")}
+        className={`tab simulation ${activeTab === "glossary" ? "active" : ""}`}
+        onClick={() => onTabClick("glossary")}
       >
-        Simulation
+        Glossary
       </div>
       <div
         className={`tab about ${activeTab === "about" ? "active" : ""}`}
