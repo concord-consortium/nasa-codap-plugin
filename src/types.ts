@@ -4,12 +4,6 @@ export interface ICodapDataContextInfo {
   title: string;
 }
 
-export interface ICurrentDayLocation {
-  _latitude: string;
-  _longitude: string;
-  _dayOfYear: number;
-}
-
 export interface ILocation {
   name: string;
   latitude: number;
@@ -38,4 +32,4 @@ export interface GeoNameSearchOptions {
   maxRows?: number;
 }
 
-export type TabName = "location" | "simulation" | "about";
+export type TabName = "location" | "glossary" | "about";

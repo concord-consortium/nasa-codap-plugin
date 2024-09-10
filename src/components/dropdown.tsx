@@ -19,6 +19,7 @@ interface IDropdownProps<T extends IOption> {
   icon?: React.ReactNode;
   inline?: boolean;
   width?: string;
+  dropdownOffset?: string;
 }
 
 export const Dropdown = <T extends IOption>({
@@ -30,7 +31,8 @@ export const Dropdown = <T extends IOption>({
   inputPlaceholder,
   icon,
   inline,
-  width
+  width,
+  dropdownOffset
 }: IDropdownProps<T>) => {
   const [showOptions, setShowOptions] = useState(false);
   const [focusedOptionIndex, setFocusedOptionIndex] = useState(-1);
@@ -99,7 +101,7 @@ export const Dropdown = <T extends IOption>({
       <div className="day-length-dropdown-label">
         <label>{ label }</label>
       </div>
-      <div className="day-length-dropdown" style={{ width }}>
+      <div className="day-length-dropdown" style={{ width, marginLeft: dropdownOffset }}>
         {
           onSearchChange ? (
             <input
