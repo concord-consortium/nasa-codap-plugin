@@ -1,0 +1,41 @@
+@import "./vars";
+
+.app {
+  box-sizing: border-box;
+  font-family: "Montserrat", sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #222222;
+
+  input {
+    font-family: "Montserrat", sans-serif;
+  }
+
+  label {
+    font-weight: 600;
+  }
+
+  .plugin-row {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    margin-bottom: 7px;
+    margin-top: 7px;
+  }
+
+  .tab-content {
+    // display: none; would be easier, but it somehow Seasons 3D view doesn't initialize itself properly
+    // when display: none; is used.
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    position: absolute;
+    padding-left: 9px $edge-padding $edge-padding $edge-padding;
+
+    &.active {
+      width: auto;
+      height: auto;
+      background-color: white;
+    }
+  }
+}
