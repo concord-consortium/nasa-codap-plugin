@@ -7,7 +7,7 @@ on:
         required: true
 env:
   BUCKET: models-resources
-  PREFIX: codap-day-length-plugin-3
+  PREFIX: nasa-codap-plugin
   SRC_FILE: index-top.html
   DEST_FILE: index.html
 jobs:
