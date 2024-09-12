@@ -13,12 +13,12 @@ export interface ILocation {
 export interface DaylightCalcOptions {
   latitude: number;
   longitude: number;
-  year: number;
+  startDate: string;
+  endDate: string;
 }
 
 export interface DaylightInfo {
   day: string;          // read into CODAP as an ISO date
-  dayOfYear: number;
   rawSunrise: string;   // read into CODAP as an ISO date
   rawSunset: string;    // read into CODAP as an ISO date
   dayLength: number;
@@ -33,3 +33,22 @@ export interface GeoNameSearchOptions {
 }
 
 export type TabName = "location" | "glossary" | "about";
+
+// Data types
+
+export type NASAParameter = "ALLSKY_SFC_UV_INDEX" | "CLRSKY_SFC_SW_DWN" | "T2M_MAX" | "TS_MAX" | "PRECTOTCORR" | "CLOUD_AMT_DAY" | "GWETPROF";
+
+export type AttributeCategory = "Sunlight" | "Temperature" | "Water Availability";
+
+export interface IAttribute {
+  name: string;
+  title: string;
+  type: string;
+  unit?: string;
+  precision?: string;
+  formula?: string;
+  description?: string;
+  hidden?: boolean;
+  NASAParamName?: NASAParameter;
+  category?: AttributeCategory;
+}

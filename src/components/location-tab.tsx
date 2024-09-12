@@ -1,44 +1,25 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useCodapData } from "../hooks/useCodapData";
-import { kChildCollectionAttributes } from "../constants";
-import { ICodapDataContextInfo, ILocation } from "../types";
+import { kChildCollectionAttributes, kDefaultOnAttributes } from "../constants";
+import { ILocation } from "../types";
 import { LocationPicker } from "./location-picker";
 import { formatLatLongNumber } from "../utils/daylight-utils";
 
 import "./location-tab.scss";
 import "./get-data-button.scss";
 
-interface LocationTabProps {
-  latitude: string;
-  longitude: string;
-  locationSearch: string;
-  selectedAttrs: string[];
-  dataContext: ICodapDataContextInfo | null;
-  setLatitude: (latitude: string) => void;
-  setLongitude: (longitude: string) => void;
-  setLocationSearch: (search: string) => void;
-  setSelectedAttributes: (attrs: string[]) => void;
-  handleGetDataClick: () => void;
-}
+export const LocationTab: React.FC = () => {
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [locationSearch, setLocationSearch] = useState<string>("");
+  const [selectedAttrs, setSelectedAttributes] = useState<string[]>(kDefaultOnAttributes);
+  const [requestInProgress, setRequestInProgress] = useState(false);
+  const [anyDataRequested, setAnyDataRequested] = useState(false);
+  const { handleClearData, getDayLengthAndNASAData, updateAttributeVisibility } = useCodapData();
 
-export const LocationTab: React.FC<LocationTabProps> = ({
-  latitude,
-  longitude,
-  locationSearch,
-  selectedAttrs,
-  setLatitude,
-  setLongitude,
-  setLocationSearch,
-  setSelectedAttributes,
-  handleGetDataClick,
-}) => {
-
-  const enableGetData = latitude !== "" && longitude !== "";
-
-  const {
-    handleClearData,
-    updateAttributeVisibility,
-  } = useCodapData();
+  const enableGetData = latitude !== "" && longitude !== "" && startDate !== "" && endDate !== "" && !requestInProgress;
 
   useEffect(() => {
     const updateEachAttrVisibility = () => {
@@ -67,6 +48,14 @@ export const LocationTab: React.FC<LocationTabProps> = ({
     setLocationSearch(selectedLocation.name);
   };
 
+  const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setStartDate(event.target.value);
+  };
+
+  const handleEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEndDate(event.target.value);
+  };
+
   const handleLocationSearchChange = (searchString: string) => {
     setLocationSearch(searchString);
   };
@@ -81,6 +70,23 @@ export const LocationTab: React.FC<LocationTabProps> = ({
 
   const handleClearDataClick = async () => {
     await handleClearData();
+  };
+
+  const handleGetDataClick = async () => {
+    const name = locationSearch || `(${latitude}, ${longitude})`;
+    const currentLocation: ILocation = { name, latitude: Number(latitude), longitude: Number(longitude) };
+    if (!latitude || !longitude || !startDate || !endDate) return;
+
+    // if the location does not already exist, and we have params, get the data
+    setRequestInProgress(true);
+    try {
+      await getDayLengthAndNASAData(currentLocation, startDate, endDate, selectedAttrs);
+      setAnyDataRequested(true);
+    } catch (error: any) {
+      window.alert(error.message);
+    } finally {
+      setRequestInProgress(false);
+    }
   };
 
   return (
@@ -129,11 +135,13 @@ export const LocationTab: React.FC<LocationTabProps> = ({
           <input
             type="date"
             placeholder="Start Date"
+            onChange={handleStartDateChange}
           />
           to
           <input
             type="date"
             placeholder="End Date"
+            onChange={handleEndDateChange}
           />
         </div>
       </div>
@@ -141,7 +149,7 @@ export const LocationTab: React.FC<LocationTabProps> = ({
       <div className="plugin-row attributes-selection">
         <label>Attribute Categories</label>
         <ul className="attribute-tokens">
-          { kChildCollectionAttributes.map((attr: any, i: number) => (
+          {/* { kChildCollectionAttributes.map((attr: any, i: number) => (
             attr.hasToken && (
               <li
                 key={i}
@@ -151,13 +159,14 @@ export const LocationTab: React.FC<LocationTabProps> = ({
                 { attr.title }
               </li>
             )))
-          }
+          } */}
         </ul>
         <hr className="light"/>
       </div>
       <div className="plugin-row data-buttons">
         <button
           className="clear-data-button"
+          disabled={!anyDataRequested}
           onClick={handleClearDataClick}
         >
           Clear Data

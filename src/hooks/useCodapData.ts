@@ -14,6 +14,7 @@ import {
   createChildCollection,
   updateAttribute
 } from "@concord-consortium/codap-plugin-api";
+import { fetchNASAData, getNASAAttributeValues } from "../utils/nasa-api";
 
 export const useCodapData = () => {
   const [dataContext, setDataContext] = useState<any>(null);
@@ -32,13 +33,18 @@ export const useCodapData = () => {
     }
   };
 
-  const getDayLengthData = async (location: ILocation, selectedAttributes: string[]) => {
+  const getDayLengthAndNASAData = async (location: ILocation, startDate: string, endDate: string, selectedAttributes: string[]) => {
+    // Execute NASA API request first, as it might fail.
+    const NASAData = await fetchNASAData(location.latitude, location.longitude, startDate, endDate);
+     // NASA API returns elevation as the third element of the coordinates array, so we can use it directly
+    const elevation = NASAData.geometry.coordinates[2];
+
     const calcOptions: DaylightCalcOptions = {
       latitude: location.latitude,
       longitude: location.longitude,
-      year: new Date().getFullYear()
+      startDate,
+      endDate
     };
-
     const solarEvents = getDayLightInfo(calcOptions);
     const existingDataContext = await getDataContext(kDataContextName);
 
@@ -55,7 +61,7 @@ export const useCodapData = () => {
       );
       const childCollectionAttributesWithVisibility = kChildCollectionAttributes.map(attr => ({
         ...attr,
-        hidden: !selectedAttributes.includes(attr.name)
+        // hidden: selectedAttributes.includes(attr.name)
       }));
       await createChildCollection(
         kDataContextName,
@@ -65,17 +71,17 @@ export const useCodapData = () => {
       );
 
       const completeSolarRecords = solarEvents.map(solarEvent => ({
-        latitude: location.latitude,
-        longitude: location.longitude,
-        location: location.name,
-        date: solarEvent.day,
-        dayOfYear: solarEvent.dayOfYear,
+        Latitude: location.latitude,
+        Longitude: location.longitude,
+        Location: location.name,
+        Date: solarEvent.day,
+        Season: solarEvent.season,
+        Elevation: elevation,
         rawSunrise: solarEvent.rawSunrise,
         rawSunset: solarEvent.rawSunset,
-        "Day length": solarEvent.dayLength,
-        "Season": solarEvent.season,
+        "Length of day": solarEvent.dayLength,
         "Sunlight angle": solarEvent.sunlightAngle,
-        "Solar intensity": solarEvent.solarIntensity
+        ...getNASAAttributeValues(NASAData, solarEvent.day)
       }));
 
       await createItems(kDataContextName, completeSolarRecords);
@@ -132,7 +138,7 @@ export const useCodapData = () => {
     setDataContext,
     updateAttributeVisibility,
     handleClearData,
-    getDayLengthData,
+    getDayLengthAndNASAData,
     getUniqueLocationsInCodapData,
     extractUniqueLocations
   };
