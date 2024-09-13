@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { useCodapData } from "../hooks/useCodapData";
+import { getDayLengthAndNASAData, clearData, updateAttributeVisibility } from "../utils/codap-utils";
 import { kAttrCategories, kChildCollectionAttributes } from "../constants";
 import { AttributeCategory, ILocation } from "../types";
 import { LocationPicker } from "./location-picker";
 import { formatLatLongNumber } from "../utils/daylight-utils";
 
+import ProgressIndicator from "../assets/images/progress-indicator.svg";
+import DoneIcon from "../assets/images/done.svg";
+import WarningIcon from "../assets/images/warning.svg";
+
 import "./location-tab.scss";
 import "./get-data-button.scss";
+
+type DataStatus = "" | "retrieving" | "retrieved" | "incomplete" | "error";
 
 export const LocationTab: React.FC = () => {
   const [latitude, setLatitude] = useState("");
@@ -15,11 +21,10 @@ export const LocationTab: React.FC = () => {
   const [endDate, setEndDate] = useState("");
   const [locationSearch, setLocationSearch] = useState<string>("");
   const [selectedAttrCategories, setSelectedAttrCategories] = useState<AttributeCategory[]>(kAttrCategories);
-  const [requestInProgress, setRequestInProgress] = useState(false);
-  const [anyDataRequested, setAnyDataRequested] = useState(false);
-  const { handleClearData, getDayLengthAndNASAData, updateAttributeVisibility } = useCodapData();
+  const [dataStatus, setDataStatus] = useState<DataStatus>("");
+  const [anyDataToClear, setAnyDataToClear] = useState(false);
 
-  const enableGetData = latitude !== "" && longitude !== "" && startDate !== "" && endDate !== "" && !requestInProgress;
+  const enableGetData = latitude !== "" && longitude !== "" && startDate !== "" && endDate !== "" && dataStatus !== "retrieving";
 
   useEffect(() => {
     const updateEachAttrVisibility = () => {
@@ -32,7 +37,7 @@ export const LocationTab: React.FC = () => {
     };
 
     updateEachAttrVisibility();
-  }, [selectedAttrCategories, updateAttributeVisibility]);
+  }, [selectedAttrCategories]);
 
   const handleLatChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLatitude(event.target.value);
@@ -71,7 +76,9 @@ export const LocationTab: React.FC = () => {
   };
 
   const handleClearDataClick = async () => {
-    await handleClearData();
+    await clearData();
+    setAnyDataToClear(false);
+    setDataStatus("");
   };
 
   const handleGetDataClick = async () => {
@@ -80,14 +87,14 @@ export const LocationTab: React.FC = () => {
     if (!latitude || !longitude || !startDate || !endDate) return;
 
     // if the location does not already exist, and we have params, get the data
-    setRequestInProgress(true);
+    setDataStatus("retrieving");
     try {
-      await getDayLengthAndNASAData(currentLocation, startDate, endDate, selectedAttrCategories);
-      setAnyDataRequested(true);
+      const { dataComplete } = await getDayLengthAndNASAData(currentLocation, startDate, endDate, selectedAttrCategories);
+      setAnyDataToClear(true);
+      setDataStatus(dataComplete ? "retrieved" : "incomplete");
     } catch (error: any) {
       window.alert(error.message);
-    } finally {
-      setRequestInProgress(false);
+      setDataStatus("error");
     }
   };
 
@@ -166,20 +173,37 @@ export const LocationTab: React.FC = () => {
         <hr className="light"/>
       </div>
       <div className="plugin-row data-buttons">
-        <button
-          className="clear-data-button"
-          disabled={!anyDataRequested}
-          onClick={handleClearDataClick}
-        >
-          Clear Data
-        </button>
-        <button
-          className="get-data-button"
-          disabled={!enableGetData}
-          onClick={handleGetDataClick}
-        >
-          Get Data
-        </button>
+        <div className="app-message">
+          {
+            dataStatus === "retrieving" &&
+            <div className="progress-indicator"><ProgressIndicator /> Retrieving data...</div>
+          }
+          {
+            dataStatus === "retrieved" && <div className="done"><DoneIcon /> Retrieved data</div>
+          }
+          {
+            dataStatus === "incomplete" && <div className="incomplete"><WarningIcon /> Some data requested are not available</div>
+          }
+          {
+            dataStatus === "error" && <div className="error"><WarningIcon /> Error retrieving data</div>
+          }
+        </div>
+        <div className="button-container">
+          <button
+            className="clear-data-button"
+            disabled={!anyDataToClear}
+            onClick={handleClearDataClick}
+          >
+            Clear Data
+          </button>
+          <button
+            className="get-data-button"
+            disabled={!enableGetData}
+            onClick={handleGetDataClick}
+          >
+            Get Data
+          </button>
+        </div>
       </div>
     </div>
   );

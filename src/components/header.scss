@@ -3,7 +3,7 @@
 $tab-height: 26px;
 $general-tab-width: 80px;
 $location-tab-width: 104px;
-$simulation-tab-width: 73px;
+$simulation-tab-width: 72px;
 $about-tab-width: 60px;
 $left-tab-margin: 3px;
 
@@ -22,7 +22,7 @@ $left-tab-margin: 3px;
   .tab {
     position: absolute;
     text-align: center;
-    padding: 4px $tab-padding;
+    padding: 4px 10px;
     color: #222;
     border: 1px solid #222;
     margin-right: -1px;
