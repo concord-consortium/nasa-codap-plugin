@@ -1,11 +1,11 @@
-import { IAttribute } from "./types";
+import { AttributeCategory, IAttribute } from "./types";
 
 export const kPluginName = "NASA: Earth, Air, and Water";
 export const kVersion = "0.0.1";
 export const kDataContextName = "NASAPluginData";
 export const kInitialDimensions = {
   width: 360,
-  height: 541
+  height: 536
 };
 
 // These are only used in the simplified sunray angle calc
@@ -71,15 +71,7 @@ export const kChildCollectionAttributes: IAttribute[] = [
     type: "numeric",
     unit: "meter"
   },
-  // -- Sunlight Category --
-  {
-    name: "Length of day",
-    title: "Length of day",
-    type: "numeric",
-    unit: "hours",
-    description: "Number of hours of sunlight in decimal time.",
-    category: "Sunlight"
-  },
+  // -- Hidden Attributes --
   {
     name: "rawSunrise",
     title: "rawSunrise",
@@ -87,7 +79,6 @@ export const kChildCollectionAttributes: IAttribute[] = [
     hidden: true,
     precision: "seconds",
     description: "Sunrise as date object.",
-    category: "Sunlight"
   },
   {
     name: "rawSunset",
@@ -96,6 +87,14 @@ export const kChildCollectionAttributes: IAttribute[] = [
     hidden: true,
     precision: "seconds",
     description: "Sunset as date object.",
+  },
+  // -- Sunlight Category --
+  {
+    name: "Length of day",
+    title: "Length of day",
+    type: "numeric",
+    unit: "hours",
+    description: "Number of hours of sunlight in decimal time.",
     category: "Sunlight"
   },
   {
@@ -191,11 +190,9 @@ export const kChildCollectionAttributes: IAttribute[] = [
   }
 ];
 
-export const kUsedNASAParams = kChildCollectionAttributes.filter(attr => attr.NASAParamName) as (IAttribute & { NASAParamName: string })[];
+export const kAttrCategories: AttributeCategory[] = ["Sunlight", "Temperature", "Water Availability"];
 
-export const kDefaultOnAttributes = [
-  "date", "Length of day"
-];
+export const kUsedNASAParams = kChildCollectionAttributes.filter(attr => attr.NASAParamName) as (IAttribute & { NASAParamName: string })[];
 
 export const kDateWithTimeFormats = {
   asZuluISO: "YYYY-MM-DDTHH:mm[Z]",              // 1999-01-23T21:45Z
