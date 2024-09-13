@@ -49,7 +49,7 @@ export const kChildCollectionAttributes: IAttribute[] = [
   },
   {
     name: "Month",
-    title: "Moth",
+    title: "Month",
     type: "categorical",
     formula: "monthName(Date)"
   },
@@ -157,7 +157,7 @@ export const kChildCollectionAttributes: IAttribute[] = [
     title: "Max surface temperature",
     type: "numeric",
     unit: "°C",
-    description: "The daily maximum temperature at the Earth’s surface for a specific location Also known as Earth’s “skin temperature.”",
+    description: "The daily maximum temperature at the Earth’s surface for a specific location. Also known as Earth’s “skin temperature.”",
     NASAParamName: "TS_MAX",
     category: "Temperature"
   },
