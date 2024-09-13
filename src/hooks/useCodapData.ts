@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { kDataContextName, kChildCollectionName, kParentCollectionName, kParentCollectionAttributes, kChildCollectionAttributes } from "../constants";
-import { DaylightCalcOptions, ILocation } from "../types";
+import { AttributeCategory, DaylightCalcOptions, ILocation } from "../types";
 import { getDayLightInfo, locationsEqual } from "../utils/daylight-utils";
 import {
   getAllItems,
@@ -33,7 +33,7 @@ export const useCodapData = () => {
     }
   };
 
-  const getDayLengthAndNASAData = async (location: ILocation, startDate: string, endDate: string, selectedAttributes: string[]) => {
+  const getDayLengthAndNASAData = async (location: ILocation, startDate: string, endDate: string, selectedAttrCategories: AttributeCategory[]) => {
     // Execute NASA API request first, as it might fail.
     const NASAData = await fetchNASAData(location.latitude, location.longitude, startDate, endDate);
      // NASA API returns elevation as the third element of the coordinates array, so we can use it directly
@@ -61,7 +61,7 @@ export const useCodapData = () => {
       );
       const childCollectionAttributesWithVisibility = kChildCollectionAttributes.map(attr => ({
         ...attr,
-        // hidden: selectedAttributes.includes(attr.name)
+        hidden: attr.hidden !== undefined ? attr.hidden : (attr.category && !selectedAttrCategories.includes(attr.category))
       }));
       await createChildCollection(
         kDataContextName,

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useCodapData } from "../hooks/useCodapData";
-import { kChildCollectionAttributes, kDefaultOnAttributes } from "../constants";
-import { ILocation } from "../types";
+import { kAttrCategories, kChildCollectionAttributes } from "../constants";
+import { AttributeCategory, ILocation } from "../types";
 import { LocationPicker } from "./location-picker";
 import { formatLatLongNumber } from "../utils/daylight-utils";
 
@@ -14,7 +14,7 @@ export const LocationTab: React.FC = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [locationSearch, setLocationSearch] = useState<string>("");
-  const [selectedAttrs, setSelectedAttributes] = useState<string[]>(kDefaultOnAttributes);
+  const [selectedAttrCategories, setSelectedAttrCategories] = useState<AttributeCategory[]>(kAttrCategories);
   const [requestInProgress, setRequestInProgress] = useState(false);
   const [anyDataRequested, setAnyDataRequested] = useState(false);
   const { handleClearData, getDayLengthAndNASAData, updateAttributeVisibility } = useCodapData();
@@ -24,13 +24,15 @@ export const LocationTab: React.FC = () => {
   useEffect(() => {
     const updateEachAttrVisibility = () => {
       for (const attr of kChildCollectionAttributes) {
-        const isSelected = selectedAttrs.includes(attr.name);
-        updateAttributeVisibility(attr.name, !isSelected);
+        if (attr.category) {
+          const isSelected = selectedAttrCategories.includes(attr.category);
+          updateAttributeVisibility(attr.name, !isSelected);
+        }
       }
     };
 
     updateEachAttrVisibility();
-  }, [selectedAttrs, updateAttributeVisibility]);
+  }, [selectedAttrCategories, updateAttributeVisibility]);
 
   const handleLatChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLatitude(event.target.value);
@@ -60,11 +62,11 @@ export const LocationTab: React.FC = () => {
     setLocationSearch(searchString);
   };
 
-  const handleTokenClick = (attribute: string) => {
-    if (selectedAttrs.includes(attribute)) {
-      setSelectedAttributes(selectedAttrs.filter(attr => attr !== attribute));
+  const handleTokenClick = (attribute: AttributeCategory) => {
+    if (selectedAttrCategories.includes(attribute)) {
+      setSelectedAttrCategories(selectedAttrCategories.filter(attr => attr !== attribute));
     } else {
-      setSelectedAttributes([...selectedAttrs, attribute]);
+      setSelectedAttrCategories([...selectedAttrCategories, attribute]);
     }
   };
 
@@ -80,7 +82,7 @@ export const LocationTab: React.FC = () => {
     // if the location does not already exist, and we have params, get the data
     setRequestInProgress(true);
     try {
-      await getDayLengthAndNASAData(currentLocation, startDate, endDate, selectedAttrs);
+      await getDayLengthAndNASAData(currentLocation, startDate, endDate, selectedAttrCategories);
       setAnyDataRequested(true);
     } catch (error: any) {
       window.alert(error.message);
@@ -149,17 +151,17 @@ export const LocationTab: React.FC = () => {
       <div className="plugin-row attributes-selection">
         <label>Attribute Categories</label>
         <ul className="attribute-tokens">
-          {/* { kChildCollectionAttributes.map((attr: any, i: number) => (
-            attr.hasToken && (
+          {
+            kAttrCategories.map((attrCategory: AttributeCategory) => (
               <li
-                key={i}
-                className={`token ${selectedAttrs.includes(attr.name) ? "on" : "off"}`}
-                onClick={() => handleTokenClick(attr.name)}
+                key={attrCategory}
+                className={`token ${selectedAttrCategories.includes(attrCategory) ? "on" : "off"}`}
+                onClick={() => handleTokenClick(attrCategory)}
               >
-                { attr.title }
+                { attrCategory }
               </li>
-            )))
-          } */}
+            ))
+          }
         </ul>
         <hr className="light"/>
       </div>
