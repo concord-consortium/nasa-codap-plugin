@@ -1,6 +1,8 @@
+import { IAttribute } from "./types";
+
 export const kPluginName = "NASA: Earth, Air, and Water";
 export const kVersion = "0.0.1";
-export const kDataContextName = "DayLengthPluginData";
+export const kDataContextName = "NASAPluginData";
 export const kInitialDimensions = {
   width: 360,
   height: 541
@@ -17,121 +19,182 @@ export const kGeonamesUser = "codap";
 export const kDefaultMaxRows = 4;
 
 export const kParentCollectionName = "Locations";
-export const kChildCollectionName = "Daylight Info";
+export const kChildCollectionName = "NASA Info";
 
 export const kAdjustSpringForwardOutlier = false;
 
 export const kParentCollectionAttributes = [
   {
-    name: "latitude",
-    type: "numeric"
+    name: "Latitude",
+    type: "numeric",
+    unit: "°"
   },
   {
-    name: "longitude",
-    type: "numeric"
+    name: "Longitude",
+    type: "numeric",
+    unit: "°"
   },
   {
-    name: "location",
+    name: "Location",
     type: "categorical"
   }
 ];
 
-export const kChildCollectionAttributes = [
+export const kChildCollectionAttributes: IAttribute[] = [
   {
-    name: "date",
+    name: "Date",
     title: "Date",
     type: "date",
-    hasToken: true,
     precision: "day",
-    description: "Date"
   },
   {
-    name: "dayOfYear",
-    title: "Day of year",
-    type: "numeric",
-    hasToken: false,
-    hidden: true,
-    description: "Day of year"
+    name: "Month",
+    title: "Month",
+    type: "categorical",
+    formula: "monthName(Date)"
   },
   {
-    name: "Day length",
-    title: "Day length",
-    type: "numeric",
-    hasToken: true,
-    unit: "hours",
-    description: "Day length in hours"
-  },
-  {
-    name: "rawSunrise",
-    title: "rawSunrise",
-    type: "date",
-    hasToken: true,
-    hidden: true,
-    precision: "seconds",
-    description: "sunrise as date object"
-  },
-  {
-    name: "rawSunset",
-    title: "rawSunset",
-    type: "date",
-    hasToken: false,
-    hidden: true,
-    precision: "seconds",
-    description: "sunset as date object"
-  },
-  {
-    name: "Sunrise",
-    title: "Sunrise",
-    type: "numeric",
-    hasToken: false,
-    unit: "decimal hours",
-    formula: "hours(rawSunrise)+minutes(rawSunrise)/60",
-    description: "time in decimal hours"
-  },
-  {
-    name: "Sunset",
-    title: "Sunset",
-    type: "numeric",
-    hasToken: false,
-    unit: "decimal hours",
-    formula: "hours(rawSunset)+minutes(rawSunset)/60",
-    description: "time in decimal hours"
-  },
-  {
-    name: "Sunlight angle",
-    title: "Sunlight angle",
-    type: "numeric",
-    hasToken: false,
-    unit: "°",
-    description: "angle in degrees of sunlight at solar noon"
-  },
-  {
-    name: "Solar intensity",
-    title: "Solar intensity",
-    type: "numeric",
-    hasToken: false,
-    unit: "W/㎡",
-    description: "intensity of solar energy in watts per square meter at solar noon, disregarding all atmospheric effects"
+    name: "Year",
+    title: "Year",
+    type: "categorical",
+    formula: "year(Date)",
   },
   {
     name: "Season",
     title: "Season",
     type: "categorical",
-    hasToken: false
+    description: "Seasons are determined by the dates of the spring and fall equinoxes and the summer and winter solstices."
   },
   {
-    name: "calcId",
-    title: "calcId",
-    type: "categorical",
-    hasToken: false,
+    name: "Elevation",
+    title: "Elevation",
+    type: "numeric",
+    unit: "meter"
+  },
+  // -- Sunlight Category --
+  {
+    name: "Length of day",
+    title: "Length of day",
+    type: "numeric",
+    unit: "hours",
+    description: "Number of hours of sunlight in decimal time.",
+    category: "Sunlight"
+  },
+  {
+    name: "rawSunrise",
+    title: "rawSunrise",
+    type: "date",
     hidden: true,
-    description: "unique identifier for each location on a day - concatenation of latitude, longitude, and dayOfYear",
-    formula: "latitude + ',' + longitude + ',' + dayOfYear"
+    precision: "seconds",
+    description: "Sunrise as date object.",
+    category: "Sunlight"
+  },
+  {
+    name: "rawSunset",
+    title: "rawSunset",
+    type: "date",
+    hidden: true,
+    precision: "seconds",
+    description: "Sunset as date object.",
+    category: "Sunlight"
+  },
+  {
+    name: "Sunrise",
+    title: "Sunrise",
+    type: "numeric",
+    unit: "decimal hours",
+    formula: "hours(rawSunrise)+minutes(rawSunrise)/60",
+    description: "The local time of sunrise in decimal time.",
+    category: "Sunlight"
+  },
+  {
+    name: "Sunset",
+    title: "Sunset",
+    type: "numeric",
+    unit: "decimal hours",
+    formula: "hours(rawSunset)+minutes(rawSunset)/60",
+    description: "The local time of sunset in decimal time.",
+    category: "Sunlight"
+  },
+  {
+    name: "Sunlight angle",
+    title: "Sunlight angle",
+    type: "numeric",
+    unit: "°",
+    description: "Angle at which sunlight hits the earth at noon each day (degrees).",
+    category: "Sunlight"
+  },
+  {
+    name: "UV Index",
+    title: "UV Index",
+    type: "numeric",
+    unit: "",
+    description: "The ultraviolet radiation exposure index (UV Index) is a scale that measures the amount of UV radiation reaching the Earth's surface. It provides a daily forecast of the expected risk of overexposure to the sun.",
+    NASAParamName: "ALLSKY_SFC_UV_INDEX",
+    category: "Sunlight"
+  },
+  {
+    name: "Solar intensity",
+    title: "Solar intensity",
+    type: "numeric",
+    unit: "W/㎡",
+    description: "An estimate of the amount of energy from the Sun traveling downward toward the surface of the Earth at noon each day.",
+    NASAParamName: "CLRSKY_SFC_SW_DWN",
+    category: "Sunlight"
+  },
+  // -- Temperature Category --
+  {
+    name: "Max air temperature",
+    title: "Max air temperature",
+    type: "numeric",
+    unit: "°C",
+    description: "Daily maximum air temperature at 2 meters above the surface of the earth.",
+    NASAParamName: "T2M_MAX",
+    category: "Temperature"
+  },
+  {
+    name: "Max surface temperature",
+    title: "Max surface temperature",
+    type: "numeric",
+    unit: "°C",
+    description: "The daily maximum temperature at the Earth’s surface for a specific location. Also known as Earth’s “skin temperature.”",
+    NASAParamName: "TS_MAX",
+    category: "Temperature"
+  },
+  // -- Water Availability Category --
+  {
+    name: "Precipitation",
+    title: "Precipitation",
+    type: "numeric",
+    unit: "mm/day",
+    description: "Total precipitation reaching Earth’s surface for the day (includes snow).",
+    NASAParamName: "PRECTOTCORR",
+    category: "Water Availability"
+  },
+  {
+    name: "Daytime clouds",
+    title: "Daytime clouds",
+    type: "numeric",
+    unit: "%",
+    description: "The average percentage of cloud cover over the course of the day (during daylight).",
+    NASAParamName: "CLOUD_AMT_DAY",
+    category: "Water Availability"
+  },
+  {
+    name: "Soil moisture",
+    title: "Soil moisture",
+    type: "numeric",
+    unit: "",
+    description: "Amount of soil moisture from 0% water free to 100% saturated.",
+    NASAParamName: "GWETPROF",
+    category: "Water Availability"
   }
 ];
 
+export const kUsedNASAParams = kChildCollectionAttributes.filter(attr => attr.NASAParamName) as (IAttribute & { NASAParamName: string })[];
+
 export const kDefaultOnAttributes = [
-  "date", "Day length"
+  "date", "Length of day"
 ];
 
 export const kDateWithTimeFormats = {

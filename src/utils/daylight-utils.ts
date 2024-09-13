@@ -107,14 +107,14 @@ export function getMinutesSinceMidnight(time: Dayjs): number {
 }
 
 export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
-  const { latitude, longitude, year } = options;
+  const { latitude, longitude, startDate, endDate } = options;
   const results: DaylightInfo[] = [];
 
   const timeZone = tzlookup(latitude, longitude);
-  let currentDay = dayjs.tz(`${year}-01-01`, timeZone).startOf("day");
-  const endOfYear = dayjs.tz(`${year + 1}-01-01`, timeZone).startOf("day");
+  let currentDay = dayjs.tz(startDate, timeZone).startOf("day");
+  const endDay = dayjs.tz(endDate, timeZone).startOf("day");
 
-  while (currentDay.isBefore(endOfYear)) {
+  while (currentDay.isBefore(endDay)) {
     const noonDate = currentDay.hour(12).toDate();
     const utcSunrise = dayjs.utc(getSunrise(latitude, longitude, noonDate));
     const utcSunset = dayjs.utc(getSunset(latitude, longitude, noonDate));
@@ -146,7 +146,8 @@ export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
     else {
       finalDayLength = getDayLength(localSunriseObj, localSunsetObj);
       // Optional adjustment of outlier on spring forward day for some timezones
-      if (kAdjustSpringForwardOutlier){
+      if (kAdjustSpringForwardOutlier) {
+        const year = currentDay.year();
         const isSpringForward = localSunriseObj.utcOffset() < localSunsetObj.utcOffset();
         if (hasDST(latitude, longitude, year) && isSpringForward) finalDayLength -= 1;
       }
@@ -154,7 +155,6 @@ export function getDayLightInfo(options: DaylightCalcOptions): DaylightInfo[] {
 
     const record: DaylightInfo = {
       day: currentDay.format(kDateFormats.asLocalISODate),
-      dayOfYear: currentDay.dayOfYear(),
       rawSunrise: localSunriseObj.format(kDateWithTimeFormats.asLocalISOWithTZOffset),
       rawSunset: localSunsetObj.format(kDateWithTimeFormats.asLocalISOWithTZOffset),
       dayLength: finalDayLength,
