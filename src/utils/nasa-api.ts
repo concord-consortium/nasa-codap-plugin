@@ -16,6 +16,9 @@ const config = {
   "time-standard": "lst"
 }
 
+// NASA API returns -999 for missing values.
+const NASA_API_NULL_VALUE = -999;
+
 export const dateToAPIDateFormat = (date: string | Date) => {
   if (typeof date === "string") {
     date = new Date(date);
@@ -50,7 +53,7 @@ export function getNASAAttributeValues(NASAResponse: any, day: string): Record<s
 
   return kUsedNASAParams.reduce((result: Record<string, number>, attr) => {
     const value = values[attr.NASAParamName]?.[formattedDate];
-    if (value !== undefined) {
+    if (value !== undefined && value !== NASA_API_NULL_VALUE) {
       result[attr.name] = value;
     }
     return result;
