@@ -1,5 +1,5 @@
 import { kDataContextName, kChildCollectionName, kParentCollectionName, kParentCollectionAttributes, kChildCollectionAttributes } from "../constants";
-import { AttributeCategory, DaylightCalcOptions, ILocation } from "../types";
+import { AttributeCategory, DaylightCalcOptions, IAttribute, ILocation, Units } from "../types";
 import { getDayLightInfo, locationsEqual } from "./daylight-utils";
 import {
   getAllItems,
@@ -33,7 +33,7 @@ export const isDataComplete = (codapCases: Record<string, any>[], attributeNames
   return codapCases.every(c => attributeNames.every(attr => c[attr] !== undefined));
 };
 
-export const getDayLengthAndNASAData = async (location: ILocation, startDate: string, endDate: string, selectedAttrCategories: AttributeCategory[]) => {
+export const getDayLengthAndNASAData = async (location: ILocation, startDate: string, endDate: string, selectedAttrCategories: AttributeCategory[], units: Units) => {
   // Execute NASA API request first, as it might fail.
   const NASAData = await fetchNASAData(location.latitude, location.longitude, startDate, endDate);
   // NASA API returns elevation as the third element of the coordinates array, so we can use it directly
@@ -54,7 +54,7 @@ export const getDayLengthAndNASAData = async (location: ILocation, startDate: st
     await createParentCollection(
       kDataContextName,
       kParentCollectionName,
-      kParentCollectionAttributes
+      attrsToCodapAttrs(kParentCollectionAttributes, units)
     );
     const childCollectionAttributesWithVisibility = kChildCollectionAttributes.map(attr => ({
       ...attr,
@@ -64,13 +64,13 @@ export const getDayLengthAndNASAData = async (location: ILocation, startDate: st
       kDataContextName,
       kChildCollectionName,
       kParentCollectionName,
-      childCollectionAttributesWithVisibility
+      attrsToCodapAttrs(childCollectionAttributesWithVisibility, units)
     );
     await createTable(kDataContextName);
   }
 
   if (existingDataContext.success || newDataContext?.success) {
-    const codapCases = solarEvents.map(solarEvent => ({
+    const codapCasesMetric = solarEvents.map(solarEvent => ({
       Latitude: location.latitude,
       Longitude: location.longitude,
       Location: location.name,
@@ -84,13 +84,24 @@ export const getDayLengthAndNASAData = async (location: ILocation, startDate: st
       ...getNASAAttributeValues(NASAData, solarEvent.day)
     }));
 
+    const codapCasesImperial = codapCasesMetric.map((c: Record<string, string | number>) => {
+      const cImperial = { ...c };
+      kChildCollectionAttributes.forEach(attr => {
+        if (c[attr.name] !== undefined && attr.unit?.metricToImperial) {
+          cImperial[attr.name] = attr.unit.metricToImperial(c[attr.name] as number);
+        }
+      });
+      return cImperial;
+    });
+
+    const codapCases = units === "imperial" ? codapCasesImperial : codapCasesMetric
     await createItems(kDataContextName, codapCases);
 
     // Attributes with formulas will not have any values defined in the case list.
     const requiredAttrNames = kChildCollectionAttributes.filter(a => !a.formula).map(a => a.name);
     const dataComplete = isDataComplete(codapCases, requiredAttrNames);
 
-    return { codapCases, dataComplete };
+    return { codapCasesMetric, codapCasesImperial, dataComplete };
   }
   throw new Error("Failed to create data context");
 };
@@ -106,6 +117,24 @@ export const updateAttributeVisibility = (attributeName: string, hidden: boolean
     );
   } catch (error) {
     console.error("Error updating attribute visibility:", error);
+  }
+};
+
+export const updateAttributeUnits = (units: Units) => {
+  try {
+    kChildCollectionAttributes.forEach(attr => {
+      if (attr.unit && attr.unit.metric !== attr.unit.imperial) {
+        updateAttribute(
+          kDataContextName,
+          kChildCollectionName,
+          attr.name,
+          { name: attr.name },
+          { unit: units === "metric" ? attr.unit?.metric : attr.unit?.imperial }
+        );
+      }
+    });
+  } catch (error) {
+    console.error("Error updating attribute unit:", error);
   }
 };
 
@@ -137,3 +166,6 @@ export const getUniqueLocationsInCodapData = async () => {
     }
   }
 };
+
+export const attrsToCodapAttrs = (attrs: IAttribute[], units: Units) =>
+  attrs.map(attr => ({ ...attr, unit: units === "metric" ? attr.unit?.metric : attr.unit?.imperial }));

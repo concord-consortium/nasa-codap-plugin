@@ -36,6 +36,8 @@ export type TabName = "location" | "glossary" | "about";
 
 // Data types
 
+export type Units = "metric" | "imperial";
+
 export type NASAParameter = "ALLSKY_SFC_UV_INDEX" | "CLRSKY_SFC_SW_DWN" | "T2M_MAX" | "TS_MAX" | "PRECTOTCORR" | "CLOUD_AMT_DAY" | "GWETPROF";
 
 export type AttributeCategory = "Sunlight" | "Temperature" | "Water Availability";
@@ -44,7 +46,11 @@ export interface IAttribute {
   name: string;
   title: string;
   type: string;
-  unit?: string;
+  unit?: {
+    metric: string;
+    imperial: string;
+    metricToImperial?: (value: number) => number;
+  };
   precision?: string;
   formula?: string;
   description?: string;
