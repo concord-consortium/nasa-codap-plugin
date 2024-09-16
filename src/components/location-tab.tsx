@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { getDayLengthAndNASAData, clearData, updateAttributeVisibility } from "../utils/codap-utils";
-import { kAttrCategories, kChildCollectionAttributes } from "../constants";
-import { AttributeCategory, ILocation } from "../types";
+import { getDayLengthAndNASAData, clearData, updateAttributeVisibility, updateAttributeUnits } from "../utils/codap-utils";
+import { createItems } from "@concord-consortium/codap-plugin-api";
+import { kAttrCategories, kChildCollectionAttributes, kDataContextName } from "../constants";
+import { AttributeCategory, ILocation, Units } from "../types";
 import { LocationPicker } from "./location-picker";
 import { formatLatLongNumber } from "../utils/daylight-utils";
 
@@ -19,10 +20,11 @@ export const LocationTab: React.FC = () => {
   const [longitude, setLongitude] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [units, setUnits] = useState<Units>("imperial");
   const [locationSearch, setLocationSearch] = useState<string>("");
   const [selectedAttrCategories, setSelectedAttrCategories] = useState<AttributeCategory[]>(kAttrCategories);
   const [dataStatus, setDataStatus] = useState<DataStatus>("");
-  const [anyDataToClear, setAnyDataToClear] = useState(false);
+  const [codapCases, setCodapCases] = useState<Record<Units, Record<string, any>[]> | undefined>();
 
   const enableGetData = latitude !== "" && longitude !== "" && startDate !== "" && endDate !== "" && dataStatus !== "retrieving";
 
@@ -75,9 +77,19 @@ export const LocationTab: React.FC = () => {
     }
   };
 
+  const handleUnitsChange = async (newUnits: Units) => {
+    setUnits(newUnits);
+
+    if (codapCases) {
+      await clearData();
+      await createItems(kDataContextName, codapCases[newUnits]);
+      await updateAttributeUnits(newUnits);
+    }
+  };
+
   const handleClearDataClick = async () => {
     await clearData();
-    setAnyDataToClear(false);
+    setCodapCases(undefined);
     setDataStatus("");
   };
 
@@ -89,8 +101,11 @@ export const LocationTab: React.FC = () => {
     // if the location does not already exist, and we have params, get the data
     setDataStatus("retrieving");
     try {
-      const { dataComplete } = await getDayLengthAndNASAData(currentLocation, startDate, endDate, selectedAttrCategories);
-      setAnyDataToClear(true);
+      const { dataComplete, codapCasesImperial, codapCasesMetric } = await getDayLengthAndNASAData(currentLocation, startDate, endDate, selectedAttrCategories, units);
+      setCodapCases(prevCases => ({
+        imperial: [...(prevCases?.imperial || []), ...codapCasesImperial],
+        metric: [...(prevCases?.metric || []), ...codapCasesMetric]
+      }));
       setDataStatus(dataComplete ? "retrieved" : "incomplete");
     } catch (error: any) {
       window.alert(error.message);
@@ -156,7 +171,20 @@ export const LocationTab: React.FC = () => {
       </div>
       <hr className="light above-attrs"/>
       <div className="plugin-row attributes-selection">
-        <label>Attribute Categories</label>
+        <div className="attributes-header">
+          <div><label>Attribute Categories</label></div>
+          <div className="units">
+            <label>Units:</label>
+            <div className="unit-buttons">
+              <button className={units === "imperial" ? "on" : "off"} onClick={() => handleUnitsChange("imperial")}>
+                standard
+              </button>
+              <button className={units === "metric" ? "on" : "off"} onClick={() => handleUnitsChange("metric")}>
+                metric
+              </button>
+            </div>
+          </div>
+        </div>
         <ul className="attribute-tokens">
           {
             kAttrCategories.map((attrCategory: AttributeCategory) => (
@@ -191,7 +219,7 @@ export const LocationTab: React.FC = () => {
         <div className="button-container">
           <button
             className="clear-data-button"
-            disabled={!anyDataToClear}
+            disabled={!codapCases}
             onClick={handleClearDataClick}
           >
             Clear Data

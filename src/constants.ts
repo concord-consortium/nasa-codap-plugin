@@ -23,19 +23,28 @@ export const kChildCollectionName = "NASA Info";
 
 export const kAdjustSpringForwardOutlier = false;
 
-export const kParentCollectionAttributes = [
+export const kParentCollectionAttributes: IAttribute[] = [
   {
     name: "Latitude",
+    title: "Latitude",
     type: "numeric",
-    unit: "°"
+    unit: {
+      imperial: "°",
+      metric: "°"
+    }
   },
   {
     name: "Longitude",
+    title: "Longitude",
     type: "numeric",
-    unit: "°"
+    unit: {
+      metric: "°",
+      imperial: "°"
+    }
   },
   {
     name: "Location",
+    title: "Location",
     type: "categorical"
   }
 ];
@@ -69,7 +78,11 @@ export const kChildCollectionAttributes: IAttribute[] = [
     name: "Elevation",
     title: "Elevation",
     type: "numeric",
-    unit: "meter"
+    unit: {
+      metric: "meter",
+      imperial: "feet",
+      metricToImperial: (value: number) => value * 3.28084
+    }
   },
   // -- Hidden Attributes --
   {
@@ -93,7 +106,10 @@ export const kChildCollectionAttributes: IAttribute[] = [
     name: "Length of day",
     title: "Length of day",
     type: "numeric",
-    unit: "hours",
+    unit: {
+      metric: "hours",
+      imperial: "hours"
+    },
     description: "Number of hours of sunlight in decimal time.",
     category: "Sunlight"
   },
@@ -101,7 +117,10 @@ export const kChildCollectionAttributes: IAttribute[] = [
     name: "Sunrise",
     title: "Sunrise",
     type: "numeric",
-    unit: "decimal hours",
+    unit: {
+      metric: "decimal hours",
+      imperial: "decimal hours"
+    },
     formula: "hours(rawSunrise)+minutes(rawSunrise)/60",
     description: "The local time of sunrise in decimal time.",
     category: "Sunlight"
@@ -110,7 +129,10 @@ export const kChildCollectionAttributes: IAttribute[] = [
     name: "Sunset",
     title: "Sunset",
     type: "numeric",
-    unit: "decimal hours",
+    unit: {
+      metric: "decimal hours",
+      imperial: "decimal hours"
+    },
     formula: "hours(rawSunset)+minutes(rawSunset)/60",
     description: "The local time of sunset in decimal time.",
     category: "Sunlight"
@@ -119,7 +141,10 @@ export const kChildCollectionAttributes: IAttribute[] = [
     name: "Sunlight angle",
     title: "Sunlight angle",
     type: "numeric",
-    unit: "°",
+    unit: {
+      metric: "°",
+      imperial: "°"
+    },
     description: "Angle at which sunlight hits the earth at noon each day (degrees).",
     category: "Sunlight"
   },
@@ -127,7 +152,6 @@ export const kChildCollectionAttributes: IAttribute[] = [
     name: "UV Index",
     title: "UV Index",
     type: "numeric",
-    unit: "",
     description: "The ultraviolet radiation exposure index (UV Index) is a scale that measures the amount of UV radiation reaching the Earth's surface. It provides a daily forecast of the expected risk of overexposure to the sun.",
     NASAParamName: "ALLSKY_SFC_UV_INDEX",
     category: "Sunlight"
@@ -136,7 +160,11 @@ export const kChildCollectionAttributes: IAttribute[] = [
     name: "Solar intensity",
     title: "Solar intensity",
     type: "numeric",
-    unit: "W/㎡",
+    unit: {
+      metric: "W/m²",
+      imperial: "W/ft²",
+      metricToImperial: (value: number) => value * 0.092903
+    },
     description: "An estimate of the amount of energy from the Sun traveling downward toward the surface of the Earth at noon each day.",
     NASAParamName: "CLRSKY_SFC_SW_DWN",
     category: "Sunlight"
@@ -146,7 +174,11 @@ export const kChildCollectionAttributes: IAttribute[] = [
     name: "Max air temperature",
     title: "Max air temperature",
     type: "numeric",
-    unit: "°C",
+    unit: {
+      metric: "°C",
+      imperial: "°F",
+      metricToImperial: (value: number) => value * 9 / 5 + 32
+    },
     description: "Daily maximum air temperature at 2 meters above the surface of the earth.",
     NASAParamName: "T2M_MAX",
     category: "Temperature"
@@ -155,7 +187,11 @@ export const kChildCollectionAttributes: IAttribute[] = [
     name: "Max surface temperature",
     title: "Max surface temperature",
     type: "numeric",
-    unit: "°C",
+    unit: {
+      metric: "°C",
+      imperial: "°F",
+      metricToImperial: (value: number) => value * 9 / 5 + 32
+    },
     description: "The daily maximum temperature at the Earth’s surface for a specific location. Also known as Earth’s “skin temperature.”",
     NASAParamName: "TS_MAX",
     category: "Temperature"
@@ -165,7 +201,11 @@ export const kChildCollectionAttributes: IAttribute[] = [
     name: "Precipitation",
     title: "Precipitation",
     type: "numeric",
-    unit: "mm/day",
+    unit: {
+      metric: "mm/day",
+      imperial: "in/day",
+      metricToImperial: (value: number) => value * 0.0393701
+    },
     description: "Total precipitation reaching Earth’s surface for the day (includes snow).",
     NASAParamName: "PRECTOTCORR",
     category: "Water Availability"
@@ -174,7 +214,10 @@ export const kChildCollectionAttributes: IAttribute[] = [
     name: "Daytime clouds",
     title: "Daytime clouds",
     type: "numeric",
-    unit: "%",
+    unit: {
+      metric: "%",
+      imperial: "%"
+    },
     description: "The average percentage of cloud cover over the course of the day (during daylight).",
     NASAParamName: "CLOUD_AMT_DAY",
     category: "Water Availability"
@@ -183,7 +226,6 @@ export const kChildCollectionAttributes: IAttribute[] = [
     name: "Soil moisture",
     title: "Soil moisture",
     type: "numeric",
-    unit: "",
     description: "Amount of soil moisture from 0% water free to 100% saturated.",
     NASAParamName: "GWETPROF",
     category: "Water Availability"

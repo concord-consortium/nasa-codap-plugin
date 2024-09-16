@@ -111,10 +111,59 @@
   .attributes-selection {
     display: flex;
     flex-direction: column;
-    label {
+
+    .attributes-header {
       width: 100%;
-      box-sizing: border-box;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+
+      .units {
+        font-size: 10px;
+
+        .unit-buttons {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+
+          button {
+            font-size: 10px;
+            font-family: $font-family;
+            width: 60px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid $teal-dark;
+            background-color: white;
+
+            &:first-child {
+              border-radius: 8px 0 0 8px;
+              margin-left: 5px;
+              margin-right: 3px;
+            }
+
+            &:last-child {
+              border-radius: 0 8px 8px 0;
+            }
+
+            &.on {
+              background-color: $teal-light-25;
+            }
+
+            &.off {
+              background-color: white;
+              cursor: pointer;
+
+              &:hover {
+                background-color: $teal-light-50;
+              }
+            }
+          }
+        }
+      }
     }
+
     .attribute-tokens {
       list-style-type: none;
       padding: 0;
