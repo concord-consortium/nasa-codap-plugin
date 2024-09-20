@@ -43,6 +43,17 @@ export const kParentCollectionAttributes: IAttribute[] = [
     }
   },
   {
+    name: "Elevation",
+    title: "Elevation",
+    type: "numeric",
+    unit: {
+      metric: "m",
+      imperial: "ft",
+      metricToImperial: (value: number) => value * 3.28084
+    },
+    description: "Height above sea level"
+  },
+  {
     name: "Location",
     title: "Location",
     type: "categorical"
@@ -73,17 +84,6 @@ export const kChildCollectionAttributes: IAttribute[] = [
     title: "Season",
     type: "categorical",
     description: "The seasons is determined by the date of the spring and fall equinoxes and the summer and winter solstices"
-  },
-  {
-    name: "Elevation",
-    title: "Elevation",
-    type: "numeric",
-    unit: {
-      metric: "m",
-      imperial: "ft",
-      metricToImperial: (value: number) => value * 3.28084
-    },
-    description: "Height above sea level"
   },
   // -- Hidden Attributes --
   {

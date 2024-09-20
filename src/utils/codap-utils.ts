@@ -86,7 +86,7 @@ export const getDayLengthAndNASAData = async (location: ILocation, startDate: st
 
     const codapCasesImperial = codapCasesMetric.map((c: Record<string, string | number>) => {
       const cImperial = { ...c };
-      kChildCollectionAttributes.forEach(attr => {
+      [...kParentCollectionAttributes, ...kChildCollectionAttributes].forEach(attr => {
         if (c[attr.name] !== undefined && attr.unit?.metricToImperial) {
           cImperial[attr.name] = attr.unit.metricToImperial(c[attr.name] as number);
         }
@@ -122,16 +122,18 @@ export const updateAttributeVisibility = (attributeName: string, hidden: boolean
 
 export const updateAttributeUnits = (units: Units) => {
   try {
-    kChildCollectionAttributes.forEach(attr => {
-      if (attr.unit && attr.unit.metric !== attr.unit.imperial) {
-        updateAttribute(
-          kDataContextName,
-          kChildCollectionName,
-          attr.name,
-          { name: attr.name },
-          { unit: units === "metric" ? attr.unit?.metric : attr.unit?.imperial }
-        );
-      }
+    [kParentCollectionAttributes, kChildCollectionAttributes].forEach((attrs, collectionIdx) => {
+      attrs.forEach(attr => {
+        if (attr.unit && attr.unit.metric !== attr.unit.imperial) {
+          updateAttribute(
+            kDataContextName,
+            collectionIdx === 0 ? kParentCollectionName : kChildCollectionName,
+            attr.name,
+            { name: attr.name },
+            { unit: units === "metric" ? attr.unit?.metric : attr.unit?.imperial }
+          );
+        }
+      });
     });
   } catch (error) {
     console.error("Error updating attribute unit:", error);
