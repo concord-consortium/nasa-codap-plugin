@@ -1,4 +1,5 @@
 import React from "react";
+import NasaPartnerImg from "../assets/images/nasa-partner.png";
 
 import "./about-tab.scss";
 
@@ -12,6 +13,7 @@ export const AboutTab: React.FC = () => {
   return (
     <div className="about-tab">
       <h2>NASA: Earth, Air, and Water Data</h2>
+      <img src={NasaPartnerImg} alt="NASA Partner Logo" />
       <p>
         The NASA: Earth, Air and Water plugin for CODAP was developed to help students use data to explore solar
         intensity (energy) at different locations and/or time frames. Additionally, the data can be used to investigate
