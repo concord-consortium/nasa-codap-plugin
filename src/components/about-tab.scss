@@ -8,6 +8,14 @@
   font-weight: 500;
   overflow-y: scroll;
   max-height: 480px;
+  user-select: text;
+
+  img {
+    width: 60px;
+    display: inline;
+    float: right;
+    margin: -25px 0 5px 5px;
+  }
 
   h2, h3 {
     font-size: 12px;

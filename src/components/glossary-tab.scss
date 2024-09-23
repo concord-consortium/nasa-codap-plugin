@@ -1,0 +1,43 @@
+@import "./vars.scss";
+
+.glossary-tab {
+  box-sizing: border-box;
+  width: $location-tab-width;
+  height: $location-tab-height;
+  padding: $tab-padding;
+  font-weight: 500;
+  overflow-y: scroll;
+  max-height: 480px;
+  user-select: text;
+
+  table {
+    border-collapse: collapse;
+    text-align: left;
+
+    th {
+      font-size: 12px;
+      font-weight: 600;
+      border-bottom: solid 1px #979797;
+      padding-bottom: 10px;
+    }
+
+    td {
+      vertical-align: top;
+      padding-top: 10px;
+      padding-bottom: 10px;
+
+      p {
+        margin: 0;
+      }
+
+      p + p {
+        margin-top: 10px;
+      }
+    }
+
+    td:first-child {
+      padding-right: 20px;
+      width: 98px;
+    }
+  }
+}

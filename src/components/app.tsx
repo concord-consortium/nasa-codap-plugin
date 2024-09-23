@@ -5,6 +5,7 @@ import { kInitialDimensions, kVersion, kPluginName } from "../constants";
 import { initializePlugin, selectSelf } from "@concord-consortium/codap-plugin-api";
 import { LocationTab } from "./location-tab";
 import { AboutTab } from "./about-tab";
+import { GlossaryTab } from "./glossary-tab";
 import { Header } from "./header";
 
 import "./app.scss";
@@ -38,7 +39,7 @@ export const App: React.FC = () => {
         <LocationTab />
       </div>
       <div className={clsx("tab-content", { active: activeTab === "glossary" })}>
-        <AboutTab />
+        <GlossaryTab />
       </div>
       <div className={clsx("tab-content", { active: activeTab === "about" })}>
         <AboutTab />

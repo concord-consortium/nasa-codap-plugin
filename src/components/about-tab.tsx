@@ -1,4 +1,5 @@
 import React from "react";
+import NasaPartnerImg from "../assets/images/nasa-partner.png";
 
 import "./about-tab.scss";
 
@@ -12,44 +13,38 @@ export const AboutTab: React.FC = () => {
   return (
     <div className="about-tab">
       <h2>NASA: Earth, Air, and Water Data</h2>
+      <img src={NasaPartnerImg} alt="NASA Partner Logo" />
       <p>
-        The NASA: Earth, Air, and Water plugin calculates data on daylight for each day of the year at any location on Earth. The
-        calculated dataset does not include the effects of clouds, land formation, and other variables that affect
-        sunlight in order to provide the underlying causes of Earth’s seasons and climate.
+        The NASA: Earth, Air and Water plugin for CODAP was developed to help students use data to explore solar
+        intensity (energy) at different locations and/or time frames. Additionally, the data can be used to investigate
+        relationships between solar intensity and different parts of the earth’s systems: hydrosphere (precipitation),
+        atmosphere (cloud and UV Index), geosphere (soil moisture).
       </p>
-      <h2>Simulation</h2>
+      <h2>Missing Values</h2>
       <p>
-        An integrated simulation of the orbit of the Earth around the Sun allows for a focus on the physical
-        relationship of Earth and Sun. The data and simulation can be used to explore the amount, angle and intensity of
-        daylight that determine seasonal and climatic differences across the globe.
+        Cells with missing values often occur for two different reasons: the data for those dates are not yet available
+        or the sensors on the satellite were unable to return the values for that day.
       </p>
-      <h2>Solar Intensity and Sunlight Angle</h2>
+      <h2>Simulation and Other Resources</h2>
       <p>
-        Solar energy is radiant light and heat from the Sun that is important for understanding Earth’s seasons and
-        climate. The Earth’s axis and yearly orbit cause the daylight hours and solar intensity reaching the Earth to
-        vary by location.
+        To further explore solar intensity through a simulation, we suggest you explore the Daylight Plugin simulation
+        available in the CODAP plugin menu. For additional lessons from NASA and visualizations about solar intensity or
+        the Earth’s energy budget,
+        visit <Link href="https://mynasadata.larc.nasa.gov/phenomenon/earth-energy-budget">MyNASAdata</Link>.
       </p>
+      <h2>Data Acknowledgement</h2>
       <p>
-        Because the Earth is spherical, sunlight reaches the surface at different angles—from 0° when it is at the
-        horizon (lowest solar intensity) to 90° when directly overhead (highest solar intensity). In addition, the 23°
-        tilt of the Earth’s axis further affects the angle of sunlight reaching the different latitudes of the Earth.
+        These data are obtained for educational purposes from the NASA Langley Research Center
+        (LaRC) <Link href="https://power.larc.nasa.gov/">POWER Project</Link> funded through the NASA Earth
+        Science/Applied Science Program.
       </p>
+      <h2>Project Funders</h2>
       <p>
-        To explore actual measurement values of sunlight data for locations, we suggest visiting
-        the <Link href="https://power.larc.nasa.gov/">NASA POWER website</Link>.
-      </p>
-
-      <hr/>
-
-      <p>
-        The NASA: Earth, Air, and Water plugin for CODAP was developed by the <Link href="https://concord.org/">Concord Consortium</Link> as
-        part of the <Link href="https://mss.wested.org/project/boosting-data-science-teaching-and-learning-in-stem/">Boosting Data Science</Link> project,
-        a collaboration between <Link href="https://www.wested.org/">WestEd</Link> and the Concord Consortium.
-      </p>
-      <p>
-        This material is based upon work supported by the National Science Foundation under Grant No. 2101049. Any
-        opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and
-        do not necessarily reflect the views of the National Science Foundation.
+        This material is based upon work supported by the National Science Foundation under Grant No. 2101049 and by a
+        National Aeronautics and Space Administration (NASA) grant or cooperative agreement (No. 80NSSC22M0005) and is
+        part of NASA’s Science Activation Portfolio. Any opinions, findings, conclusions or recommendations expressed in
+        this material are those of the author and do not necessarily reflect the views of the National Science
+        Foundation or NASA.
       </p>
     </div>
   );
