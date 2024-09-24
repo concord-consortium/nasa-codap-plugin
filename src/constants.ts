@@ -25,6 +25,11 @@ export const kAdjustSpringForwardOutlier = false;
 
 export const kParentCollectionAttributes: IAttribute[] = [
   {
+    name: "Location",
+    title: "Location",
+    type: "categorical"
+  },
+  {
     name: "Latitude",
     title: "Latitude",
     type: "numeric",
@@ -52,11 +57,6 @@ export const kParentCollectionAttributes: IAttribute[] = [
       metricToImperial: (value: number) => value * 3.28084
     },
     description: "Height above sea level"
-  },
-  {
-    name: "Location",
-    title: "Location",
-    type: "categorical"
   }
 ];
 
@@ -172,8 +172,8 @@ export const kChildCollectionAttributes: IAttribute[] = [
   },
   // -- Temperature Category --
   {
-    name: "Max air temperature",
-    title: "Max air temperature",
+    name: "Max air temp",
+    title: "Max air temp",
     type: "numeric",
     unit: {
       metric: "°C",
@@ -185,8 +185,8 @@ export const kChildCollectionAttributes: IAttribute[] = [
     category: "Temperature"
   },
   {
-    name: "Max surface temperature",
-    title: "Max surface temperature",
+    name: "Max surface temp",
+    title: "Max surface temp",
     type: "numeric",
     unit: {
       metric: "°C",
