@@ -35,7 +35,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
   return (
     <Dropdown<ILocation>
       label="Location"
-      inputPlaceholder={autoFindingLocation ? "Trying to automatically find your location..." : "City, State or Country"}
+      inputPlaceholder={autoFindingLocation ? "Searching for your location..." : "City, State or Country"}
       dropdownOffset="10px"
       value={searchValue}
       options={locationCandidates}

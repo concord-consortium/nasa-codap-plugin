@@ -121,7 +121,7 @@ export const GlossaryTab: React.FC = () => {
           <tr>
             <td>Max air temp</td>
             <td>
-              Daily maximum air temperature at 2 meters above the surface of the earth.  wo meters is the height above the ground
+              Daily maximum air temperature at 2 meters above the surface of the earth.  Two meters is the height above the ground
               at which all official temperature measurements are made around the world.
             </td>
           </tr>
