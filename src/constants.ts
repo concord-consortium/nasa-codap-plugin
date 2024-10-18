@@ -83,7 +83,7 @@ export const kChildCollectionAttributes: IAttribute[] = [
     name: "Season",
     title: "Season",
     type: "categorical",
-    description: "The seasons is determined by the date of the spring and fall equinoxes and the summer and winter solstices"
+    description: "The season is determined by the date of the spring and fall equinoxes and the summer and winter solstices"
   },
   // -- Hidden Attributes --
   {
@@ -212,8 +212,8 @@ export const kChildCollectionAttributes: IAttribute[] = [
     category: "Water Availability"
   },
   {
-    name: "Daytime clouds",
-    title: "Daytime clouds",
+    name: "Clouds daytime",
+    title: "Clouds daytime",
     type: "numeric",
     unit: {
       metric: "%",
@@ -228,10 +228,10 @@ export const kChildCollectionAttributes: IAttribute[] = [
     title: "Soil moisture",
     type: "numeric",
     unit: {
-      metric: "%",
-      imperial: "%"
+      metric: "fraction",
+      imperial: "fraction"
     },
-    description: "Amount of soil moisture, from 0% (water-free) to 100% (saturated)",
+    description: "Amount of soil moisture, from 0.0 (water-free) to 1.0 (saturated)",
     NASAParamName: "GWETPROF",
     category: "Water Availability"
   }

@@ -5,6 +5,8 @@ import { kAttrCategories, kChildCollectionAttributes, kDataContextName } from ".
 import { AttributeCategory, ILocation, Units } from "../types";
 import { LocationPicker } from "./location-picker";
 import { formatLatLongNumber } from "../utils/daylight-utils";
+import { oneYearAgoFromYesterday, yesterday } from "../utils/date-utils";
+import { findNearestLocation } from "../utils/geonameSearch";
 
 import ProgressIndicator from "../assets/images/progress-indicator.svg";
 import DoneIcon from "../assets/images/done.svg";
@@ -18,15 +20,48 @@ type DataStatus = "" | "retrieving" | "retrieved" | "incomplete" | "error";
 export const LocationTab: React.FC = () => {
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState(oneYearAgoFromYesterday);
+  const [endDate, setEndDate] = useState(yesterday);
   const [units, setUnits] = useState<Units>("imperial");
   const [locationSearch, setLocationSearch] = useState<string>("");
   const [selectedAttrCategories, setSelectedAttrCategories] = useState<AttributeCategory[]>(kAttrCategories);
   const [dataStatus, setDataStatus] = useState<DataStatus>("");
   const [codapCases, setCodapCases] = useState<Record<Units, Record<string, any>[]> | undefined>();
+  const [autoFindingLocation, setAutoFindingLocation] = useState(false);
 
   const enableGetData = latitude !== "" && longitude !== "" && startDate !== "" && endDate !== "" && dataStatus !== "retrieving";
+
+  useEffect(() => {
+    // use current location
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const [lat, long] = [position.coords.latitude, position.coords.longitude];
+
+        const getNearest = async () => {
+          let nearest: ILocation | undefined = undefined;
+          try {
+            nearest = await findNearestLocation(lat, long);
+          } catch (e) {
+            console.error(e);
+          }
+
+          setAutoFindingLocation(false);
+
+          if (nearest) {
+            setLatitude(formatLatLongNumber(nearest.latitude));
+            setLongitude(formatLatLongNumber(nearest.longitude));
+            setLocationSearch(nearest.name);
+          } else {
+            setLatitude(formatLatLongNumber(lat));
+            setLongitude(formatLatLongNumber(long));
+          }
+        };
+
+        setAutoFindingLocation(true);
+        getNearest();
+      });
+    }
+  }, []);
 
   useEffect(() => {
     const updateEachAttrVisibility = () => {
@@ -121,6 +156,7 @@ export const LocationTab: React.FC = () => {
       <hr />
       <div className="location-picker">
         <LocationPicker
+          autoFindingLocation={autoFindingLocation}
           onLocationSelect={handleLocationSelect}
           searchValue={locationSearch}
           onSearchChange={handleLocationSearchChange}
@@ -159,12 +195,14 @@ export const LocationTab: React.FC = () => {
           <input
             type="date"
             placeholder="Start Date"
+            value={startDate}
             onChange={handleStartDateChange}
           />
           to
           <input
             type="date"
             placeholder="End Date"
+            value={endDate}
             onChange={handleEndDateChange}
           />
         </div>

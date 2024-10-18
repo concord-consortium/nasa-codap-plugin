@@ -94,7 +94,7 @@ export const GlossaryTab: React.FC = () => {
               <p>
                 The UV index is calculated to include forecast ozone levels, cloudiness, and elevation in order to be an
                 accurate prediction of UV exposure at solar noon, when the sun is at its highest point in the sky.
-                Exposure to light-reflecting surfaces like sand and water can also increase the UV index.
+                Nearby light-reflecting surfaces like sand and water can also increase the UV index.
               </p>
               <p>
                 The UV index can help people determine how to protect themselves from the sun when planning outdoor
@@ -102,6 +102,9 @@ export const GlossaryTab: React.FC = () => {
                 like seeking shade, using sunscreen, and wearing protective clothing. People with lighter skin, blond or
                 red hair, freckles or moles, or a history of sunburns are more vulnerable to the sun&apos;s rays and may need
                 to take precautions at lower UV Index levels.
+              </p>
+              <p>
+                UV index data are typically available with a delay of 3-4 months for processing the values.
               </p>
             </td>
           </tr>
@@ -118,7 +121,8 @@ export const GlossaryTab: React.FC = () => {
           <tr>
             <td>Max air temp</td>
             <td>
-              Daily maximum air temperature at 2 meters above the surface of the earth
+              Daily maximum air temperature at 2 meters above the surface of the earth.  wo meters is the height above the ground
+              at which all official temperature measurements are made around the world.
             </td>
           </tr>
 
@@ -140,16 +144,27 @@ export const GlossaryTab: React.FC = () => {
           <tr>
             <td>Clouds daytime</td>
             <td>
-              Clouds are a visible indicator of available water present in the atmosphere. The amount of clouds and the
-              altitude of clouds during the day can also impact the amount of solar energy that reaches or is trapped
-              near the earth’s surface.
+              <p>
+                Clouds are a visible indicator of available water present in the atmosphere. The amount of clouds and the
+                altitude of clouds during the day can also impact the amount of solar energy that reaches or is trapped
+                near the earth’s surface.
+              </p>
+              <p>
+                Daytime cloud data are typically available with a delay of 3-4 months for processing the values.
+              </p>
             </td>
           </tr>
 
           <tr>
             <td>Soil moisture</td>
             <td>
-              The percent of moisture present in soil ranging from 0-100%. The soil moisture reported extends down to the bedrock.
+              <p>
+                The fraction of soil moisture, when available. A value of 0 indicates a completely water-free soil and a value of 1
+                indicates a completely saturated soil. The soil measured here is the layer from the surface (0 cm) to 5 cm below it.
+              </p>
+              <p>
+                Soil moisture data are typically available with a delay of 3-4 months for processing the values.
+              </p>
             </td>
           </tr>
         </tbody>
