@@ -6,12 +6,14 @@ import LocationIcon from "../assets/images/icon-location.svg";
 
 interface LocationPickerProps {
   searchValue: string;
+  autoFindingLocation: boolean;
   onLocationSelect: (place: ILocation) => void;
   onSearchChange: (value: string) => void;
 }
 
 export const LocationPicker: React.FC<LocationPickerProps> = ({
   searchValue,
+  autoFindingLocation,
   onLocationSelect,
   onSearchChange
 }) => {
@@ -33,7 +35,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
   return (
     <Dropdown<ILocation>
       label="Location"
-      inputPlaceholder="City, State or Country"
+      inputPlaceholder={autoFindingLocation ? "Searching for your location..." : "City, State or Country"}
       dropdownOffset="10px"
       value={searchValue}
       options={locationCandidates}

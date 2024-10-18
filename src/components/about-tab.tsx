@@ -23,7 +23,8 @@ export const AboutTab: React.FC = () => {
       <h2>Missing Values</h2>
       <p>
         Cells with missing values often occur for two different reasons: the data for those dates are not yet available
-        or the sensors on the satellite were unable to return the values for that day.
+        or the sensors on the satellite were unable to return the values for that day. In general, you can expect a 3-4
+        month lag in the data for UV index, Daytime clouds, and Soil moisture. Sunlight intensity data are intermittent.
       </p>
       <h2>Simulation and Other Resources</h2>
       <p>
