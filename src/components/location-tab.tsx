@@ -5,7 +5,7 @@ import { kAttrCategories, kChildCollectionAttributes, kDataContextName } from ".
 import { AttributeCategory, ILocation, Units } from "../types";
 import { LocationPicker } from "./location-picker";
 import { formatLatLongNumber } from "../utils/daylight-utils";
-import { oneYearAgoFromYesterday, yesterday } from "../utils/date-utils";
+import { defaultEnd, defaultStart } from "../utils/date-utils";
 import { findNearestLocation } from "../utils/geonameSearch";
 
 import ProgressIndicator from "../assets/images/progress-indicator.svg";
@@ -20,8 +20,8 @@ type DataStatus = "" | "retrieving" | "retrieved" | "incomplete" | "error";
 export const LocationTab: React.FC = () => {
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
-  const [startDate, setStartDate] = useState(oneYearAgoFromYesterday);
-  const [endDate, setEndDate] = useState(yesterday);
+  const [startDate, setStartDate] = useState(defaultEnd);
+  const [endDate, setEndDate] = useState(defaultStart);
   const [units, setUnits] = useState<Units>("imperial");
   const [locationSearch, setLocationSearch] = useState<string>("");
   const [selectedAttrCategories, setSelectedAttrCategories] = useState<AttributeCategory[]>(kAttrCategories);
