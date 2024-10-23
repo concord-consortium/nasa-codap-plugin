@@ -62,18 +62,22 @@ export const GlossaryTab: React.FC = () => {
               <p>
                 Because of the earth’s tilted axis, sunlight reaches the Earth at varying angles over the course of
                 a year. During summer months, for the part of the earth that is tilted toward the sun, it appears higher
-                in the sky and more overhead. This means that during the summer, the angle of sunlight reaches its largest
-                values—approaching 90°. Higher angles of sunlight are more direct, concentrated, and intense.
+                in the sky and more overhead. This means that during summer, the angle of sunlight approaches 90°
+                and is more direct, concentrated, and intense.
               </p>
               <p>
-                During the winter, the sun appears lower in the sky. Lower angles of sunlight cause the sunlight to
-                spread out over surfaces and become less direct, less concentrated, and less intense. In addition,
-                sunlight at lower angles is more likely to be reflected or absorbed by the atmosphere on its way to the surface.
+                During the winter, the sun appears lower in the sky. At these angles, sunlight spreads out over surfaces
+                and becomes less direct, less concentrated, and less intense. In addition, it is more likely to be
+                reflected or absorbed by the atmosphere on its way to the surface.
+              </p>
+              <p>
+                <strong>Note that scientists measure the angle of the sun from 0° to 180°.</strong> As a result, values for the Northern
+                Hemisphere are reported form 0° to 90° and values for the Southern Hemisphere are reported from 90° to 180°.
               </p>
               <p>
                 The round shape of the earth also impacts the sunlight angle, which affects the degree of warmth that
-                reaches each region. Light from the sun will shine more directly overhead (at higher angles) near the
-                equator compared to high latitudes such as the north and south poles.
+                reaches each region. Light from the sun will shine more directly overhead near the
+                equator compared to latitudes further into in the Northern and Southern Hemispheres.
               </p>
               <p>
                 To explore these factors interactively, visit
