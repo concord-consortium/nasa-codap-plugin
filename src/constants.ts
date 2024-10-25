@@ -1,7 +1,7 @@
 import { AttributeCategory, IAttribute } from "./types";
 
 export const kPluginName = "NASA: Earth, Air, and Water";
-export const kVersion = "1.0.0";
+export const kVersion = "1.1.0";
 export const kDataContextName = "NASAPluginData";
 export const kInitialDimensions = {
   width: 360,
